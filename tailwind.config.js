@@ -6,7 +6,8 @@ module.exports = {
   theme: {
     fontFamily: {
       merriw: ['"Merriweather Sans"'],
-      overpassm: ['"Overpass Mono"']
+      overpassm: ['"Overpass Mono"', 'monospace'],
+      consolas: ['"Consolas"', 'monospace']
     }
   },
   plugins: [],

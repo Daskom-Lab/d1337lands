@@ -12,7 +12,11 @@ export async function getStaticProps() {
   const peopleList = getPeopleList();
   
   peopleList.forEach(people => {
-    people.Avatar = getAssetFile(people.Avatar);
+    if (people.Avatar.endsWith(".html"))
+      people.Avatar = getAssetFile(people.Avatar);
+
+    // Remove newline at start and end of description
+    people.Description = people.Description.replace(/^\s+|\s+$/g, ''); 
   });
 
   return {
