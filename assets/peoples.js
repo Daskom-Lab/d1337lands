@@ -5,9 +5,9 @@ export function getPeopleList() {
       "Handle": "f4r4w4y",
       "Realname": "Muhammad Fakhri Putra Supriyadi",
       "Description": `
-+-----------------------+
-|  Developer by design  | 
-+-----------------------+
++------------------------------------------------+
+|  Developer by design (you may know me as FAI)  | 
++------------------------------------------------+
       `
     }
   ]
