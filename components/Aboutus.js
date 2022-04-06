@@ -5,6 +5,10 @@ import remarkBreaks from "remark-breaks";
 
 export default function Aboutus() {
   const aboutus_md = `
+  # ~Welcome to our community website~
+
+  **Daskom1337** is a community that revolves around technology and digital craftmanship. We talk, learn and teach everyone (including ourselves) about how things works, how to make X and more...
+
   [+] We basically consist of some of people from Dasar Komputer Laboratory that somehow manage their way to love technology and some even goes really far into it up to the level that we couldn't describe, so instead of finding and recruiting people from the wild, we created a community like this to share and learn knowledge together (for free, because we are indonesian, and we love everything for free).
 
   [+] We are ofcourse the creator of this thing (and almost everything since 2017 in daskom were, are and probably will always be created by us) including the [daskomlab web application](https://daskomlab.com/) that daskom is using for everyday practicum.

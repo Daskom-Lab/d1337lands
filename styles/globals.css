@@ -25,3 +25,8 @@ a {
 p:not(:last-child) {
   margin-bottom: 1.5rem;
 }
+
+h1 {
+  font-size: larger;
+  margin-bottom: 2rem;
+}

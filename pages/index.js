@@ -7,6 +7,8 @@ import Activity from '../components/Activity'
 import People from '../components/People'
 import { getAssetFile } from "../utils/assets";
 import { getPeopleList } from '../assets/peoples'
+import SimpleBar from 'simplebar-react';
+import 'simplebar/dist/simplebar.min.css';
 
 export async function getStaticProps() {
   const peopleList = getPeopleList();
@@ -46,7 +48,7 @@ export default function Home({ peopleList }) {
           <div className="font-merriw font-extrabold text-4xl text-yellow-300 mx-auto">
             Daskom1337 Community
           </div>
-          <div className="flex flex-col self-center w-full h-full border-2 border-slate-400 bg-slate-800 rounded-xl p-5 mt-6 overflow-auto shadow-l">
+          <SimpleBar className="flex flex-col self-center w-full h-full border-2 overflow-auto border-slate-400 bg-slate-800 rounded-xl p-5 mt-6 shadow-l">
             {
               {
                 "about-us": <Aboutus />,
@@ -54,7 +56,7 @@ export default function Home({ peopleList }) {
                 people: <People peopleList={peopleList} />
               }[menu]
             }
-          </div>
+          </SimpleBar>
           <div className="flex flex-row mt-5 px-10">
             <Button text="About Us" color={menu === "about-us" ? "green" : "yellow"} onClick={() => setMenu("about-us")} />
             <Button text="The Activity" color={menu === "activity" ? "green" : "yellow"} onClick={() => setMenu("activity")} />
