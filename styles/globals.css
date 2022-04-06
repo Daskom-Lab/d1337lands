@@ -21,3 +21,7 @@ a {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+p:not(:last-child) {
+  margin-bottom: 1.5rem;
+}

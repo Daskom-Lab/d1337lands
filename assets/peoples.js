@@ -31,7 +31,7 @@ export function getPeopleList() {
       "Realname": "Daskom1337 Bots",
       "Description": `
 >> Im pleased to tell you these <<
->>        master of mine        <<`
+>>       masters of mine        <<`
     },
     {
       "Avatar": "fai.html",

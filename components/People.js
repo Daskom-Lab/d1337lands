@@ -7,9 +7,9 @@ export default function People({ peopleList }) {
             <div className="flex flex-row">
               {
                 i%2 === 0 &&
-                  <div style={{ fontSize: "5px" }} className="whitespace-pre font-consolas font-mono font-extrabold" dangerouslySetInnerHTML={{__html: people.Avatar}} />
+                  <div style={{ fontSize: "5px" }} className="whitespace-pre subpixel-antialiased tracking-wider font-consolas font-mono font-extrabold" dangerouslySetInnerHTML={{__html: people.Avatar}} />
               }
-              <div className="flex flex-col ml-8 my-auto">
+              <div className="flex flex-col mx-8 my-auto">
                 <div>
                   {people.Realname} [{people.Handle}]
                 </div>
@@ -19,7 +19,7 @@ export default function People({ peopleList }) {
               </div>
               {
                 i%2 !== 0 &&
-                  <div style={{ fontSize: "5px" }} className="whitespace-pre font-consolas font-mono font-extrabold" dangerouslySetInnerHTML={{__html: people.Avatar}} />
+                  <div style={{ fontSize: "5px" }} className="whitespace-pre subpixel-antialiased tracking-wider font-consolas font-mono font-extrabold" dangerouslySetInnerHTML={{__html: people.Avatar}} />
               }
             </div>
             {

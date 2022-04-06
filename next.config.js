@@ -3,7 +3,9 @@ const nextConfig = {
   reactStrictMode: true,
 }
 
-module.exports = {
+const withTM = require("next-transpile-modules")(["react-syntax-highlighter"]);
+
+module.exports = withTM({
   future: {
     webpack5: true, 
   },
@@ -18,5 +20,5 @@ module.exports = {
     return config;
   },
 
-  nextConfig
-}
+  nextConfig 
+})
