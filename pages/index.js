@@ -16,7 +16,7 @@ export async function getStaticProps() {
       people.Avatar = getAssetFile(people.Avatar);
 
     // Remove newline at start and end of description
-    people.Description = people.Description.replace(/^\s+|\s+$/g, ''); 
+    people.Description = people.Description.replace(/^(\n|\r\n|\r)+|(\n|\r\n|\r)+$/g, ''); 
   });
 
   return {
