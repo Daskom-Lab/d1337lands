@@ -43,6 +43,17 @@ export function getPeopleList() {
 |                      ~~~                       |
 |        Community Mentor of Daskom1337          |
 +------------------------------------------------+`
+    },
+    {
+      "Avatar": "ade.html",
+      "Handle": "Adrama",
+      "Realname": "Ade Aditya Ramadha",
+      "Description": `
++------------------------------------------------+
+|               Ramadha without N                | 
+|                      ~~~                       |
+|        Week 1 & 12 Champion of Daskom1337      |
++------------------------------------------------+`
     }
   ]
 }
