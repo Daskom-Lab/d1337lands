@@ -55,7 +55,7 @@ export default function Home({ peopleList }) {
           </div>
           {
             menu !== "playground" ? (
-              <SimpleBar className="flex flex-col self-center w-full h-full border-2 overflow-auto border-slate-400 bg-slate-800 rounded-xl p-5 mt-6 shadow-l">
+              <SimpleBar className="flex flex-col self-center w-full h-full border-2 overflow-auto border-slate-400 bg-slate-900 rounded-xl p-5 mt-6 shadow-l">
                 {
                   {
                     "about-us": <Aboutus />,

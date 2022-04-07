@@ -11,6 +11,7 @@ class CustomTerminal extends React.Component {
     this.state = {
       currentDirectory: "/",
       currentUser: "guest",
+      input: "",
     }
   }
 
@@ -31,9 +32,25 @@ class CustomTerminal extends React.Component {
       \r+===================================================================+`);
   }
 
-  printTerminalPrompt() {
-    this.xtermRef.current.terminal.write(`\r
-      \r${this.state.currentUser}@daskom1337 ${this.state.currentDirectory} ${this.state.currentUser === "root" ? "#" : "$"} `);
+  printTerminalPrompt = (isFirstLine) => {
+    if (!isFirstLine)
+      this.xtermRef.current.terminal.write("\r\n")
+    this.xtermRef.current.terminal.write(`${this.state.currentUser}@daskom1337 ${this.state.currentDirectory} ${this.state.currentUser === "root" ? "#" : "$"} `);
+  }
+
+  handleInput = (input) => {
+    switch (input) {
+      case "clear":
+        this.xtermRef.current.terminal.clear()
+        this.xtermRef.current.terminal.write("\x1b[2J\r")
+        this.setState({ input: "" })
+        break;
+    
+      default:
+        this.xtermRef.current.terminal.write(`\r
+          \rcommand not found: ${this.state.input}`)
+        break;
+    }
   }
 
   componentDidMount() {
@@ -46,21 +63,22 @@ class CustomTerminal extends React.Component {
     return (
       <>
         <XTerm
-          className="w-full h-full border-2 overflow-none border-slate-400 bg-slate-800 rounded-xl mt-6 shadow-l"
+          className="w-full h-full border-2 overflow-none border-slate-400 rounded-xl mt-6 shadow-l"
           ref={this.xtermRef}
           options={{
+            cursorBlink: true,
             scrollback: 0,
             theme: {
-              background: "#0A0E14",
-              foreground: "#B3B1AD",
-              black:   "#01060E",
-              red:     "#EA6C73",
-              green:   "#91B362",
-              yellow:  "#F9AF4F",
-              blue:    "#53BDFA",
-              magenta: "#FAE994",
-              cyan:    "#90E1C6",
-              white:   "#C7C7C7",
+              background:    "#0A0E14",
+              foreground:    "#B3B1AD",
+              black:         "#01060E",
+              red:           "#EA6C73",
+              green:         "#91B362",
+              yellow:        "#F9AF4F",
+              blue:          "#53BDFA",
+              magenta:       "#FAE994",
+              cyan:          "#90E1C6",
+              white:         "#C7C7C7",
               brightBlack:   "#686868",
               brightRed:     "#F07178",
               brightGreen:   "#C2D94C",
@@ -73,9 +91,33 @@ class CustomTerminal extends React.Component {
           }}
           addons={[this.fitAddon]}
           onData={(data) => {
-            const code = data.charCodeAt(0);
+            const code = data.charCodeAt(0)
+            console.log(code)
+            console.log(this.state.input)
+            
+            // Enter key
             if (code === 13) {
-            }
+              if (this.state.input.length > 0) {
+                this.handleInput(this.state.input)
+              }
+              
+              this.printTerminalPrompt(this.state.input === "clear")
+              this.setState({ input: "" })
+
+            // Backspace key
+            } else if (code === 127 && this.state.input.length > 0 && this.state.input.trim() !== "") {
+              this.xtermRef.current.terminal.write("\b \b")
+              this.setState({ input: this.state.input.slice(0, -1) })
+           
+            // Contol keys (eg: arrow keys)
+            } else if (code < 32 || code === 127) {
+              return;
+            
+            // Other keys goes to input
+            } else { 
+              this.xtermRef.current.terminal.write(data)
+              this.setState({ input: String(this.state.input + data).trim() })
+            } 
           }}
         />
       </>
