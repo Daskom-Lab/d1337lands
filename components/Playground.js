@@ -11,6 +11,7 @@ class CustomTerminal extends React.Component {
     this.state = {
       currentDirectory: "/",
       currentUser: "guest",
+      isInProcess: false,
       input: "",
     }
   }
@@ -39,12 +40,21 @@ class CustomTerminal extends React.Component {
   }
 
   handleInput = (input) => {
+    if (input.includes(" ")) {
+      // TODO: implement more advance parser for piping commands or commands with parameters and stuff
+      return
+    }
+
     switch (input) {
       case "clear":
         this.xtermRef.current.terminal.clear()
         this.xtermRef.current.terminal.write("\x1b[2J\r")
         this.setState({ input: "" })
         break;
+
+      case "ls":
+        // TODO: implement the ls and cat command
+        this.xtermRef.current.terminal.write()
     
       default:
         this.xtermRef.current.terminal.write(`\r
@@ -54,6 +64,7 @@ class CustomTerminal extends React.Component {
   }
 
   componentDidMount() {
+    console.log(this.props.fileTree)
     this.fitAddon.fit()
     this.printInitialPrompt()
     this.printTerminalPrompt()
@@ -92,8 +103,6 @@ class CustomTerminal extends React.Component {
           addons={[this.fitAddon]}
           onData={(data) => {
             const code = data.charCodeAt(0)
-            console.log(code)
-            console.log(this.state.input)
             
             // Enter key
             if (code === 13) {
@@ -125,8 +134,8 @@ class CustomTerminal extends React.Component {
   }
 }
 
-export default function Playground() {
+export default function Playground({ fileTree }) {
   return (
-    <CustomTerminal /> 
+    <CustomTerminal fileTree={fileTree}/> 
   ) 
 }

@@ -5,7 +5,7 @@ import Button from '../components/Button'
 import Aboutus from '../components/Aboutus'
 import Activity from '../components/Activity'
 import People from '../components/People'
-import { getAssetFile } from "../utils/assets";
+import { getAssetFile, getFileTree } from "../utils/assets";
 import { getPeopleList } from '../assets/peoples'
 import SimpleBar from 'simplebar-react';
 import 'simplebar/dist/simplebar.min.css';
@@ -26,14 +26,17 @@ export async function getStaticProps() {
     people.Description = people.Description.replace(/^(\n|\r\n|\r)+|(\n|\r\n|\r)+$/g, ''); 
   });
 
+  const fileTree = getFileTree();
+
   return {
     props: {
-      peopleList
+      peopleList,
+      fileTree
     }
   }
 }
 
-export default function Home({ peopleList }) {
+export default function Home({ peopleList, fileTree }) {
   const [menu, setMenu] = useState("about-us");
 
   return (
@@ -65,7 +68,7 @@ export default function Home({ peopleList }) {
                 }
               </SimpleBar>
             ) : (
-              <Playground />
+              <Playground fileTree={fileTree}/>
             )
           }
           <div className="flex flex-row mt-5 px-10">
