@@ -1,7 +1,7 @@
 export function getPeopleList() {
   return [
     {
-      "Avatar": `
+      Avatar: `
               .^:                :~:              
            .~7!...              ...?J!.           
         .^?Y?: ~!                7! ^YGY~.        
@@ -27,33 +27,45 @@ export function getPeopleList() {
                      !555B#B?                     
                       :JPBP^                      
                        :JY:`,
-      "Handle": "robots",
-      "Realname": "Daskom1337 Bots",
-      "Description": `
+      Handle: "robots",
+      Realname: "Daskom1337 Bots",
+      Description: `
 >> Im pleased to tell you these <<
->>       masters of mine        <<`
+>>       masters of mine        <<`,
     },
     {
-      "Avatar": "fai.html",
-      "Handle": "f4r4w4y",
-      "Realname": "Muhammad Fakhri Putra Supriyadi",
-      "Description": `
+      Avatar: "fai.html",
+      Handle: "f4r4w4y",
+      Realname: "Muhammad Fakhri Putra Supriyadi",
+      Description: `
 +------------------------------------------------+
 |  Developer by design (you may know me as FAI)  | 
 |                      ~~~                       |
 |        Community Mentor of Daskom1337          |
-+------------------------------------------------+`
++------------------------------------------------+`,
     },
     {
-      "Avatar": "ade.html",
-      "Handle": "Adrama",
-      "Realname": "Ade Aditya Ramadha",
-      "Description": `
+      Avatar: "ade.html",
+      Handle: "Adrama",
+      Realname: "Ade Aditya Ramadha",
+      Description: `
 +------------------------------------------------+
 |               Ramadha without N                | 
 |                      ~~~                       |
 |        Week 1 & 12 Champion of Daskom1337      |
-+------------------------------------------------+`
-    }
-  ]
++------------------------------------------------+`,
+    },
+    {
+      Avatar: "cuday.html",
+      Handle: "2day",
+      Realname: "Yhudi Cornelius",
+      Description: `
++------------------------------------------------+
+|       Ordinary Person who want to learn more   | 
+|                    about Code                  | 
+|                      ~~~                       |
+|       Community Contributor of Daskom1337      |
++------------------------------------------------+`,
+    },
+  ];
 }
