@@ -69,10 +69,10 @@ export default function Home({ peopleList }) {
             )
           }
           <div className="flex flex-row mt-5 px-10">
-            <Button text="About Us" color={menu === "about-us" ? "green" : "yellow"} onClick={() => setMenu("about-us")} />
-            <Button text="The Activity" color={menu === "activity" ? "green" : "yellow"} onClick={() => setMenu("activity")} />
-            <Button text="The People" color={menu === "people" ? "green" : "yellow"} onClick={() => setMenu("people")} />
-            <Button text="The Playground" color={menu === "playground" ? "green" : "yellow"} onClick={() => setMenu("playground")} />
+            <Button text="About Us" color={menu === "about-us" ? "red" : "yellow"} onClick={() => setMenu("about-us")} />
+            <Button text="The Activity" color={menu === "activity" ? "red" : "yellow"} onClick={() => setMenu("activity")} />
+            <Button text="The People" color={menu === "people" ? "red" : "yellow"} onClick={() => setMenu("people")} />
+            <Button text="The Playground" color={menu === "playground" ? "red" : "yellow"} onClick={() => setMenu("playground")} />
           </div>
         </div>
       </main>
