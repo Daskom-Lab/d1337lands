@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
 }
 
-const withTM = require("next-transpile-modules")(["react-syntax-highlighter"]);
+const withTM = require("next-transpile-modules")(["react-syntax-highlighter", "xterm-for-react"]);
 
 module.exports = withTM({
   future: {

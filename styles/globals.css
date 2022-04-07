@@ -30,3 +30,16 @@ h1 {
   font-size: larger;
   margin-bottom: 2rem;
 }
+
+/* XTerm.js related styling */
+.xterm-viewport { 
+  overflow: hidden !important;
+  border-radius: 10px;
+}
+
+.xterm {
+  padding: 25px;
+  height: 100%;
+  width: 100%;
+  border-radius: 10px;
+}

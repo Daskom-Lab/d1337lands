@@ -10,6 +10,11 @@ import { getPeopleList } from '../assets/peoples'
 import SimpleBar from 'simplebar-react';
 import 'simplebar/dist/simplebar.min.css';
 
+import dynamic from "next/dynamic";
+const Playground = dynamic(() => import("../components/Playground"), {
+  ssr: false
+});
+
 export async function getStaticProps() {
   const peopleList = getPeopleList();
   
@@ -48,19 +53,26 @@ export default function Home({ peopleList }) {
           <div className="font-merriw font-extrabold text-4xl text-yellow-300 mx-auto">
             Daskom1337 Community
           </div>
-          <SimpleBar className="flex flex-col self-center w-full h-full border-2 overflow-auto border-slate-400 bg-slate-800 rounded-xl p-5 mt-6 shadow-l">
-            {
-              {
-                "about-us": <Aboutus />,
-                activity: <Activity />,
-                people: <People peopleList={peopleList} />
-              }[menu]
-            }
-          </SimpleBar>
+          {
+            menu !== "playground" ? (
+              <SimpleBar className="flex flex-col self-center w-full h-full border-2 overflow-auto border-slate-400 bg-slate-800 rounded-xl p-5 mt-6 shadow-l">
+                {
+                  {
+                    "about-us": <Aboutus />,
+                    activity: <Activity />,
+                    people: <People peopleList={peopleList} />
+                  }[menu]
+                }
+              </SimpleBar>
+            ) : (
+              <Playground />
+            )
+          }
           <div className="flex flex-row mt-5 px-10">
             <Button text="About Us" color={menu === "about-us" ? "green" : "yellow"} onClick={() => setMenu("about-us")} />
             <Button text="The Activity" color={menu === "activity" ? "green" : "yellow"} onClick={() => setMenu("activity")} />
             <Button text="The People" color={menu === "people" ? "green" : "yellow"} onClick={() => setMenu("people")} />
+            <Button text="The Playground" color={menu === "playground" ? "green" : "yellow"} onClick={() => setMenu("playground")} />
           </div>
         </div>
       </main>
