@@ -67,5 +67,16 @@ export function getPeopleList() {
 |       Community Contributor of Daskom1337      |
 +------------------------------------------------+`,
     },
+    {
+      Avatar: "alif.html",
+      Handle: "rageris",
+      Realname: "Fauzan Dizki Alif Azmi Siregar",
+      Description: `
++------------------------------------------------+
+|       Writing codes one line at a time.        |
+|                      ~~~                       |
+|       Front End Developer at Daskom1337        |
++------------------------------------------------+`,
+    },
   ];
 }
