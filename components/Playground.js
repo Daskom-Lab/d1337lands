@@ -26,7 +26,7 @@ class CustomTerminal extends React.Component {
       \r|                                                                   |
       \r|  psst, if you happened to be one of daskom1337 community          |
       \r|  member, you can type "login" to log yourself in (ofc right)      |
-      \r|  to psst (dont tell them) play some "game" by typing "startgame"  |
+      \r|  to psst (dont tell them) play some game by typing "startgame"    |
       \r|                                                                   |
       \r+===================================================================+`);
   }
