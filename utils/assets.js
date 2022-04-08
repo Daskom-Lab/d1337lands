@@ -43,7 +43,7 @@ export function getFileTree (dir=filetreeDir, files_){
       files_[`/${dirOnly}`].push({
         name: fileOnly,
         type: "file",
-        content: getAssetFileAbs(name)
+        content: getAssetFileAbs(name).replace(/(\r)?\n/g, "\r\n")
       });
     }
   }
