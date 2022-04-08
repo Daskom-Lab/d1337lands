@@ -6,7 +6,10 @@ const colorArr = {
   "blue"     : 34,
   "magenta"  : 35,
   "cyan"     : 36,
-  "white"    : 37
+  "white"    : 37,
+  "daskom"   : '38;2;132;193;39;1',
+  "user"     : '38;2;139;232;53',
+  "dir"      : '38;2;107;166;212'
 }
 
 export function colorize(color, text) {
