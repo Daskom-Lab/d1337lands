@@ -1,11 +1,11 @@
-# D1337Lands Project
-
+<div style="font-size: 10px; margin-bottom: 25px" align="center">
 ██████╗░░█████╗░░██████╗██╗░░██╗░█████╗░███╗░░░███╗░░███╗░░██████╗░██████╗░███████╗  
 ██╔══██╗██╔══██╗██╔════╝██║░██╔╝██╔══██╗████╗░████║░████║░░╚════██╗╚════██╗╚════██║  
 ██║░░██║███████║╚█████╗░█████═╝░██║░░██║██╔████╔██║██╔██║░░░█████╔╝░█████╔╝░░░░██╔╝  
 ██║░░██║██╔══██║░╚═══██╗██╔═██╗░██║░░██║██║╚██╔╝██║╚═╝██║░░░╚═══██╗░╚═══██╗░░░██╔╝░  
 ██████╔╝██║░░██║██████╔╝██║░╚██╗╚█████╔╝██║░╚═╝░██║███████╗██████╔╝██████╔╝░░██╔╝░░  
 ╚═════╝░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░░░░╚═╝╚══════╝╚═════╝░╚═════╝░░░╚═╝░░░  
+</div>
 
 This project is basically daskom1337 community first ever website (and project) that aims to create a place to expose our identity to the internet and to also gather around internally to learn and play together (because we also made a game, how cool is that right?).
 
