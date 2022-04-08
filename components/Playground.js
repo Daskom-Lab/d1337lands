@@ -12,8 +12,21 @@ class CustomTerminal extends React.Component {
     this.state = {
       currentDirectory: "/",
       currentUser: "guest",
-      isInProcess: false,
       input: "",
+      shouldFlush: true,
+      
+      /**
+       * Process related states, these states depends
+       * fully on what is currently running process
+       */ 
+      isInProcess: false,
+      processType: "",
+      processState: 0,
+
+      loginData: {
+        username: "",
+        password: ""
+      }
     }
   }
 
@@ -35,13 +48,64 @@ class CustomTerminal extends React.Component {
     \r`);
   }
 
+  printUserPrompt() {
+    let cleanDir = this.state.currentDirectory === "/" ? this.state.currentDirectory : this.state.currentDirectory.slice(0, -1)
+    this.xtermRef.current.terminal.write(`\r
+      \x1b[A\r${colorize("user",`${this.state.currentUser}@daskom1337`)} ${colorize("dir",cleanDir)} ${this.state.currentUser === "root" ? "#" : "$"} `); 
+  }
+
   printTerminalPrompt() {
     if (this.state.input !== "clear")
       this.xtermRef.current.terminal.write("\r\n")
 
-    let cleanDir = this.state.currentDirectory === "/" ? this.state.currentDirectory : this.state.currentDirectory.slice(0, -1)
-    this.xtermRef.current.terminal.write(`\r
-      \x1b[A\r${colorize("user",`${this.state.currentUser}@daskom1337`)} ${colorize("dir",cleanDir)} ${this.state.currentUser === "root" ? "#" : "$"} `);
+    if (!this.state.isInProcess) 
+      this.printUserPrompt()
+    else 
+      switch (this.state.processType) {
+        case "login":
+          switch (this.state.processState) {
+            case 0:
+              this.xtermRef.current.terminal.write("Username: ")
+              this.setState({ processState: 1 }) 
+              break;
+
+            case 1:
+              this.xtermRef.current.terminal.write("Password: ")
+              this.setState({ 
+                processState: 2,
+                shouldFlush: false,
+                loginData: {
+                  username: this.state.input
+                }
+              }) 
+              break;
+
+            case 2:
+              this.setState({
+                isInProcess: false,
+                processType: "",
+                processState: 0,
+                shouldFlush: true,
+                loginData: {
+                  password: this.state.input
+                }
+              })
+
+              this.xtermRef.current.terminal.write("[+] Logging in...")
+              // TODO: implement login logic to connect to the backend and do the actual login process
+              this.xtermRef.current.terminal.write("\r\n[+] Login success \r\n")
+              this.printUserPrompt()
+              break;
+          
+            default:
+              break;
+          } 
+          break;
+      
+        default:
+          break;
+      }
+    
     this.setState({ input: "" })
   }
 
@@ -153,6 +217,19 @@ class CustomTerminal extends React.Component {
               this.xtermRef.current.terminal.write(`\r\nNo Command ( ╹x╹ )`)
             break;
           }
+
+      case "login":
+        if (inputArgs.length > 0) {
+          this.xtermRef.current.terminal.write("\r\nlogin: Dont need any argument")
+          return
+        } 
+
+        this.setState({ 
+          isInProcess: true,
+          processType: "login",
+          processState: 0,
+          shouldFlush: true
+        })
         break;
 
       default:
@@ -203,7 +280,7 @@ class CustomTerminal extends React.Component {
             
             // Enter key
             if (code === 13) {
-              if (this.state.input.length > 0) {
+              if (this.state.input.length > 0 && !this.state.isInProcess) {
                 this.handleInput(this.state.input)
               }
              
@@ -220,8 +297,9 @@ class CustomTerminal extends React.Component {
               return;
             
             // Other keys goes to input
-            } else { 
-              this.xtermRef.current.terminal.write(data)
+            } else {
+              if (this.state.shouldFlush) 
+                this.xtermRef.current.terminal.write(data)
               this.setState({ input: String(this.state.input + data).replace(/^(\n|\r\n|\r)+|(\n|\r\n|\r)+$/g, '') })
             } 
           }}
