@@ -1,7 +1,7 @@
 import React from 'react';
 import { FitAddon } from 'xterm-addon-fit';
 import { XTerm } from 'xterm-for-react';
-import { colorize, bold, colorize_system } from '../utils/vt100_codes';
+import { colorize, bold } from '../utils/vt100_codes';
 
 class CustomTerminal extends React.Component {
   constructor(props) {
@@ -20,14 +20,14 @@ class CustomTerminal extends React.Component {
   printInitialPrompt() {
     this.xtermRef.current.terminal.write(`\r+===================================================================+
       \r|                                                                   |
-      \r|  Welcome to ${colorize('daskom', 'Daskom1337')} Playground,                                |
+      \r|  Welcome to ${colorize("daskom", "Daskom1337")} Playground,                                |
       \r|                                                                   |
       \r|  type "help" to display list of available commands                |
       \r|  type "help {command}" to display usage of that command           |
       \r|                                                                   |
       \r|  Go play and enjoy yourself in our playground !!!                 |
       \r|                                                                   |
-      \r|  psst, if you happened to be one of ${colorize('daskom', 'daskom1337')} community          |
+      \r|  psst, if you happened to be one of ${colorize("daskom", "daskom1337")} community          |
       \r|  member, you can type "login" to log yourself in (ofc right)      |
       \r|  to psst (dont tell them) play some game by typing "startgame"    |
       \r|                                                                   |
@@ -41,7 +41,7 @@ class CustomTerminal extends React.Component {
 
     let cleanDir = this.state.currentDirectory === "/" ? this.state.currentDirectory : this.state.currentDirectory.slice(0, -1)
     this.xtermRef.current.terminal.write(`\r
-      \x1b[A\r${colorize('user',`${this.state.currentUser}@daskom1337`)} ${colorize('dir',cleanDir)} ${this.state.currentUser === "root" ? "#" : "$"} `);
+      \x1b[A\r${colorize("user",`${this.state.currentUser}@daskom1337`)} ${colorize("dir",cleanDir)} ${this.state.currentUser === "root" ? "#" : "$"} `);
     this.setState({ input: "" })
   }
 
@@ -89,7 +89,7 @@ class CustomTerminal extends React.Component {
             if (node.type === "file")
               this.xtermRef.current.terminal.write(`${node.name}`)
             else
-              this.xtermRef.current.terminal.write(`${colorize('dir',node.name)}`)
+              this.xtermRef.current.terminal.write(`${colorize("dir",node.name)}`)
             
             if (i != tree.length - 1) {
               this.xtermRef.current.terminal.write(" ")
@@ -141,7 +141,7 @@ class CustomTerminal extends React.Component {
               this.xtermRef.current.terminal.write(`\r\n/ᐠ. ｡.ᐟ\\ᵐᵉᵒʷˎˊ˗\r\nusage : cat [filename]\r\nconcatenate files and print on the standar output`)
             break;
             case "ls":
-              this.xtermRef.current.terminal.write(`\r\nusage : ls [option (optional)]\r\nlist directory contents\r\nOption :\r\n${bold('-a')}\tdo not ignore entries starting with .`)
+              this.xtermRef.current.terminal.write(`\r\nusage : ls [option (optional)]\r\nlist directory contents\r\nOption :\r\n${bold("-a")}\tdo not ignore entries starting with .`)
             break;
             case "cd":
               this.xtermRef.current.terminal.write(`\r\nusage : cd [dirname (optional)]\r\nchange directory`)
