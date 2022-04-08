@@ -30,41 +30,107 @@ class CustomTerminal extends React.Component {
       \r|  member, you can type "login" to log yourself in (ofc right)      |
       \r|  to psst (dont tell them) play some game by typing "startgame"    |
       \r|                                                                   |
-      \r+===================================================================+`);
+      \r+===================================================================+
+    \r`);
   }
 
-  printTerminalPrompt = (isFirstLine) => {
-    if (!isFirstLine)
+  printTerminalPrompt() {
+    if (this.state.input !== "clear")
       this.xtermRef.current.terminal.write("\r\n")
-    this.xtermRef.current.terminal.write(`${this.state.currentUser}@daskom1337 ${this.state.currentDirectory} ${this.state.currentUser === "root" ? "#" : "$"} `);
+
+    let cleanDir = this.state.currentDirectory === "/" ? this.state.currentDirectory : this.state.currentDirectory.slice(0, -1)
+    this.xtermRef.current.terminal.write(`\r
+      \x1b[A\r${this.state.currentUser}@daskom1337 ${cleanDir} ${this.state.currentUser === "root" ? "#" : "$"} `);
+    this.setState({ input: "" })
   }
+
+  sleep = ms => new Promise(r => setTimeout(r, ms));
 
   handleInput = (input) => {
-    if (input.includes(" ")) {
-      // TODO: implement more advance parser for piping commands or commands with parameters and stuff
-      return
-    }
+    // TODO: implement more advance parser for piping commands or commands with parameters and stuff
+    //       by handling space, dash (-), quote [double and single] (", ') and other characters
 
-    switch (input) {
+    let inputArgs = input.split(" ")
+    let command = inputArgs.shift()
+    switch (command) {
       case "clear":
         this.xtermRef.current.terminal.clear()
         this.xtermRef.current.terminal.write("\x1b[2J\r")
-        this.setState({ input: "" })
+        break;
+
+      case "cat":
+        let output = ""
+        inputArgs.forEach(arg => {
+          let cleanDir = this.state.currentDirectory === "/" ? this.state.currentDirectory : this.state.currentDirectory.slice(0, -1)
+          let nodeNames = this.props.fileTree[cleanDir].map(node => node.name) 
+          if (nodeNames.includes(arg)) {
+            if (this.props.fileTree[cleanDir][nodeNames.indexOf(arg)].type === "file")
+              output += `\r\n${this.props.fileTree[cleanDir][nodeNames.indexOf(arg)].content}`
+            else
+              output += `\r\ncat: ${arg}: Is a directory`
+          } else {
+            output += `\r\ncat: ${arg}: No such file or directory`
+          }
+        });
+
+        this.xtermRef.current.terminal.write(output)
         break;
 
       case "ls":
-        // TODO: implement the ls and cat command
-        this.xtermRef.current.terminal.write()
-    
+        let cleanDir = this.state.currentDirectory === "/" ? this.state.currentDirectory : this.state.currentDirectory.slice(0, -1)
+        let tree = this.props.fileTree[cleanDir]
+
+        this.xtermRef.current.terminal.write("\r\n")
+
+        let i = 0;
+        tree.forEach(node => {
+          if (!node.name.startsWith(".")) {
+            if (node.type === "file")
+              this.xtermRef.current.terminal.write(`${node.name}`)
+            else
+              this.xtermRef.current.terminal.write(`[${node.name}]`)
+            
+            if (i != tree.length - 1) {
+              this.xtermRef.current.terminal.write(" ")
+            }
+          }
+          
+          i++; 
+        });
+        break;
+
+      case "cd":
+        if (inputArgs.length > 1) {
+          this.xtermRef.current.terminal.write("\r\ncd: Only need one argument")
+          return
+        } else if (inputArgs.length === 0) {
+          this.setState({ currentDirectory: "/" })
+          return
+        }
+
+        let dirChange = this.state.currentDirectory
+        inputArgs[0].split("/").forEach(dir => {
+          dir = dir.trim()
+
+          if (dir === ".." && dirChange !== "/") 
+            dirChange = `${dirChange.split("/").slice(0, -2).join("/")}/`
+          else if (!["", ".."].includes(dir)) 
+            dirChange += `${dir}/`
+        })
+
+        if (dirChange === "/" || Object.keys(this.props.fileTree).includes(dirChange.slice(0, -1)))
+          this.setState({ currentDirectory: dirChange })
+        else 
+          this.xtermRef.current.terminal.write(`\r\ncd: no such file or directory: ${inputArgs[0]}`)
+        break;
+
       default:
-        this.xtermRef.current.terminal.write(`\r
-          \rcommand not found: ${this.state.input}`)
+        this.xtermRef.current.terminal.write(`\r\ncommand not found: ${this.state.input}`)
         break;
     }
   }
 
   componentDidMount() {
-    console.log(this.props.fileTree)
     this.fitAddon.fit()
     this.printInitialPrompt()
     this.printTerminalPrompt()
@@ -101,7 +167,7 @@ class CustomTerminal extends React.Component {
             }
           }}
           addons={[this.fitAddon]}
-          onData={(data) => {
+          onData={async (data) => {
             const code = data.charCodeAt(0)
             
             // Enter key
@@ -109,9 +175,9 @@ class CustomTerminal extends React.Component {
               if (this.state.input.length > 0) {
                 this.handleInput(this.state.input)
               }
-              
-              this.printTerminalPrompt(this.state.input === "clear")
-              this.setState({ input: "" })
+             
+              await this.sleep(3) // Needed to wait for set state finish
+              this.printTerminalPrompt()
 
             // Backspace key
             } else if (code === 127 && this.state.input.length > 0 && this.state.input.trim() !== "") {
@@ -125,7 +191,7 @@ class CustomTerminal extends React.Component {
             // Other keys goes to input
             } else { 
               this.xtermRef.current.terminal.write(data)
-              this.setState({ input: String(this.state.input + data).trim() })
+              this.setState({ input: String(this.state.input + data).replace(/^(\n|\r\n|\r)+|(\n|\r\n|\r)+$/g, '') })
             } 
           }}
         />
