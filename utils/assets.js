@@ -23,24 +23,24 @@ export function getFileTree (dir=filetreeDir, files_){
     let filetreeName = name.replace(filetreeDir + "/", "")
     
     if (fs.statSync(name).isDirectory()){
-      let lastDir = "/"
+      let lastDir = ""
       if (filetreeName.includes("/"))
         lastDir = filetreeName.split("/").slice(0, -1).join("/");
       const currDir = filetreeName.split("/").pop() 
-        
-      files_[lastDir].push({
+
+      files_[`/${lastDir}`].push({
         name: currDir,
         type: "directory" 
       })
             
-      files_[filetreeName] = []
+      files_[`/${filetreeName}`] = []
       getFileTree(name, files_);
 
     } else {
       const dirOnly = filetreeName.split("/").slice(0, -1).join("/")
       const fileOnly = filetreeName.split("/").pop() 
 
-      files_[dirOnly].push({
+      files_[`/${dirOnly}`].push({
         name: fileOnly,
         type: "file",
         content: getAssetFileAbs(name)
