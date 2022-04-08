@@ -154,7 +154,7 @@ class CustomTerminal extends React.Component {
             break;
           }
         break;
-
+        
       default:
         this.xtermRef.current.terminal.write(`\r\ncommand not found: ${this.state.input}`)
         break;
