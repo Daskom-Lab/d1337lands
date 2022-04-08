@@ -256,7 +256,7 @@ class CustomTerminal extends React.Component {
           ref={this.xtermRef}
           options={{
             cursorBlink: true,
-            scrollback: 0,
+            scrollback: 1000,
             theme: {
               background:    "#0A0E14",
               foreground:    "#B3B1AD",
