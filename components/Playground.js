@@ -199,24 +199,28 @@ class CustomTerminal extends React.Component {
         else
           switch(inputArgs[0]){
             case "clear":
-              this.xtermRef.current.terminal.write(`\r\nusage : clear\r\nclear the terminal screen`)
-            break;
+              this.xtermRef.current.terminal.write("\r\nusage : clear\r\nclear the terminal screen")
+              break;
             case "cat":
-              this.xtermRef.current.terminal.write(`\r\n/ᐠ. ｡.ᐟ\\ᵐᵉᵒʷˎˊ˗\r\nusage : cat [filename]\r\nconcatenate files and print on the standar output`)
-            break;
+              this.xtermRef.current.terminal.write("\r\n/ᐠ. ｡.ᐟ\\ᵐᵉᵒʷˎˊ˗\r\nusage : cat [filename]\r\nread files and print on the standard output")
+              break;
             case "ls":
               this.xtermRef.current.terminal.write(`\r\nusage : ls [option (optional)]\r\nlist directory contents\r\nOption :\r\n${bold("-a")}\tdo not ignore entries starting with .`)
-            break;
+              break;
             case "cd":
-              this.xtermRef.current.terminal.write(`\r\nusage : cd [dirname (optional)]\r\nchange directory`)
-            break;
+              this.xtermRef.current.terminal.write("\r\nusage : cd [dirname (optional)]\r\nchange directory")
+              break;
             case "help":
-              this.xtermRef.current.terminal.write(`\r\nusage : help [command (optional)]\r\nhelp me`)
-            break;
+              this.xtermRef.current.terminal.write("\r\nusage : help [command (optional)]\r\nhelp me")
+              break;
+            case "login":
+              this.xtermRef.current.terminal.write("\r\nusage : login\r\nlog yourself in (if you are one of daskom1337 community member)")
+              break;
             default:
-              this.xtermRef.current.terminal.write(`\r\nNo Command ( ╹x╹ )`)
-            break;
+              this.xtermRef.current.terminal.write("\r\nNo Command ( ╹x╹ )")
+              break;
           }
+        break;
 
       case "login":
         if (inputArgs.length > 0) {
