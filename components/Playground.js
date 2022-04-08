@@ -114,9 +114,13 @@ class CustomTerminal extends React.Component {
 
           if (dir === ".." && dirChange !== "/") 
             dirChange = `${dirChange.split("/").slice(0, -2).join("/")}/`
+          else if (dir === ".")
+            dirChange = dirChange
           else if (!["", ".."].includes(dir)) 
             dirChange += `${dir}/`
         })
+
+        console.log(dirChange)
 
         if (dirChange === "/" || Object.keys(this.props.fileTree).includes(dirChange.slice(0, -1)))
           this.setState({ currentDirectory: dirChange })
