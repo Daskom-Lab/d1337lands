@@ -84,7 +84,7 @@ class CustomTerminal extends React.Component {
 
         let i = 0;
         tree.forEach(node => {
-          if (!node.name.startsWith(".")) {
+          if (!node.name.startsWith(".") || inputArgs[0] === "-a") {
             if (node.type === "file")
               this.xtermRef.current.terminal.write(`${node.name}`)
             else
@@ -119,8 +119,6 @@ class CustomTerminal extends React.Component {
           else if (!["", ".."].includes(dir)) 
             dirChange += `${dir}/`
         })
-
-        console.log(dirChange)
 
         if (dirChange === "/" || Object.keys(this.props.fileTree).includes(dirChange.slice(0, -1)))
           this.setState({ currentDirectory: dirChange })
