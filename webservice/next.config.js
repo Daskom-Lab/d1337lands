@@ -21,4 +21,7 @@ module.exports = withTM({
   },
 
   nextConfig,
+  experimental: {
+    outputStandalone: true,
+  }
 });
