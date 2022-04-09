@@ -15,7 +15,7 @@ The serverless api that exist in pages/api directory has several utilities that 
 You can start the project by doing these steps:
 
 ```
-1. git clone https://github.com/fakhrip/d1337lands.git d1337lands && cd d1337lands
+1. git clone https://github.com/fakhrip/d1337lands.git d1337lands && cd d1337lands/webservice
 2. yarn install
 3. yarn dev 
 ```
