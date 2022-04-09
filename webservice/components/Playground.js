@@ -33,14 +33,14 @@ class CustomTerminal extends React.Component {
   printInitialPrompt() {
     this.xtermRef.current.terminal.write(`\r+===================================================================+
       \r|                                                                   |
-      \r|  Welcome to ${colorize("daskom", "Daskom1337")} Playground,                                |
+      \r|  Welcome to ${bold(colorize("green", "Daskom1337"))} Playground,                                |
       \r|                                                                   |
       \r|  type "help" to display list of available commands                |
       \r|  type "help {command}" to display usage of that command           |
       \r|                                                                   |
       \r|  Go play and enjoy yourself in our playground !!!                 |
       \r|                                                                   |
-      \r|  psst, if you happened to be one of ${colorize("daskom", "daskom1337")} community          |
+      \r|  psst, if you happened to be one of ${bold(colorize("green", "daskom1337"))} community          |
       \r|  member, you can type "login" to log yourself in (ofc right)      |
       \r|  to psst (dont tell them) play some game by typing "startgame"    |
       \r|                                                                   |
@@ -51,7 +51,7 @@ class CustomTerminal extends React.Component {
   printUserPrompt() {
     let cleanDir = this.state.currentDirectory === "/" ? this.state.currentDirectory : this.state.currentDirectory.slice(0, -1)
     this.xtermRef.current.terminal.write(`\r
-      \x1b[A\r${colorize("user",`${this.state.currentUser}@daskom1337`)} ${colorize("dir",cleanDir)} ${this.state.currentUser === "root" ? "#" : "$"} `); 
+      \x1b[A\r${colorize("green",`${this.state.currentUser}@daskom1337`)} ${colorize("blue",cleanDir)} ${this.state.currentUser === "root" ? "#" : "$"} `); 
   }
 
   printTerminalPrompt() {
@@ -153,7 +153,7 @@ class CustomTerminal extends React.Component {
             if (node.type === "file")
               this.xtermRef.current.terminal.write(`${node.name}`)
             else
-              this.xtermRef.current.terminal.write(`${colorize("dir",node.name)}`)
+              this.xtermRef.current.terminal.write(`${colorize("blue",node.name)}`)
             
             if (i != tree.length - 1) {
               this.xtermRef.current.terminal.write(" ")
