@@ -13,16 +13,16 @@ services:
   graphql-engine:
     image: hasura/graphql-engine:v2.4.0.cli-migrations-v3
     environment:
-      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:5pGfbtNqPSKV3YmQ4FSB7PycYLZZLJ@postgres:5432/postgres
-      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:5pGfbtNqPSKV3YmQ4FSB7PycYLZZLJ@postgres:5432/postgres
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:M98vDBjHerkB44eYTM3t3sJSYfj2Vw@postgres:5432/postgres
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:M98vDBjHerkB44eYTM3t3sJSYfj2Vw@postgres:5432/postgres
       HASURA_GRAPHQL_ENABLE_CONSOLE: "false"
       HASURA_GRAPHQL_DEV_MODE: "false"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
-      HASURA_GRAPHQL_ADMIN_SECRET: "AfEmK7EUrBZ7vKdyM6JA3vjjxZrPBfsk7RsBuR4ubRwZR74UrRs9uJ2AQ2Vm"
+      HASURA_GRAPHQL_ADMIN_SECRET: "hSK6kPeZN2zTLsvd2grPNtapLbeNzD9QU9aPd38f894JsmxM7Ecpb9hkAxeX"
       HASURA_GRAPHQL_ENABLE_TELEMETRY: "false"
       HASURA_GRAPHQL_JWT_SECRET: "{\"key\": \"9NE5uLKVMB5Pm3YNHXxKFBYyDCRP6FzFrY8CxmNFckQ6fJQKTvm5SHPCUE7Rma3WQpSzYh\",\"type\": \"HS256\",\"claims_format\": \"json\"}"
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "guest"
-      BACKEND_UNIQUE_KEY: ":8b3tShb%c%%(u$Teag7"
+      BACKEND_UNIQUE_KEY: "+8b3tShb%c%%_u!Teag7"
       BACKEND_URL: "http://webservice:5000"
     ports:
     - "8080:8080"
@@ -36,7 +36,7 @@ services:
       dockerfile: Dockerfile
     image: webservice
     ports:
-    - "3000:5000"
+    - "5000:3000"
     depends_on:
     - "postgres"
     restart: always
