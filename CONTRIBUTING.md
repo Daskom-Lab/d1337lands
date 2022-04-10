@@ -1,4 +1,6 @@
-# CONTRUBUTING
+# CONTRIBUTING
+
+In order for you to contribute to the project by helping to develop this project is that you have to know how to run the project first, so here are the how-to's for that  
 
 ## How to run the project
 
@@ -20,6 +22,21 @@ hasura console
 in the database directory (and it will automatically open up the console in your default browser)
 
 After successfully running the project, you will be able to access the frontend website of this project in http://localhost:5000
+
+Oh, and one more thing, to create the database structure, run this comand  
+```
+make migrate
+```
+in the root directory
+
+### Full command
+
+So all in all what you need to run to get all the services running are:  
+```bash
+make serve && \
+make migrate && \
+cd database && hasura console
+```
 
 ## Installing the dependency
 
