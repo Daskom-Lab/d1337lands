@@ -1,0 +1,11 @@
+table:
+  name: title_codes
+  schema: public
+object_relationships:
+- name: titleById
+  using:
+    foreign_key_constraint_on:
+      column: code_id
+      table:
+        name: titles
+        schema: public
