@@ -1,0 +1,15 @@
+table:
+  name: paid_hints
+  schema: public
+object_relationships:
+- name: quest
+  using:
+    foreign_key_constraint_on: quest_id
+array_relationships:
+- name: unlocked_hints
+  using:
+    foreign_key_constraint_on:
+      column: hint_id
+      table:
+        name: unlocked_hints
+        schema: public

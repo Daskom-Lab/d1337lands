@@ -1,0 +1,11 @@
+table:
+  name: potion_codes
+  schema: public
+array_relationships:
+- name: potions
+  using:
+    foreign_key_constraint_on:
+      column: potion_id
+      table:
+        name: potions
+        schema: public

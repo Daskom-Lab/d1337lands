@@ -1,0 +1,11 @@
+table:
+  name: achievement_codes
+  schema: public
+array_relationships:
+- name: achievements
+  using:
+    foreign_key_constraint_on:
+      column: code_id
+      table:
+        name: achievements
+        schema: public
