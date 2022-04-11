@@ -5,7 +5,7 @@
   "main": "service.js",
   "repository": "https://github.com/fakhrip/d1337lands",
   "author": "Daskom1337 Community",
-  "license": "GPLv3",
+  "license": "GPL-3.0-only",
   "private": true,
   "scripts": {
     "start": "node ."
