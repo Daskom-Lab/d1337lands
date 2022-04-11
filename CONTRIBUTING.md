@@ -54,3 +54,15 @@ and then you can try to rebuild the project all over again by running
 ```
 make serve
 ```
+
+## Development
+
+Please note that running the project is differrent when you are developing the webservice and game
+
+### Webservice
+
+For the webservice part, you have to go into that directory first and run  
+```
+yarn dev
+```
+to run the development mode of the webservice, this would probably change in the future as we already planned to build docker-compose for development purpose, but that is something to be handled in the future
