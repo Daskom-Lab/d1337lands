@@ -52,7 +52,7 @@ make remove_volume
 ```
 and then you can try to rebuild the project all over again by running  
 ```
-make serve
+make serve && make migrate
 ```
 
 ## Development
