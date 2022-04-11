@@ -41,6 +41,7 @@ services:
     depends_on:
     - "postgres"
     - "graphql-engine"
+    - "websocket"
     restart: always
 
   discordbot:
@@ -50,6 +51,17 @@ services:
     image: discordbot
     ports:
     - "5555:3000"
+    depends_on:
+    - "postgres"
+    restart: always
+
+  websocket:
+    build:
+      context: ./websocket/
+      dockerfile: Dockerfile
+    image: websocket
+    ports:
+    - "6666:3000"
     depends_on:
     - "postgres"
     restart: always
