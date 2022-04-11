@@ -45,4 +45,4 @@ d1337lands
 
 All kinds of contributions are very much welcome! Please dont hesitate to contact us via anyone of our community member if you want to talk/ask about something, or if you are a current/former daskom laboratory assistant and want to join us, go ahead and contact us as the door will always be open for you!
 
-If you want to contribute to this project specifically, you can read the guide in [CONTRIBUTING.md](./CONTRIBUTING.md)
+If you want to contribute to this project specifically, you can read the guide in [CONTRIBUTING.md](./CONTRIBUTING.md), please also note that for development contribution, you have to see the **development** section in that file
