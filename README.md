@@ -37,6 +37,7 @@ d1337lands
 ├── discordbot  [our own discord bot customized for games and other stuff]
 ├── game        [the game!!! (its an rpg game btw)]
 ├── webservice  [frontend and serverless api for the web stuff]
+├── websocket   [connectors for between the game and the web frontend via socketio] 
 └── README.md   [this is where you are now]
 ```
 
