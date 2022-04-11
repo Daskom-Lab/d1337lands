@@ -1,0 +1,19 @@
+{
+  "name": "discordbot",
+  "version": "1.0.0",
+  "description": "custom daskom1337 discord bot",
+  "main": "service.js",
+  "repository": "https://github.com/fakhrip/d1337lands",
+  "author": "Daskom1337 Community",
+  "license": "GPLv3",
+  "private": true,
+  "scripts": {
+    "start": "node ."
+  },
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "discord.js": "^13.6.0",
+    "express": "^4.17.3"
+  }
+}
