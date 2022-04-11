@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "next": "12.1.4",
     "next-transpile-modules": "^9.0.0",
     "react": "18.0.0",
