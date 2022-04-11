@@ -6,5 +6,8 @@ serve:
 migrate:
 	cd database && hasura migrate apply --database-name default && cd ..
 
+down:
+	docker-compose down
+
 remove_volume:
 	docker volume ls | grep -q d1337lands_d1337db && docker volume rm d1337lands_d1337db
