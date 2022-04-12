@@ -1,12 +1,11 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import React, { useState } from 'react'
-import Button from '../components/Button'
-import Aboutus from '../components/Aboutus'
-import Activity from '../components/Activity'
-import People from '../components/People'
-import { getAssetFile, getFileTree } from "../utils/assets";
-import { getPeopleList } from '../assets/peoples'
+import Button from '@/components/Button'
+import Aboutus from '@/components/Aboutus'
+import Activity from '@/components/Activity'
+import People from '@/components/People'
+import { getAssetFile, getFileTree } from "@/utils/assets";
+import { getPeopleList } from '@/assets/peoples'
 import SimpleBar from 'simplebar-react';
 import 'simplebar/dist/simplebar.min.css';
 
