@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "express-jwt": "^6.1.1",
     "next": "12.1.4",
     "next-transpile-modules": "^9.0.0",
     "react": "18.0.0",
