@@ -8,12 +8,13 @@
   "license": "GPL-3.0-only",
   "private": true,
   "scripts": {
-    "start": "node ."
+    "start": "nodemon ."
   },
   "dependencies": {
     "body-parser": "^1.20.0",
     "cors": "^2.8.5",
     "discord.js": "^13.6.0",
-    "express": "^4.17.3"
+    "express": "^4.17.3",
+    "nodemon": "^2.0.15"
   }
 }
