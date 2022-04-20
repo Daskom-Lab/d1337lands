@@ -250,17 +250,19 @@ class CustomTerminal extends React.Component {
         // TODO: This is just for development purpose, should be remove later on after the login feature finished
         setCookies("1337token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWFsbG93ZWQtcm9sZXMiOlsiTWVudG9yIl0sIngtaGFzdXJhLWRlZmF1bHQtcm9sZSI6Ik1lbnRvciIsIngtaGFzdXJhLXVzZXItbmFtZSI6ImZha2hyaXAiLCJ4LWhhc3VyYS11c2VyLWlkIjoiMSJ9fQ.UGNn4vFRVLsz04si9-T6eWe0ST2VfFiUcpCvvEIe3bU")
 
-        if (checkCookies("1337token")) {
-          await POST("/api/authentication/validate", getCookie("1337token"))
-            .then (() => {
-              this.context.setGameActive(true);
-              this.xtermRef.current.terminal.write("\r\n[+] Game started successfully :D");
-            }).catch (() => {
-              this.context.setGameActive(false)
-              this.xtermRef.current.terminal.write("\r\n[+] Oops, you can't cheat bruh :(");
-            })
+        if (!checkCookies("1337token")) {
+          this.xtermRef.current.terminal.write("\r\n[+] You have to login first!");
+          return;
+        }
 
-        } else this.xtermRef.current.terminal.write("\r\n[+] You have to login first!");
+        await POST("/api/authentication/validate", getCookie("1337token"))
+          .then (() => {
+            this.context.setGameActive(true);
+            this.xtermRef.current.terminal.write("\r\n[+] Game started successfully :D");
+          }).catch (() => {
+            this.context.setGameActive(false)
+            this.xtermRef.current.terminal.write("\r\n[+] Oops, you can't cheat bruh :(");
+          })
         break;
 
       default:
