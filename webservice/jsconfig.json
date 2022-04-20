@@ -9,7 +9,7 @@
       "@/pages/*": ["pages/*"],
       "@/styles/*": ["styles/*"],
       "@/utils/*": ["utils/*"],
-      
+      "@/context/*": ["context/*"],
     }
   },
   "exclude": ["node_modules", ".next"]

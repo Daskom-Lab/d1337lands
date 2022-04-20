@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Button from '@/components/Button'
 import Aboutus from '@/components/Aboutus'
 import Activity from '@/components/Activity'
@@ -10,7 +10,8 @@ import SimpleBar from 'simplebar-react';
 import 'simplebar/dist/simplebar.min.css';
 
 import dynamic from "next/dynamic";
-const Playground = dynamic(() => import("../components/Playground"), {
+import { useAppContext } from '@/context/appstate'
+const Playground = dynamic(() => import("@/components/Playground"), {
   ssr: false
 });
 
@@ -37,6 +38,11 @@ export async function getStaticProps() {
 
 export default function Home({ peopleList, fileTree }) {
   const [menu, setMenu] = useState("about-us");
+  const sharedState = useAppContext();
+
+  useEffect(() => {
+    console.log("AppWide: " + JSON.stringify(sharedState))
+  }, [sharedState.isGameActive])
 
   return (
     <div className="w-full h-full">

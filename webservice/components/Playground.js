@@ -1,12 +1,17 @@
 import React from 'react';
 import { FitAddon } from 'xterm-addon-fit';
 import { XTerm } from 'xterm-for-react';
-import { colorize, bold } from '../utils/vt100_codes';
+import { colorize, bold } from '@/utils/vt100_codes';
+import { getCookie, checkCookies, setCookies } from 'cookies-next';
+import AppContext from '@/context/appstate';
+import { POST } from '@/utils/fetcher';
 
 class CustomTerminal extends React.Component {
+  static contextType = AppContext;
+
   constructor(props) {
     super(props)
-    this.xtermRef = React.createRef()
+    this.xtermRef = React.createRef();
     this.fitAddon = new FitAddon();
 
     this.state = {
@@ -111,7 +116,7 @@ class CustomTerminal extends React.Component {
 
   sleep = ms => new Promise(r => setTimeout(r, ms));
 
-  handleInput = (input) => {
+  handleInput = async (input) => {
     // TODO: implement more advance parser for piping commands or commands with parameters and stuff
     //       by handling space, dash (-), quote [double and single] (", ') and other characters
 
@@ -236,6 +241,28 @@ class CustomTerminal extends React.Component {
         })
         break;
 
+      case "startgame":
+        if (inputArgs.length > 0) {
+          this.xtermRef.current.terminal.write("\r\nstartgame: Dont need any argument")
+          return
+        } 
+
+        // TODO: This is just for development purpose, should be remove later on after the login feature finished
+        setCookies("1337token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWFsbG93ZWQtcm9sZXMiOlsiTWVudG9yIl0sIngtaGFzdXJhLWRlZmF1bHQtcm9sZSI6Ik1lbnRvciIsIngtaGFzdXJhLXVzZXItbmFtZSI6ImZha2hyaXAiLCJ4LWhhc3VyYS11c2VyLWlkIjoiMSJ9fQ.UGNn4vFRVLsz04si9-T6eWe0ST2VfFiUcpCvvEIe3bU")
+
+        if (checkCookies("1337token")) {
+          await POST("/api/authentication/validate", getCookie("1337token"))
+            .then (() => {
+              this.context.setGameActive(true);
+              this.xtermRef.current.terminal.write("\r\n[+] Game started successfully :D");
+            }).catch (() => {
+              this.context.setGameActive(false)
+              this.xtermRef.current.terminal.write("\r\n[+] Oops, you can't cheat bruh :(");
+            })
+
+        } else this.xtermRef.current.terminal.write("\r\n[+] You have to login first!");
+        break;
+
       default:
         this.xtermRef.current.terminal.write(`\r\ncommand not found: ${this.state.input}`)
         break;
@@ -285,7 +312,7 @@ class CustomTerminal extends React.Component {
             // Enter key
             if (code === 13) {
               if (this.state.input.length > 0 && !this.state.isInProcess) {
-                this.handleInput(this.state.input)
+                await this.handleInput(this.state.input)
               }
              
               await this.sleep(3) // Needed to wait for set state finish
