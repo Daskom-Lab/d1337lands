@@ -13,11 +13,13 @@ async function handler(req, res) {
   const id = jwt_claims["x-hasura-user-id"]
   const name = jwt_claims["x-hasura-user-name"]
   const role = jwt_claims["x-hasura-default-role"]
+  const nickname = jwt_claims["x-hasura-user-nickname"]
 
   res.status(200).json({
     "id": id,
     "name": name,
-    "role": role
+    "role": role,
+    "nickname": nickname
   })
 }
 

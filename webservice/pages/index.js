@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Button from '@/components/Button'
 import Aboutus from '@/components/Aboutus'
 import Activity from '@/components/Activity'
@@ -56,32 +56,67 @@ export default function Home({ peopleList, fileTree }) {
         <link rel="icon" type="image/png" sizes="32x32" href="https://contact.daskomlab.com/assets/favicon/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="https://contact.daskomlab.com/assets/favicon/favicon-16x16.png" />
       </Head>
-      <main className="w-full h-full border-8 border-green-400 bg-green-800 flex flex-col">
-        <div className="flex flex-col m-auto max-w-6xl w-full h-4/6">
-          <div className="font-merriw font-extrabold text-4xl text-yellow-300 mx-auto">
+      <main className={
+        "w-full h-full border-8 border-green-400 bg-green-800 flex flex-row transition-all " +
+        (sharedState.isGameActive ? "p-4" : "p-0")
+      }>
+        {
+          sharedState.isGameActive && (
+            <div className="flex flex-col m-auto w-2/5 max-w-xl">
+              GAME LOG
+            </div>
+          )  
+        }
+        <div className={
+          "flex flex-col m-auto flex-auto transition-all " + 
+          (sharedState.isGameActive ? "h-full max-w-full" : "h-4/6 max-w-6xl")
+        }>
+          <div className={
+            "font-merriw font-extrabold text-4xl text-yellow-300 mx-auto " +
+            (sharedState.isGameActive ? "hidden" : "visible")
+          }>
             Daskom1337 Community
           </div>
+          <div className={
+            "w-full border-2 border-slate-400 bg-slate-900 rounded-xl shadow-l transition-all " + 
+            (sharedState.isGameActive ? "h-4/6" : "mt-6 h-full")
+          }>
+            {
+              !sharedState.isGameActive ? (
+                menu !== "playground" ? (
+                  <SimpleBar className="flex flex-col w-full h-full p-5 overflow-auto self-center">
+                    {
+                      {
+                        "about-us": <Aboutus />,
+                        activity: <Activity />,
+                        people: <People peopleList={peopleList} />
+                      }[menu]
+                    }
+                  </SimpleBar>
+                ) : (
+                  <Playground fileTree={fileTree}/>
+                )
+              ) : (
+                <div>
+                  GAME & Main Menu (Overlay)
+                </div>
+              )
+            }
+          </div>
           {
-            menu !== "playground" ? (
-              <SimpleBar className="flex flex-col self-center w-full h-full border-2 overflow-auto border-slate-400 bg-slate-900 rounded-xl p-5 mt-6 shadow-l">
-                {
-                  {
-                    "about-us": <Aboutus />,
-                    activity: <Activity />,
-                    people: <People peopleList={peopleList} />
-                  }[menu]
-                }
-              </SimpleBar>
+            !sharedState.isGameActive ? (
+              <div className="flex flex-row mt-5 px-10">
+                <Button text="About Us" color={menu === "about-us" ? "red" : "yellow"} onClick={() => setMenu("about-us")} />
+                <Button text="The Activity" color={menu === "activity" ? "red" : "yellow"} onClick={() => setMenu("activity")} />
+                <Button text="The People" color={menu === "people" ? "red" : "yellow"} onClick={() => setMenu("people")} />
+                <Button text="The Playground" color={menu === "playground" ? "red" : "yellow"} onClick={() => setMenu("playground")} />
+              </div>
             ) : (
-              <Playground fileTree={fileTree}/>
+              <div>
+                COMMENT & Sidebar (show people that is currently online)
+              </div>
             )
           }
-          <div className="flex flex-row mt-5 px-10">
-            <Button text="About Us" color={menu === "about-us" ? "red" : "yellow"} onClick={() => setMenu("about-us")} />
-            <Button text="The Activity" color={menu === "activity" ? "red" : "yellow"} onClick={() => setMenu("activity")} />
-            <Button text="The People" color={menu === "people" ? "red" : "yellow"} onClick={() => setMenu("people")} />
-            <Button text="The Playground" color={menu === "playground" ? "red" : "yellow"} onClick={() => setMenu("playground")} />
-          </div>
         </div>
       </main>
     </div>

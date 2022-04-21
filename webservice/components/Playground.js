@@ -281,7 +281,7 @@ class CustomTerminal extends React.Component {
     return (
       <>
         <XTerm
-          className="w-full h-full border-2 overflow-none border-slate-400 rounded-xl mt-6 shadow-l"
+          className="w-full h-full overflow-none"
           ref={this.xtermRef}
           options={{
             cursorBlink: true,
@@ -318,7 +318,8 @@ class CustomTerminal extends React.Component {
               }
              
               await this.sleep(3) // Needed to wait for set state finish
-              this.printTerminalPrompt()
+              if (this.xtermRef.current != null)
+                this.printTerminalPrompt()
 
             // Backspace key
             } else if (code === 127 && this.state.input.length > 0 && this.state.input.trim() !== "") {
