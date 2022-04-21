@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "scripts": {
-    "build": "webpack --config webpack/prod.js ",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider; webpack --config webpack/prod.js ",
     "start": "export NODE_OPTIONS=--openssl-legacy-provider; webpack-dev-server --config webpack/base.js --open"
   },
   "author": "Daskom1337 Community",

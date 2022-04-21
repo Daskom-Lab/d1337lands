@@ -42,6 +42,7 @@ services:
     - "postgres"
     - "graphql-engine"
     - "websocket"
+    - "game"
     restart: always
 
   discordbot:
@@ -64,6 +65,19 @@ services:
     - "6666:3000"
     depends_on:
     - "postgres"
+    restart: always
+
+  game:
+    build:
+      context: ./game/
+      dockerfile: Dockerfile
+    image: game
+    ports:
+    - "7777:3000"
+    depends_on:
+    - "postgres"
+    - "graphql-engine"
+    - "websocket"
     restart: always
 
 volumes:

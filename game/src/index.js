@@ -89,7 +89,7 @@ const config = {
     mode: Phaser.Scale.FIT
   },
   parent: "game",
-  backgroundColor: "#2f4f4f"
+  backgroundColor: "#152342"
 };
 
 export const game = new Phaser.Game(config);
