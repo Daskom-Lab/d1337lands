@@ -40,6 +40,7 @@ export async function getStaticProps() {
 
 export default function Home({ peopleList, fileTree }) {
   const [menu, setMenu] = useState("about-us");
+  const [mainMenuOpened, setMainMenuOpened] = useState(false)
   const sharedState = useAppContext();
 
   useEffect(() => {
@@ -64,8 +65,16 @@ export default function Home({ peopleList, fileTree }) {
       }>
         {
           sharedState.isGameActive && (
-            <div className="flex flex-col m-auto rounded-xl w-2/5 border-2 border-slate-400 bg-slate-900 mr-2 h-full max-w-xl">
-              GAME LOG
+            <div className="flex flex-col m-auto rounded-lg w-2/5 border-2 border-slate-400 bg-slate-900 mr-2 h-full max-w-xl">
+              <div className="w-full text-black bg-green-400 text-xs tracking-wide font-bold font-merriw rounded-t-md px-2 py-1 border-b-2 border-slate-400">
+                Game logs - (always read before you ask please...)
+              </div>
+              <div className="w-full flex-auto">
+
+              </div>
+              <div className="flex w-full px-2">
+                <input className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" />
+              </div>
             </div>
           )  
         }
@@ -100,13 +109,16 @@ export default function Home({ peopleList, fileTree }) {
                 )
               ) : (
                 <div className="w-full h-full text-white relative">
-                  <iframe src="http://localhost:8080" className="rounded-xl h-full w-full" />
-                  <button className="">
+                  <iframe src="http://localhost:7777" className="rounded-xl h-full w-full" />
+                  {
+                    mainMenuOpened && (
+                      <div className="w-full h-full top-0 rounded-xl absolute bg-slate-700 bg-opacity-80">
+                      </div>
+                    )
+                  }
+                  <button className="rounded-full text-3xl text-black bg-yellow-400 p-2 w-[56px] h-auto absolute top-0 right-0 mr-4 mt-4 hover:-translate-x-1 hover:translate-y-1 hover:scale-110 hover:rotate-90 transition duration-150 border-2 border-black" onClick={() => setMainMenuOpened(!mainMenuOpened)}>
                     <FontAwesomeIcon icon={faGear} />
                   </button>
-                  <div className="w-full h-full top-0 rounded-xl absolute bg-slate-700 bg-opacity-80">
-
-                  </div>
                 </div>
               )
             }
@@ -122,10 +134,23 @@ export default function Home({ peopleList, fileTree }) {
             ) : (
               <div className="flex flex-row mt-2 h-2/6">
                 <div className="flex flex-col mr-2 w-4/6 h-full rounded-lg border-2 border-slate-400 bg-slate-900">
+                  <div className="w-full text-black bg-green-400 text-xs tracking-wide font-bold font-merriw rounded-t-md px-2 py-1 border-b-2 border-slate-400">
+                    Chat - (go talk to other people you nerd!)
+                  </div>
+                  <div className="w-full flex-auto">
 
+                  </div>
+                  <div className="flex w-full px-2">
+                    <input className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" />
+                  </div>
                 </div>
                 <div className="flex flex-col w-2/6 h-full rounded-lg border-2 border-slate-400 bg-slate-900">
+                  <div className="w-full text-black bg-green-400 text-xs tracking-wide font-bold font-merriw rounded-t-md px-2 py-1 border-b-2 border-slate-400">
+                    User activity - (look at these human being, meh)
+                  </div>
+                  <div className="w-full flex-auto">
 
+                  </div>
                 </div>
               </div>
             )
