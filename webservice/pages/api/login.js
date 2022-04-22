@@ -68,8 +68,7 @@ export default function handler(req, res) {
                             });
                             console.log("Login Success!");
                             return;
-                          }
-                          else 
+                          }  
                             console.log(err.message);
                             res.status(403).json({
                               reason: "Login Failed!",
@@ -103,10 +102,9 @@ export default function handler(req, res) {
                       message: "Login Success!"
                     });
                     return;
-                  } else {
+                  }
                     res.status(403).json({message: "Login Failed!"});
                     return
-                  }
               }); 
             }
           } else {
