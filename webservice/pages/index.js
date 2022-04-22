@@ -7,6 +7,7 @@ import People from '@/components/People'
 import { getAssetFile, getFileTree } from "@/utils/assets";
 import { getPeopleList } from '@/assets/peoples'
 import SimpleBar from 'simplebar-react';
+import useEventListener from '@use-it/event-listener'
 import 'simplebar/dist/simplebar.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGear } from '@fortawesome/free-solid-svg-icons'
@@ -41,7 +42,42 @@ export async function getStaticProps() {
 export default function Home({ peopleList, fileTree }) {
   const [menu, setMenu] = useState("about-us");
   const [mainMenuOpened, setMainMenuOpened] = useState(false)
+  const [inputsFocused, setInputsFocused] = useState([])
   const sharedState = useAppContext();
+
+  useEventListener("keydown", ({ key }) => {
+    if (inputsFocused.length > 0) return
+
+    // Space or Enter clicked (goes into action)
+    if ([" ", "Enter"].includes(key)) {
+
+      return
+    }
+
+    // W or Arrow key Up clicked (move up)
+    if (["w", "W", "ArrowUp"].includes(key)) {
+
+      return
+    }
+
+    // A or Arrow key Left clicked (move left)
+    if (["a", "A", "ArrowLeft"].includes(key)) {
+
+      return
+    }
+
+    // S or Arrow key Down clicked (move down)
+    if (["s", "S", "ArrowDown"].includes(key)) {
+
+      return
+    }
+
+    // D or Arrow key Right clicked (move right)
+    if (["d", "D", "ArrowRight"].includes(key)) {
+      
+      return
+    }
+  });
 
   useEffect(() => {
     console.log("AppWide: " + JSON.stringify(sharedState))
@@ -60,7 +96,7 @@ export default function Home({ peopleList, fileTree }) {
         <link rel="icon" type="image/png" sizes="16x16" href="https://contact.daskomlab.com/assets/favicon/favicon-16x16.png" />
       </Head>
       <main className={
-        "w-full h-full border-8 border-green-400 bg-green-800 flex flex-row transition-all duration-700 " +
+        "w-full h-full border-4 border-lime-500 bg-green-800 flex flex-row transition-all duration-700 " +
         (sharedState.isGameActive ? "p-4" : "p-0")
       }>
         {
@@ -73,7 +109,10 @@ export default function Home({ peopleList, fileTree }) {
 
               </div>
               <div className="flex w-full px-2">
-                <input className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" />
+                <input 
+                  className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" 
+                  onFocus={() => setInputsFocused(arr => [...arr, "logs"])}
+                  onBlur={() => setInputsFocused(inputsFocused.filter((_, id) => id !== inputsFocused.length - 1))} />
               </div>
             </div>
           )  
@@ -141,7 +180,10 @@ export default function Home({ peopleList, fileTree }) {
 
                   </div>
                   <div className="flex w-full px-2">
-                    <input className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" />
+                    <input 
+                      className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" 
+                      onFocus={() => setInputsFocused(arr => [...arr, "chat"])}
+                      onBlur={() => setInputsFocused(inputsFocused.filter((_, id) => id !== inputsFocused.length - 1))} />
                   </div>
                 </div>
                 <div className="flex flex-col w-2/6 h-full rounded-lg border-2 border-slate-400 bg-slate-900">

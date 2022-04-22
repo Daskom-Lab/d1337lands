@@ -12,6 +12,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@fortawesome/react-fontawesome": "^0.1.18",
+    "@use-it/event-listener": "^0.1.7",
     "cookies-next": "^2.0.4",
     "cors": "^2.8.5",
     "express-jwt": "^6.1.1",
