@@ -86,7 +86,7 @@ const config = {
     width: CANVAS_WIDTH,
     height: CANVAS_HEIGHT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    mode: Phaser.Scale.FIT
+    mode: Phaser.Scale.ENVELOP,
   },
   parent: "game",
   backgroundColor: "#152342"
