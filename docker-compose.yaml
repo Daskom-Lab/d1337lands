@@ -23,9 +23,9 @@ services:
       HASURA_GRAPHQL_JWT_SECRET: "{\"key\": \"9NE5uLKVMB5Pm3YNHXxKFBYyDCRP6FzFrY8CxmNFckQ6fJQKTvm5SHPCUE7Rma3WQpSzYh\",\"type\": \"HS256\",\"claims_format\": \"json\"}"
       HASURA_GRAPHQL_UNAUTHORIZED_ROLE: "guest"
       BACKEND_UNIQUE_KEY: "+8b3tShb%c%%_u!Teag7"
-      BACKEND_URL: "http://webservice:5000"
+      BACKEND_URL: "http://webservice:4444"
     ports:
-    - "8080:8080"
+    - "3333:8080"
     depends_on:
     - "postgres"
     - "discordbot"
@@ -37,11 +37,12 @@ services:
       dockerfile: Dockerfile
     image: webservice
     ports:
-    - "5000:3000"
+    - "4444:3000"
     depends_on:
     - "postgres"
     - "graphql-engine"
     - "websocket"
+    - "game"
     restart: always
 
   discordbot:
@@ -64,6 +65,19 @@ services:
     - "6666:3000"
     depends_on:
     - "postgres"
+    restart: always
+
+  game:
+    build:
+      context: ./game/
+      dockerfile: Dockerfile
+    image: game
+    ports:
+    - "7777:3000"
+    depends_on:
+    - "postgres"
+    - "graphql-engine"
+    - "websocket"
     restart: always
 
 volumes:

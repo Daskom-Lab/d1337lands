@@ -6,6 +6,7 @@ module.exports = {
   theme: {
     fontFamily: {
       merriw: ['"Merriweather Sans"'],
+      sourcesans: ['"Source Sans Pro"', 'sans-serif'],
       overpassm: ['"Overpass Mono"', 'monospace'],
       consolas: ['"Consolas"', 'monospace']
     }

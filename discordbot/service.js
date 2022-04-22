@@ -22,7 +22,7 @@ client.once("ready", () => {
   });
 
   // Get a user role based on given user_id
-  app.get("/getUserRole/:user_id", async (request, response) => {
+  app.get("/getUserData/:user_id", async (request, response) => {
     const guild = await client.guilds.fetch("962874739649548378");
     guild.members.fetch(request.params.user_id)
       .then((res) => {
@@ -33,7 +33,8 @@ client.once("ready", () => {
         }
 
         response.status(200).json({
-          "roles": role_names
+          "roles": role_names,
+          "username": res.user.username
         })
       })
       .catch((err) => {
