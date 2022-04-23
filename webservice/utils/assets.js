@@ -12,10 +12,9 @@ export function getAssetFileAbs(filepath) {
   return fs.readFileSync(filepath, "utf8");
 }
 
-export function getFileTree (dir=filetreeDir, files_){
-  files_ = files_ || {
-    "/": []
-  };
+export function getFileTree (dir=filetreeDir, files_={
+  "/": []
+}){
   var files = fs.readdirSync(dir);
 
   for (var i in files){

@@ -13,6 +13,10 @@ export const jwt = initMiddleware(
   })
 );
 
+export function jwt_sign(data) {
+  return jwt.sign(data, "9NE5uLKVMB5Pm3YNHXxKFBYyDCRP6FzFrY8CxmNFckQ6fJQKTvm5SHPCUE7Rma3WQpSzYh");
+}
+
 export default function check_jwt(handler) {
   return async (req, res) => {
     try {
