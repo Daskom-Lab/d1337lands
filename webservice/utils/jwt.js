@@ -1,5 +1,6 @@
 import initMiddleware from "@/utils/init_middleware";
 const Jwt = require("express-jwt");
+const jsonwebtoken = require("jsonwebtoken");
 
 export const jwt = initMiddleware(
   Jwt({ 
@@ -14,7 +15,7 @@ export const jwt = initMiddleware(
 );
 
 export function jwt_sign(data) {
-  return jwt.sign(data, "9NE5uLKVMB5Pm3YNHXxKFBYyDCRP6FzFrY8CxmNFckQ6fJQKTvm5SHPCUE7Rma3WQpSzYh");
+  return jsonwebtoken.sign(data, "9NE5uLKVMB5Pm3YNHXxKFBYyDCRP6FzFrY8CxmNFckQ6fJQKTvm5SHPCUE7Rma3WQpSzYh");
 }
 
 export default function check_jwt(handler) {
@@ -26,7 +27,7 @@ export default function check_jwt(handler) {
     } catch (err) {
       if (err.name === 'UnauthorizedError')
         res.status(401).json({
-          "reason": "User token is invalid"
+          reason: "User token is invalid"
         });
     }
   }

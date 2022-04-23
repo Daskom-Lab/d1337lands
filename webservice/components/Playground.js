@@ -59,7 +59,7 @@ class CustomTerminal extends React.Component {
       \x1b[A\r${colorize("green",`${this.state.currentUser}@daskom1337`)} ${colorize("blue",cleanDir)} ${this.state.currentUser === "root" ? "#" : "$"} `); 
   }
 
-  printTerminalPrompt() {
+  async printTerminalPrompt() {
     if (this.state.input !== "clear")
       this.xtermRef.current.terminal.write("\r\n")
 
@@ -76,29 +76,39 @@ class CustomTerminal extends React.Component {
 
             case 1:
               this.xtermRef.current.terminal.write("Password: ")
+              this.state.loginData.username = this.state.input
               this.setState({ 
                 processState: 2,
                 shouldFlush: false,
-                loginData: {
-                  username: this.state.input
-                }
+                loginData: this.state.loginData
               }) 
               break;
 
             case 2:
+              this.state.loginData.password = this.state.input
               this.setState({
-                isInProcess: false,
                 processType: "",
-                processState: 0,
-                shouldFlush: true,
-                loginData: {
-                  password: this.state.input
-                }
+                processState: 3,
+                loginData: this.state.loginData
               })
 
               this.xtermRef.current.terminal.write("[+] Logging in...")
-              // TODO: implement login logic to connect to the backend and do the actual login process
-              this.xtermRef.current.terminal.write("\r\n[+] Login success \r\n")
+
+              await this.sleep(3) 
+              await POST("/api/authentication/login", this.state.loginData)
+                .then ((res) => {
+                  setCookies("1337token", res.accessToken)
+                  this.xtermRef.current.terminal.write("\r\n[+] Login success \r\n")
+                }).catch (() => {
+                  this.xtermRef.current.terminal.write("\r\n[+] Login failed \r\n")
+                })
+
+              this.setState({
+                processState: 0,
+                isInProcess: false,
+                shouldFlush: true
+              })
+
               this.printUserPrompt()
               break;
           
@@ -247,15 +257,12 @@ class CustomTerminal extends React.Component {
           return
         } 
 
-        // TODO: This is just for development purpose, should be remove later on after the login feature finished
-        setCookies("1337token", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJodHRwczovL2hhc3VyYS5pby9qd3QvY2xhaW1zIjp7IngtaGFzdXJhLWFsbG93ZWQtcm9sZXMiOlsiTWVudG9yIl0sIngtaGFzdXJhLWRlZmF1bHQtcm9sZSI6Ik1lbnRvciIsIngtaGFzdXJhLXVzZXItbmFtZSI6ImZha2hyaXAiLCJ4LWhhc3VyYS11c2VyLWlkIjoiMSJ9fQ.UGNn4vFRVLsz04si9-T6eWe0ST2VfFiUcpCvvEIe3bU")
-
         if (!checkCookies("1337token")) {
           this.xtermRef.current.terminal.write("\r\n[+] You have to login first!");
           return;
         }
 
-        await POST("/api/authentication/validate", getCookie("1337token"))
+        await POST("/api/authentication/validate", null, getCookie("1337token"))
           .then (() => {
             this.context.setGameActive(true);
             this.xtermRef.current.terminal.write("\r\n[+] Game started successfully :D");
@@ -271,10 +278,10 @@ class CustomTerminal extends React.Component {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.fitAddon.fit()
     this.printInitialPrompt()
-    this.printTerminalPrompt()
+    await this.printTerminalPrompt()
   }
 
   render() {
@@ -319,7 +326,7 @@ class CustomTerminal extends React.Component {
              
               await this.sleep(3) // Needed to wait for set state finish
               if (this.xtermRef.current != null)
-                this.printTerminalPrompt()
+                await this.printTerminalPrompt()
 
             // Backspace key
             } else if (code === 127 && this.state.input.length > 0 && this.state.input.trim() !== "") {

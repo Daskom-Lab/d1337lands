@@ -1,18 +1,30 @@
-export const GET = (url, token) => 
+export const GET = (url, token=null) => 
   fetch(url, {
       headers: {
-        "Authorization": `Bearer ${token}`,
+        "Authorization": token === null ? "" : `Bearer ${token}`,
       },
     })
-    .then(r => r.json())
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
 
-export const POST = (url, token, data) =>
+      throw new Error(`${response.status} ${response.statusText}`)
+    })
+
+export const POST = (url, data=null, token=null) =>
   fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        "Authorization": token === null ? "" : `Bearer ${token}`,
       },
-      body: data === undefined ? "" : JSON.stringify(data)
+      body: data === null ? "" : JSON.stringify(data)
     })
-    .then(r => r.json())
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+
+      throw new Error(`${response.status} ${response.statusText}`)
+    })
