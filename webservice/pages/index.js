@@ -6,14 +6,16 @@ import Activity from '@/components/Activity'
 import People from '@/components/People'
 import { getAssetFile, getFileTree } from "@/utils/assets";
 import { getPeopleList } from '@/assets/peoples'
-import SimpleBar from 'simplebar-react';
+import SimpleBar from 'simplebar-react'
 import useEventListener from '@use-it/event-listener'
-import 'simplebar/dist/simplebar.min.css';
+import 'simplebar/dist/simplebar.min.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGear } from '@fortawesome/free-solid-svg-icons'
+import { io } from "socket.io-client"
 
 import dynamic from "next/dynamic";
 import { useAppContext } from '@/context/appstate'
+import { checkCookies, getCookie } from 'cookies-next'
 const Playground = dynamic(() => import("@/components/Playground"), {
   ssr: false
 });
@@ -41,8 +43,11 @@ export async function getStaticProps() {
 
 export default function Home({ peopleList, fileTree }) {
   const [menu, setMenu] = useState("about-us");
+  const [socket, setSocket] = useState(undefined)
   const [mainMenuOpened, setMainMenuOpened] = useState(false)
   const [inputsFocused, setInputsFocused] = useState([])
+  const [log_buffer, setLogBuffer] = useState("")
+  const [user_state, setUserState] = useState({})
   const sharedState = useAppContext();
 
   useEventListener("keydown", ({ key }) => {
@@ -51,35 +56,72 @@ export default function Home({ peopleList, fileTree }) {
     // Space or Enter clicked (goes into action)
     if ([" ", "Enter"].includes(key)) {
 
+      console.log("enter clicked")
       return
     }
 
     // W or Arrow key Up clicked (move up)
     if (["w", "W", "ArrowUp"].includes(key)) {
 
+      console.log("arrow up clicked")
       return
     }
 
     // A or Arrow key Left clicked (move left)
     if (["a", "A", "ArrowLeft"].includes(key)) {
 
+      console.log("arrow left clicked")
       return
     }
 
     // S or Arrow key Down clicked (move down)
     if (["s", "S", "ArrowDown"].includes(key)) {
 
+      console.log("arrow down clicked")
       return
     }
 
     // D or Arrow key Right clicked (move right)
     if (["d", "D", "ArrowRight"].includes(key)) {
       
+      console.log("arrow right clicked")
       return
     }
   });
 
   useEffect(() => {
+    if (sharedState.isGameActive && socket === undefined)
+      if (checkCookies("1337token")) {
+        const socket = io("http://localhost:5000", {
+          auth: (cb) => {
+            cb({ token: getCookie("1337token") })
+          }
+        })
+
+        socket.on("user_data", (data) => {
+          console.log("connected ...")
+          setUserState(data)
+          setLogBuffer(`Hello and welcome to daskom1337 codeventure, ${data["user_nickname"]}`)
+
+          if (data["user_datas"].length === 0) {
+            socket.emit("send_action", {
+              "action": "initialize_data"
+            }, (response) => {
+              if (response === "OK")
+                setUserState(prevState => ({
+                  ...prevState,
+                  user_datas: {
+                    "map": "town",
+                    "position": "0,0"
+                  }
+                }))
+            })
+          }
+        })
+
+        setSocket(socket)
+      }
+
     console.log("AppWide: " + JSON.stringify(sharedState))
   }, [sharedState.isGameActive])
 
@@ -105,8 +147,8 @@ export default function Home({ peopleList, fileTree }) {
               <div className="w-full text-black bg-green-400 text-xs tracking-wide font-bold font-merriw rounded-t-md px-2 py-1 border-b-2 border-slate-400">
                 Game logs - (always read before you ask please...)
               </div>
-              <div className="w-full flex-auto">
-
+              <div className="w-full flex-auto text-white font-sourcesans font-medium text-base p-2">
+                { log_buffer }
               </div>
               <div className="flex w-full px-2">
                 <input 
@@ -155,7 +197,7 @@ export default function Home({ peopleList, fileTree }) {
                       </div>
                     )
                   }
-                  <button className="rounded-full text-3xl text-black bg-yellow-400 p-2 w-[56px] h-auto absolute top-0 right-0 mr-4 mt-4 hover:-translate-x-1 hover:translate-y-1 hover:scale-110 hover:rotate-90 transition duration-150 border-2 border-black" onClick={() => setMainMenuOpened(!mainMenuOpened)}>
+                  <button className="rounded-full text-3xl text-black bg-yellow-400 p-2 w-[56px] h-auto absolute top-0 right-0 mr-4 mt-4 hover:-translate-x-1 hover:translate-y-1 hover:scale-110 hover:rotate-90 active:-translate-y-1 active:scale-90 transition duration-150 border-2 border-black" onClick={() => setMainMenuOpened(!mainMenuOpened)}>
                     <FontAwesomeIcon icon={faGear} />
                   </button>
                 </div>
