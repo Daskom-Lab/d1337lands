@@ -12,4 +12,5 @@
 - "!include public_title_codes.yaml"
 - "!include public_titles.yaml"
 - "!include public_unlocked_hints.yaml"
+- "!include public_user_datas.yaml"
 - "!include public_users.yaml"

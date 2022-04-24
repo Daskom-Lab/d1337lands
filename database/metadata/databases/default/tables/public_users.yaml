@@ -8,6 +8,13 @@ object_relationships:
 - name: title
   using:
     foreign_key_constraint_on: chosen_title
+- name: user_data
+  using:
+    foreign_key_constraint_on:
+      column: user_id
+      table:
+        name: user_datas
+        schema: public
 array_relationships:
 - name: achievements
   using:
@@ -44,3 +51,21 @@ array_relationships:
       table:
         name: unlocked_hints
         schema: public
+select_permissions:
+- permission:
+    columns:
+    - character
+    - chosen_title
+    - id
+    - leetcoin
+    - nickname
+    - role
+    - updated_at
+    - username_color
+    filter:
+      _or:
+      - role:
+          _in: X-Hasura-Role
+      - id:
+          _eq: X-Hasura-User-Id
+  role: player
