@@ -46,8 +46,7 @@ export default function Home({ peopleList, fileTree }) {
   const [socket, setSocket] = useState(undefined)
   const [mainMenuOpened, setMainMenuOpened] = useState(false)
   const [inputsFocused, setInputsFocused] = useState([])
-  const [log_buffer, setLogBuffer] = useState("")
-  const [user_state, setUserState] = useState({})
+  const [logBuffer, setLogBuffer] = useState("")
   const sharedState = useAppContext();
 
   useEventListener("keydown", ({ key }) => {
@@ -62,28 +61,48 @@ export default function Home({ peopleList, fileTree }) {
 
     // W or Arrow key Up clicked (move up)
     if (["w", "W", "ArrowUp"].includes(key)) {
-
+      if (socket !== undefined && socket !== null) {
+        socket.emit("send_action", {
+          "action": "move",
+          "direction": "up"
+        })
+      }
       console.log("arrow up clicked")
       return
     }
 
     // A or Arrow key Left clicked (move left)
     if (["a", "A", "ArrowLeft"].includes(key)) {
-
+      if (socket !== undefined && socket !== null) {
+        socket.emit("send_action", {
+          "action": "move",
+          "direction": "left"
+        })
+      }
       console.log("arrow left clicked")
       return
     }
 
     // S or Arrow key Down clicked (move down)
     if (["s", "S", "ArrowDown"].includes(key)) {
-
+      if (socket !== undefined && socket !== null) {
+        socket.emit("send_action", {
+          "action": "move",
+          "direction": "down"
+        })
+      }
       console.log("arrow down clicked")
       return
     }
 
     // D or Arrow key Right clicked (move right)
     if (["d", "D", "ArrowRight"].includes(key)) {
-      
+      if (socket !== undefined && socket !== null) {
+        socket.emit("send_action", {
+          "action": "move",
+          "direction": "right"
+        })
+      }
       console.log("arrow right clicked")
       return
     }
@@ -100,21 +119,15 @@ export default function Home({ peopleList, fileTree }) {
 
         socket.on("user_data", (data) => {
           console.log("connected ...")
-          setUserState(data)
           setLogBuffer(`Hello and welcome to daskom1337 codeventure, ${data["user_nickname"]}`)
 
           if (data["user_datas"].length === 0) {
             socket.emit("send_action", {
               "action": "initialize_data"
             }, (response) => {
-              if (response === "OK")
-                setUserState(prevState => ({
-                  ...prevState,
-                  user_datas: {
-                    "map": "town",
-                    "position": "0,0"
-                  }
-                }))
+              if (response !== "OK") {
+                console.log("Error happened...")
+              }
             })
           }
         })
@@ -148,7 +161,7 @@ export default function Home({ peopleList, fileTree }) {
                 Game logs - (always read before you ask please...)
               </div>
               <div className="w-full flex-auto text-white font-sourcesans font-medium text-base p-2">
-                { log_buffer }
+                { logBuffer }
               </div>
               <div className="flex w-full px-2">
                 <input 

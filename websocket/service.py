@@ -26,8 +26,8 @@ def getMapData(map_name):
     with open(f"assets/{map_name}/map.json", "r") as f:
         map_data = json.loads(f.read())
         map_size = {
-            "width": map_data["width"],
-            "height": map_data["height"]
+            "width": int(map_data["width"]),
+            "height": int(map_data["height"])
         }
 
     return {
@@ -53,6 +53,8 @@ def getNextPosition(map_name, position, direction):
         * collision here will be considered as boolean
         value with either 0 (false) or more than 0 (true)
     """
+    position = int(position)
+
     next_position = None
     if (direction == "up" and position > maps_data[map_name]["map_size"]["width"]):
         next_position = position - maps_data[map_name]["map_size"]["width"]
@@ -83,12 +85,14 @@ def connect(sid, _, auth):
     user_role = user_data["role"]
     user_nickname = user_data["nickname"]
 
-    sio.save_session(sid, {
+    user_session = {
         "user_id": user_id,
         "user_name": user_name,
         "user_role": user_role,
         "user_nickname": user_nickname
-    })
+    }
+
+    sio.save_session(sid, user_session)
 
     transport = RequestsHTTPTransport(
         url=graphql_endpoint_url,
@@ -113,6 +117,10 @@ def connect(sid, _, auth):
     result = client.execute(query, variable_values={
         "userId": user_id
     })
+
+    if (len(result["user_datas"]) != 0):
+        user_session["user_datas"] = result["user_datas"][0]
+        sio.save_session(sid, user_session)
 
     sio.enter_room(sid, user_id)
     print(f"User connected: {sid}")
@@ -140,6 +148,11 @@ def send_action(sid, data):
 
     data_to_emit = {}
     if (data["action"] == "initialize_data"):
+        initial_user_datas = {
+            "map": "town",
+            "position": "0"
+        }
+
         try:
             transport = RequestsHTTPTransport(
                 url=graphql_endpoint_url,
@@ -162,24 +175,50 @@ def send_action(sid, data):
 
             _ = client.execute(query, variable_values={
                 "userId": session["user_id"],
-                "map": "town",
-                "position": "0,0"
+                **initial_user_datas
             })
         except:
             return "ERR", 500
 
         data_to_emit["action"] =  {
             "action": data["action"],
-            "map": "town",
-            "position": "0,0"
+            **initial_user_datas
         }
 
         data_to_emit["map"] = {
             "user_id": session["user_id"],
             "user_nickname": session["user_nickname"],
-            "map": "town",
-            "position": "0,0"
+            **initial_user_datas
         }
+
+        session["user_datas"] = initial_user_datas
+        sio.save_session(sid, session)
+
+    elif (data["action"] == "move"):
+        next_position = getNextPosition(
+            session["user_datas"]["map"], 
+            session["user_datas"]["position"], 
+            data["direction"]
+        )
+
+        new_user_datas = {
+            "map": session["user_datas"]["map"],
+            "position": next_position
+        }
+
+        data_to_emit["action"] =  {
+            "action": data["action"],
+            **new_user_datas
+        }
+
+        data_to_emit["map"] = {
+            "user_id": session["user_id"],
+            "user_nickname": session["user_nickname"],
+            **new_user_datas
+        }
+
+        session["user_datas"] = new_user_datas
+        sio.save_session(sid, session)
 
     if (data_to_emit["action"]):
         sio.emit("handle_action", data_to_emit["action"], room=session["user_id"], skip_sid=sid)
