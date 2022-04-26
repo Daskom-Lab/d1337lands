@@ -2,6 +2,7 @@ from functools import lru_cache
 import eventlet
 import socketio
 import requests
+import random
 import glob
 import json
 
@@ -20,7 +21,11 @@ hasura_admin_secret = "hSK6kPeZN2zTLsvd2grPNtapLbeNzD9QU9aPd38f894JsmxM7Ecpb9hkA
 def getMapData(map_name):
     collisions = []
     with open(f"assets/{map_name}/collision.json", "r") as f:
-        collisions = json.loads(f.read())["data"]
+        collisions = [pos for pos, x in enumerate(json.loads(f.read())["data"]) if x > 0]
+
+    startpositions = []
+    with open(f"assets/{map_name}/startpositions.json", "r") as f:
+        startpositions = [pos for pos, x in enumerate(json.loads(f.read())["data"]) if x > 0]
 
     map_size = {}
     with open(f"assets/{map_name}/map.json", "r") as f:
@@ -31,6 +36,7 @@ def getMapData(map_name):
         }
 
     return {
+        "startpositions": startpositions,
         "collisions": collisions,
         "map_size": map_size
     }
@@ -40,6 +46,9 @@ maps = [x.replace("assets/", "") for x in glob.glob("assets/*")]
 maps_data = {}
 for map in maps:
     maps_data[map] = getMapData(map)
+
+def getRandomStartPosition(map_name):
+    return random.choice(maps_data[map_name]["startpositions"])
 
 @lru_cache
 def getNextPosition(map_name, position, direction):
@@ -65,7 +74,7 @@ def getNextPosition(map_name, position, direction):
     if (direction == "right" and position % maps_data[map_name]["map_size"]["width"] != 0):
         next_position = position + 1
 
-    if (next_position and not maps_data[map_name]["collisions"][next_position]):
+    if (next_position and next_position not in maps_data[map_name]["collisions"]):
         return next_position
     else:
         return position
@@ -150,7 +159,7 @@ def send_action(sid, data):
     if (data["action"] == "initialize_data"):
         initial_user_datas = {
             "map": "town",
-            "position": "0"
+            "position": f"{getRandomStartPosition('town')}"
         }
 
         try:
