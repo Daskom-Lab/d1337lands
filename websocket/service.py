@@ -9,11 +9,6 @@ import json
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 
-sio = socketio.Server(cors_allowed_origins=[
-    "http://localhost:4444", "http://localhost:7777", "http://localhost:3000"
-])
-app = socketio.WSGIApp(sio)
-
 auth_validation_url = "http://localhost:4444/api/authentication/validate"
 graphql_endpoint_url = "http://localhost:3333/v1/graphql"
 hasura_admin_secret = "hSK6kPeZN2zTLsvd2grPNtapLbeNzD9QU9aPd38f894JsmxM7Ecpb9hkAxeX"
@@ -41,11 +36,24 @@ def getMapData(map_name):
         "map_size": map_size
     }
 
-maps = [x.replace("assets/", "") for x in glob.glob("assets/*")]
+maps = []
+file_paths = {} 
+for x in glob.glob("assets/*"):
+    maps.append(x.replace("assets/", ""))
+    for y in glob.glob(f"{x}/*"):
+        file_paths[f"/{y}"] = f"./{y}"
 
 maps_data = {}
 for map in maps:
     maps_data[map] = getMapData(map)
+
+sio = socketio.Server(cors_allowed_origins=[
+    "http://localhost:4444", "http://localhost:7777", "http://localhost:3000"
+])
+app = socketio.WSGIApp(sio, static_files={
+    '/': {'content_type': 'text/plain', 'filename': 'index.txt'},
+    **file_paths
+})
 
 def getRandomStartPosition(map_name):
     return random.choice(maps_data[map_name]["startpositions"])
