@@ -140,6 +140,13 @@ export class GameScene extends Phaser.Scene {
         this.assetText.setText("Getting user data");
     })
 
+    socket.on("handle_action", (data) => {
+      console.log(`handle_action = ${JSON.stringify(data)}`)
+      if (this.getMainPlayer() !== undefined) {
+        this.getMainPlayer().setPosition(parseInt(data["position"]));
+      }
+    })
+
     socket.on("user_data", (data) => {
       console.log(
         `Hello and welcome to daskom1337 codeventure, ${data["user_nickname"]}`
@@ -202,7 +209,7 @@ export class GameScene extends Phaser.Scene {
         this.cameras.main.setBounds(
           0,
           0,
-          (mapJson["width"] + 1) * GameScene.TILE_SIZE,
+          (mapJson["width"]) * GameScene.TILE_SIZE,
           (mapJson["height"] + 1) * GameScene.TILE_SIZE
         );
         this.cameras.main.startFollow(playerSprite);

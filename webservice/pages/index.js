@@ -201,7 +201,7 @@ export default function Home({ peopleList, fileTree }) {
                 )
               ) : (
                 <div className="w-full h-full text-white relative">
-                  <iframe src="http://localhost:7777" className="rounded-xl h-full w-full pointer-events-none" tabIndex="-1" onFocus={(event) => {
+                  <iframe src="http://localhost:8080" className="rounded-xl h-full w-full pointer-events-none" tabIndex="-1" onFocus={(event) => {
                     event.preventDefault();
                     if (event.relatedTarget) {
                       // Revert focus back to previous blurring element

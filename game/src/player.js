@@ -2,18 +2,13 @@ import { GameScene } from "./index";
 
 export class Player {
   constructor(sprite, tilePos, mapSize) {
-    const offsetX = GameScene.TILE_SIZE / 2;
-    const offsetY = GameScene.TILE_SIZE;
-
-    let position_x = Math.floor(tilePos % mapSize.x) * GameScene.TILE_SIZE + offsetX
-    let position_y = Math.floor(tilePos / mapSize.x) * GameScene.TILE_SIZE + offsetY
-
     this.tilePos = tilePos;
     this.mapSize = mapSize;
     this.sprite = sprite;
+
     this.sprite.setFrame(104);
     this.sprite.setOrigin(0.5, 1);
-    this.sprite.setPosition(position_x, position_y);
+    this.setPosition(tilePos);
   }
 
   getPosition() {
@@ -29,7 +24,13 @@ export class Player {
   }
 
   setPosition(position) {
-    this.sprite.setPosition(position.x, position.y);
+    const offsetX = GameScene.TILE_SIZE / 2;
+    const offsetY = GameScene.TILE_SIZE;
+
+    let position_x = Math.floor(position % this.mapSize.x) * GameScene.TILE_SIZE + offsetX
+    let position_y = Math.floor(position / this.mapSize.x) * GameScene.TILE_SIZE + offsetY
+
+    this.sprite.setPosition(position_x, position_y);
   }
 
   stopAnimation() {
