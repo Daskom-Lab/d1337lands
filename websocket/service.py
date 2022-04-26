@@ -97,6 +97,8 @@ def getNextPosition(map_name, position, direction):
 
 @sio.event
 def connect(sid, _, auth):
+    # TODO: we have to fingerprint if this connections is coming from the game or the ui
+    #       so that the remaining data save will only occur on either of one side but not both
     req = requests.post(
         auth_validation_url, headers={"Authorization": f"Bearer {auth['token']}"}
     )
@@ -170,6 +172,53 @@ def connect(sid, _, auth):
 @sio.event
 def disconnect(sid):
     session = sio.get_session(sid)
+
+    transport = RequestsHTTPTransport(
+        url=graphql_endpoint_url,
+        verify=True,
+        retries=3,
+        headers={
+            "content-type": "application/json",
+            "x-hasura-admin-secret": hasura_admin_secret,
+        },
+    )
+    client = Client(transport=transport, fetch_schema_from_transport=True)
+
+    query = gql(
+        r"""
+        mutation updateUserData($userId: bigint!, $map: String!, $position: String!) {
+            update_user_datas(where: {user_id: {_eq: $userId}}, _set: {map: $map, position: $position}) {
+                affected_rows
+            }
+        } 
+    """
+    )
+
+    _ = client.execute(
+        query,
+        variable_values={
+            "userId": session["user_id"],
+            "map": session["user_datas"]["map"],
+            "position": f"{session['user_datas']['position']}",
+        },
+    )
+
+    data_to_emit = {
+        "map": {
+            "user_id": session["user_id"],
+            "user_nickname": session["user_nickname"],
+            "map": session["user_datas"]["map"],
+            "position": "-1",
+        }
+    }
+
+    sio.emit(
+        "map_state",
+        data_to_emit["map"],
+        room=data_to_emit["map"]["map"],
+        skip_sid=sid,
+    )
+
     sio.leave_room(sid, session["user_id"])
     print(f"User disconnected: {sid}")
     return "OK", 200
