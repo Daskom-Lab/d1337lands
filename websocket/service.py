@@ -9,22 +9,23 @@ import json
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 
+game_url = "http://localhost:8080"
 auth_validation_url = "http://localhost:4444/api/authentication/validate"
 graphql_endpoint_url = "http://localhost:3333/v1/graphql"
 hasura_admin_secret = "hSK6kPeZN2zTLsvd2grPNtapLbeNzD9QU9aPd38f894JsmxM7Ecpb9hkAxeX"
 
 def getMapData(map_name):
     collisions = []
-    with open(f"assets/{map_name}/collision.json", "r") as f:
-        collisions = [pos for pos, x in enumerate(json.loads(f.read())["data"]) if x > 0]
+    with requests.get(f"{game_url}/assets/maps/{map_name}/collision.json") as r:
+        collisions = [pos for pos, x in enumerate(json.loads(r.text)["data"]) if x > 0]
 
     startpositions = []
-    with open(f"assets/{map_name}/startpositions.json", "r") as f:
-        startpositions = [pos for pos, x in enumerate(json.loads(f.read())["data"]) if x > 0]
+    with requests.get(f"{game_url}/assets/maps/{map_name}/startpositions.json") as r:
+        startpositions = [pos for pos, x in enumerate(json.loads(r.text)["data"]) if x > 0]
 
     map_size = {}
-    with open(f"assets/{map_name}/map.json", "r") as f:
-        map_data = json.loads(f.read())
+    with requests.get(f"{game_url}/assets/maps/{map_name}/map.json") as r:
+        map_data = json.loads(r.text)
         map_size = {
             "width": int(map_data["width"]),
             "height": int(map_data["height"])
@@ -36,24 +37,18 @@ def getMapData(map_name):
         "map_size": map_size
     }
 
-maps = []
-file_paths = {} 
-for x in glob.glob("assets/*"):
-    maps.append(x.replace("assets/", ""))
-    for y in glob.glob(f"{x}/*"):
-        file_paths[f"/{y}"] = f"./{y}"
+maps = [
+    "town"
+]
 
 maps_data = {}
 for map in maps:
     maps_data[map] = getMapData(map)
 
 sio = socketio.Server(cors_allowed_origins=[
-    "http://localhost:4444", "http://localhost:7777", "http://localhost:3000"
+    "http://localhost:4444", "http://localhost:7777", "http://localhost:3000", "http://localhost:8080"
 ])
-app = socketio.WSGIApp(sio, static_files={
-    '/': {'content_type': 'text/plain', 'filename': 'index.txt'},
-    **file_paths
-})
+app = socketio.WSGIApp(sio)
 
 def getRandomStartPosition(map_name):
     return random.choice(maps_data[map_name]["startpositions"])

@@ -134,8 +134,6 @@ export default function Home({ peopleList, fileTree }) {
 
         setSocket(socket)
       }
-
-    console.log("AppWide: " + JSON.stringify(sharedState))
   }, [sharedState.isGameActive])
 
   return (

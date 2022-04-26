@@ -17,5 +17,6 @@ RUN yarn build
 FROM lipanski/docker-static-website:latest
 
 COPY --from=builder /app/dist/. .
+COPY --from=builder /app/assets/. ./assets
 
 CMD ["/thttpd", "-D", "-h", "0.0.0.0", "-p", "3000", "-d", "/home/static", "-u", "static", "-l", "-", "-M", "60"]
