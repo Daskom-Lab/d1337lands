@@ -4,7 +4,7 @@ import json
 
 auth_validation_url = "http://localhost:4444/api/authentication/validate"
 
-class chatNamespace(socketio.Namespace):
+class ChatNamespace(socketio.Namespace):
     def connect(self, sid, _, auth):
         req = requests.post(
             auth_validation_url, headers={"Authorization": f"Bearer {auth['token']}"}
@@ -32,6 +32,9 @@ class chatNamespace(socketio.Namespace):
 
         print(f"User connected: {sid}")
 
+        return "OK", 200
+
+    def disconnect(self, sid):
         return "OK", 200
 
     def send_message(self, sid, data):

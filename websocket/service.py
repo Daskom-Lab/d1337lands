@@ -5,7 +5,7 @@ import requests
 import random
 import glob
 import json
-from chatService import chatNamespace
+from chatService import ChatNamespace
 
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
@@ -333,7 +333,7 @@ def leave_map(sid, data):
     sio.leave_room(sid, data["map"])
     return "OK", 200
 
-sio.register_namespace(chatNamespace('/chat'))
+sio.register_namespace(ChatNamespace('/chat'))
 
 
 if __name__ == "__main__":
