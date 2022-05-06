@@ -299,8 +299,11 @@ class CustomTerminal extends React.Component {
     this.fitAddon.fit()
     await this.updateCurrentUser()
     await this.sleep(3)
-    this.printInitialPrompt()
-    await this.printTerminalPrompt()
+
+    if (this.xtermRef.current != null) {
+      this.printInitialPrompt()
+      await this.printTerminalPrompt()
+    }
   }
 
   render() {

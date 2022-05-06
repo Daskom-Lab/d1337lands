@@ -50,7 +50,7 @@ export default function Home({ peopleList, fileTree }) {
   const sharedState = useAppContext();
 
   useEventListener("keydown", ({ key }) => {
-    if (inputsFocused.length > 0) return
+    if (inputsFocused.length > 0 || mainMenuOpened) return
 
     // Space or Enter clicked (goes into action)
     if ([" ", "Enter"].includes(key)) {
@@ -134,6 +134,11 @@ export default function Home({ peopleList, fileTree }) {
 
         setSocket(socket)
       }
+
+    if (!sharedState.isGameActive && socket !== undefined) {
+      setSocket(undefined)
+      setMenu("about-us")
+    }
   }, [sharedState.isGameActive])
 
   return (
@@ -213,7 +218,21 @@ export default function Home({ peopleList, fileTree }) {
                   }} />
                   {
                     mainMenuOpened && (
-                      <div className="w-full h-full top-0 rounded-xl absolute bg-slate-700 bg-opacity-80">
+                      <div className="w-full h-full top-0 rounded-xl absolute bg-slate-700 bg-opacity-80 flex">
+                        <div className="flex-row m-auto max-w-2xl h-auto text-black">
+                          <button className="w-full rounded-lg mb-3 bg-yellow-400 border-black border-2 text-3xl font-overpassm font-semibold p-2 hover:bg-black hover:text-yellow-400">
+                            My Profile
+                          </button>
+                          <button className="w-full rounded-lg mb-3 bg-yellow-400 border-black border-2 text-3xl font-overpassm font-semibold p-2 hover:bg-black hover:text-yellow-400">
+                            Inventory
+                          </button>
+                          <button className="w-full rounded-lg bg-yellow-400 border-black border-2 text-3xl font-overpassm font-semibold p-2 hover:bg-black hover:text-yellow-400" onClick={() => {
+                            sharedState.setGameActive(false)
+                            setMainMenuOpened(false)
+                          }}>
+                            Quit Game
+                          </button>
+                        </div>
                       </div>
                     )
                   }
