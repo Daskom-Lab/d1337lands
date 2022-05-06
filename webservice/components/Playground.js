@@ -35,6 +35,21 @@ class CustomTerminal extends React.Component {
     }
   }
 
+  async updateCurrentUser() {
+    if (!checkCookies("1337token")) return;
+
+    await POST("/api/authentication/validate", null, getCookie("1337token"))
+      .then ((res) => {
+        this.setState({
+          currentUser: res.nickname
+        })
+      }).catch (() => {
+        this.setState({
+          currentUser: "guest"
+        })
+      })
+  }
+
   printInitialPrompt() {
     this.xtermRef.current.terminal.write(`\r+===================================================================+
       \r|                                                                   |
@@ -98,6 +113,8 @@ class CustomTerminal extends React.Component {
               await POST("/api/authentication/login", this.state.loginData)
                 .then ((res) => {
                   setCookies("1337token", res.accessToken)
+
+                  this.updateCurrentUser();
                   this.xtermRef.current.terminal.write("\r\n[+] Login success \r\n")
                 }).catch (() => {
                   this.xtermRef.current.terminal.write("\r\n[+] Login failed \r\n")
@@ -280,6 +297,8 @@ class CustomTerminal extends React.Component {
 
   async componentDidMount() {
     this.fitAddon.fit()
+    await this.updateCurrentUser()
+    await this.sleep(3)
     this.printInitialPrompt()
     await this.printTerminalPrompt()
   }
