@@ -352,7 +352,8 @@ class CustomTerminal extends React.Component {
 
             // Backspace key
             } else if (code === 127 && this.state.input.length > 0 && this.state.input.trim() !== "") {
-              this.xtermRef.current.terminal.write("\b \b")
+              if (this.state.shouldFlush) 
+                this.xtermRef.current.terminal.write("\b \b")
               this.setState({ input: this.state.input.slice(0, -1) })
            
             // Contol keys (eg: arrow keys)
