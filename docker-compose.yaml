@@ -11,7 +11,7 @@ services:
     restart: always
 
   graphql-engine:
-    image: hasura/graphql-engine:v2.4.0.cli-migrations-v3
+    image: hasura/graphql-engine:v2.7.0.cli-migrations-v3
     environment:
       HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:M98vDBjHerkB44eYTM3t3sJSYfj2Vw@postgres:5432/postgres
       HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:M98vDBjHerkB44eYTM3t3sJSYfj2Vw@postgres:5432/postgres
