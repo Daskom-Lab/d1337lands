@@ -1,71 +1,53 @@
 table:
-  name: users
   schema: public
+  name: users
 object_relationships:
-- name: roleByRole
-  using:
-    foreign_key_constraint_on: role
-- name: title
-  using:
-    foreign_key_constraint_on: chosen_title
-- name: user_data
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: user_datas
-        schema: public
+  - name: roleByRole
+    using:
+      foreign_key_constraint_on: role
+  - name: title
+    using:
+      foreign_key_constraint_on: chosen_title
+  - name: user_data
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: user_datas
 array_relationships:
-- name: achievements
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: achievements
-        schema: public
-- name: potions
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: potions
-        schema: public
-- name: submissions
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: submissions
-        schema: public
-- name: titles
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: titles
-        schema: public
-- name: unlocked_hints
-  using:
-    foreign_key_constraint_on:
-      column: user_id
-      table:
-        name: unlocked_hints
-        schema: public
-select_permissions:
-- permission:
-    columns:
-    - character
-    - chosen_title
-    - id
-    - leetcoin
-    - nickname
-    - role
-    - updated_at
-    - username_color
-    filter:
-      _or:
-      - role:
-          _in: X-Hasura-Role
-      - id:
-          _eq: X-Hasura-User-Id
-  role: player
+  - name: achievements
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: achievements
+  - name: potions
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: potions
+  - name: submissions
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: submissions
+  - name: titles
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: titles
+  - name: unlocked_hints
+    using:
+      foreign_key_constraint_on:
+        column: user_id
+        table:
+          schema: public
+          name: unlocked_hints

@@ -1,24 +1,42 @@
 table:
-  name: user_datas
   schema: public
+  name: user_datas
 object_relationships:
-- name: user
-  using:
-    foreign_key_constraint_on: user_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+insert_permissions:
+  - role: player
+    permission:
+      check: {}
+      columns:
+        - id
+        - user_id
+        - map
+        - position
+        - created_at
+        - updated_at
+      backend_only: false
 select_permissions:
-- permission:
-    columns:
-    - created_at
-    - id
-    - map
-    - position
-    - updated_at
-    - user_id
-    filter:
-      _or:
-      - user:
-          role:
-            _eq: X-Hasura-Role
-      - id:
-          _eq: X-Hasura-User-Id
-  role: player
+  - role: player
+    permission:
+      columns:
+        - id
+        - user_id
+        - map
+        - position
+        - created_at
+        - updated_at
+      filter: {}
+update_permissions:
+  - role: player
+    permission:
+      columns:
+        - id
+        - user_id
+        - map
+        - position
+        - created_at
+        - updated_at
+      filter: {}
+      check: null

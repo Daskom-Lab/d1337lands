@@ -1,11 +1,11 @@
 table:
-  name: potion_codes
   schema: public
+  name: potion_codes
 array_relationships:
-- name: potions
-  using:
-    foreign_key_constraint_on:
-      column: potion_id
-      table:
-        name: potions
-        schema: public
+  - name: potions
+    using:
+      foreign_key_constraint_on:
+        column: potion_id
+        table:
+          schema: public
+          name: potions

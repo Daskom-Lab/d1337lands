@@ -1,12 +1,11 @@
 table:
-  name: level
   schema: public
-is_enum: true
+  name: level
 array_relationships:
-- name: quests
-  using:
-    foreign_key_constraint_on:
-      column: level
-      table:
-        name: quests
-        schema: public
+  - name: quests
+    using:
+      foreign_key_constraint_on:
+        column: level
+        table:
+          schema: public
+          name: quests

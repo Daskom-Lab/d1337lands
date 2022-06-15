@@ -1,10 +1,10 @@
 table:
-  name: submissions
   schema: public
+  name: submissions
 object_relationships:
-- name: quest
-  using:
-    foreign_key_constraint_on: quest_id
-- name: user
-  using:
-    foreign_key_constraint_on: user_id
+  - name: quest
+    using:
+      foreign_key_constraint_on: quest_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id

@@ -1,10 +1,10 @@
 table:
-  name: achievements
   schema: public
+  name: achievements
 object_relationships:
-- name: achievement_code
-  using:
-    foreign_key_constraint_on: code_id
-- name: user
-  using:
-    foreign_key_constraint_on: user_id
+  - name: achievement_code
+    using:
+      foreign_key_constraint_on: code_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id

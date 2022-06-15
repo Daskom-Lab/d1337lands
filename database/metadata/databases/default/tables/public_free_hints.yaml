@@ -1,7 +1,7 @@
 table:
-  name: free_hints
   schema: public
+  name: free_hints
 object_relationships:
-- name: quest
-  using:
-    foreign_key_constraint_on: quest_id
+  - name: quest
+    using:
+      foreign_key_constraint_on: quest_id

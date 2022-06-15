@@ -1,32 +1,32 @@
 table:
-  name: quests
   schema: public
+  name: quests
 object_relationships:
-- name: categoryByCategory
-  using:
-    foreign_key_constraint_on: category
-- name: free_hint
-  using:
-    foreign_key_constraint_on:
-      column: quest_id
-      table:
-        name: free_hints
-        schema: public
-- name: levelByLevel
-  using:
-    foreign_key_constraint_on: level
-- name: paid_hint
-  using:
-    foreign_key_constraint_on:
-      column: quest_id
-      table:
-        name: paid_hints
-        schema: public
+  - name: categoryByCategory
+    using:
+      foreign_key_constraint_on: category
+  - name: free_hint
+    using:
+      foreign_key_constraint_on:
+        column: quest_id
+        table:
+          schema: public
+          name: free_hints
+  - name: levelByLevel
+    using:
+      foreign_key_constraint_on: level
+  - name: paid_hint
+    using:
+      foreign_key_constraint_on:
+        column: quest_id
+        table:
+          schema: public
+          name: paid_hints
 array_relationships:
-- name: submissions
-  using:
-    foreign_key_constraint_on:
-      column: quest_id
-      table:
-        name: submissions
-        schema: public
+  - name: submissions
+    using:
+      foreign_key_constraint_on:
+        column: quest_id
+        table:
+          schema: public
+          name: submissions

@@ -1,18 +1,18 @@
 table:
-  name: titles
   schema: public
+  name: titles
 object_relationships:
-- name: title_code
-  using:
-    foreign_key_constraint_on: code_id
-- name: user
-  using:
-    foreign_key_constraint_on: user_id
+  - name: title_code
+    using:
+      foreign_key_constraint_on: code_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
 array_relationships:
-- name: users
-  using:
-    foreign_key_constraint_on:
-      column: chosen_title
-      table:
-        name: users
-        schema: public
+  - name: users
+    using:
+      foreign_key_constraint_on:
+        column: chosen_title
+        table:
+          schema: public
+          name: users
