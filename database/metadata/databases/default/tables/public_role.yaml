@@ -9,3 +9,22 @@ array_relationships:
         table:
           schema: public
           name: users
+select_permissions:
+  - role: guest
+    permission:
+      columns:
+        - description
+        - value
+      filter: {}
+  - role: mentor
+    permission:
+      columns:
+        - description
+        - value
+      filter: {}
+  - role: player
+    permission:
+      columns:
+        - description
+        - value
+      filter: {}
