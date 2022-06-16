@@ -51,3 +51,22 @@ array_relationships:
         table:
           schema: public
           name: unlocked_hints
+select_permissions:
+  - role: mentor
+    permission:
+      columns:
+        - chosen_title
+        - id
+        - leetcoin
+        - nickname
+        - username
+      filter: {}
+  - role: player
+    permission:
+      columns:
+        - chosen_title
+        - id
+        - leetcoin
+        - nickname
+        - username
+      filter: {}
