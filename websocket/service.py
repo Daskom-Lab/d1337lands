@@ -3,12 +3,12 @@ import eventlet
 import socketio
 import requests
 import random
-import glob
 import json
-from chatService import ChatNamespace
 
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
+
+from websocket.subservices.chatService import ChatNamespace
 
 game_url = "http://localhost:8080"
 auth_validation_url = "http://localhost:4444/api/authentication/validate"
