@@ -8,7 +8,7 @@ import json
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 
-from websocket.subservices.chatService import ChatNamespace
+from subservices.chatService import ChatNamespace
 
 game_url = "http://localhost:8080"
 auth_validation_url = "http://localhost:4444/api/authentication/validate"
@@ -135,22 +135,25 @@ def connect(sid, _, auth):
     )
     client = Client(transport=transport, fetch_schema_from_transport=True)
 
-    query = gql(
-        r"""
-        query getUserData ($userId: bigint!) {
-            user_datas(where: {user_id: {_eq: $userId}}) {
-                map
-                position
+    try:
+        query = gql(
+            r"""
+            query getUserData ($userId: bigint!) {
+                user_datas(where: {user_id: {_eq: $userId}}) {
+                    map
+                    position
+                }
             }
-        }
-    """
-    )
+        """
+        )
 
-    result = client.execute(query, variable_values={"userId": user_id})
+        result = client.execute(query, variable_values={"userId": user_id})
 
-    if len(result["user_datas"]) != 0:
-        user_session["user_datas"] = result["user_datas"][0]
-        sio.save_session(sid, user_session)
+        if len(result["user_datas"]) != 0:
+            user_session["user_datas"] = result["user_datas"][0]
+            sio.save_session(sid, user_session)
+    except:
+        pass
 
     sio.enter_room(sid, user_id)
     print(f"User connected: {sid}")
@@ -162,7 +165,7 @@ def connect(sid, _, auth):
             "user_name": user_name,
             "user_role": user_role,
             "user_nickname": user_nickname,
-            "user_datas": result["user_datas"][0],
+            "user_datas": result["user_datas"][0] if len(result["user_datas"]) > 0 else [],
         },
         room=user_id,
     )
@@ -191,7 +194,7 @@ def disconnect(sid):
             update_user_datas(where: {user_id: {_eq: $userId}}, _set: {map: $map, position: $position}) {
                 affected_rows
             }
-        } 
+        }
     """
     )
 
@@ -254,7 +257,7 @@ def send_action(sid, data):
                     insert_user_datas_one(object: {map: $map, position: $position, user_id: $userId}) {
                         id
                     }
-                } 
+                }
             """
             )
 
