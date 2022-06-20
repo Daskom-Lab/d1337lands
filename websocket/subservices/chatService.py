@@ -46,5 +46,5 @@ class ChatNamespace(socketio.Namespace):
             "user_chat": data
         }
 
-        self.emit(data_to_emit, skip_sid=sid)
+        self.emit("send_message", data_to_emit, skip_sid=sid)
         return data_to_emit, 200

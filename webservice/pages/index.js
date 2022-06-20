@@ -54,7 +54,7 @@ export default function Home({ peopleList, fileTree }) {
   const sharedState = useAppContext()
 
   let addLogBuffer = function (newLogBuffer) {
-    setLogBuffer(logBuffer + "\n" + newLogBuffer)
+    setLogBuffer(logBuffer => logBuffer + "\n" + newLogBuffer)
   }
 
   let clearLogBuffer = function () {
@@ -62,18 +62,20 @@ export default function Home({ peopleList, fileTree }) {
   }
 
   let addChat = function (newChat) {
-    setChats(chats.concat(newChat))
+    setChats(chats => [...chats, newChat]);
   }
 
   let gameSocketEmit = function (event, data, callbackfn) {
     if (gameSocket !== undefined && gameSocket !== null) {
-      gameSocket.emit(event, data, callbackfn)
+      if (!!callbackfn) gameSocket.emit(event, data, callbackfn)
+      else gameSocket.emit(event, data)
     }
   }
 
   let chatSocketEmit = function (event, data, callbackfn) {
     if (chatSocket !== undefined && chatSocket !== null) {
-      chatSocket.emit(event, data, callbackfn)
+      if (!!callbackfn) chatSocket.emit(event, data, callbackfn)
+      else chatSocket.emit(event, data)
     }
   }
 
