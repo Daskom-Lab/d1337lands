@@ -5,7 +5,7 @@ import json
 auth_validation_url = "http://localhost:4444/api/authentication/validate"
 
 class ChatNamespace(socketio.Namespace):
-    def connect(self, sid, _, auth):
+    def on_connect(self, sid, _, auth):
         req = requests.post(
             auth_validation_url, headers={"Authorization": f"Bearer {auth['token']}"}
         )
@@ -30,12 +30,21 @@ class ChatNamespace(socketio.Namespace):
 
         self.save_session(sid, user_session)
 
-        print(f"User connected: {sid}")
-
+        print(f"User connected to chat socket: {sid}\n\n")
         return "OK", 200
 
-    def disconnect(self, sid):
+    def on_disconnect(self, sid):
+        print(f"User disconnected from chat socket: {sid}\n\n")
         return "OK", 200
 
-    def send_message(self, sid, data):
-        self.emit(data, skip_sid=sid)
+    def on_send_message(self, sid, data):
+        session = self.get_session(sid)
+
+        data_to_emit = {
+            "user_nickname": session["user_nickname"],
+            "user_role": session["user_role"],
+            "user_chat": data
+        }
+
+        self.emit(data_to_emit, skip_sid=sid)
+        return data_to_emit, 200

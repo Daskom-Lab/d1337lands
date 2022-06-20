@@ -42,12 +42,40 @@ export async function getStaticProps() {
 }
 
 export default function Home({ peopleList, fileTree }) {
-  const [menu, setMenu] = useState("about-us");
-  const [socket, setSocket] = useState(undefined)
+  const [menu, setMenu] = useState("about-us")
+  const [gameSocket, setGameSocket] = useState(undefined)
+  const [chatSocket, setChatSocket] = useState(undefined)
   const [mainMenuOpened, setMainMenuOpened] = useState(false)
   const [inputsFocused, setInputsFocused] = useState([])
   const [logBuffer, setLogBuffer] = useState("")
-  const sharedState = useAppContext();
+  const [chatInput, setChatInput] = useState("")
+  const [logInput, setLogInput] = useState("")
+  const [chats, setChats] = useState([])
+  const sharedState = useAppContext()
+
+  let addLogBuffer = function (newLogBuffer) {
+    setLogBuffer(logBuffer + "\n" + newLogBuffer)
+  }
+
+  let clearLogBuffer = function () {
+    setLogBuffer("")
+  }
+
+  let addChat = function (newChat) {
+    setChats(chats.concat(newChat))
+  }
+
+  let gameSocketEmit = function (event, data, callbackfn) {
+    if (gameSocket !== undefined && gameSocket !== null) {
+      gameSocket.emit(event, data, callbackfn)
+    }
+  }
+
+  let chatSocketEmit = function (event, data, callbackfn) {
+    if (chatSocket !== undefined && chatSocket !== null) {
+      chatSocket.emit(event, data, callbackfn)
+    }
+  }
 
   useEventListener("keydown", ({ key }) => {
     if (inputsFocused.length > 0 || mainMenuOpened) return
@@ -61,82 +89,92 @@ export default function Home({ peopleList, fileTree }) {
 
     // W or Arrow key Up clicked (move up)
     if (["w", "W", "ArrowUp"].includes(key)) {
-      if (socket !== undefined && socket !== null) {
-        socket.emit("send_action", {
-          "action": "move",
-          "direction": "up"
-        })
-      }
-      console.log("arrow up clicked")
+      gameSocketEmit("send_action", {
+        "action": "move",
+        "direction": "up"
+      })
+      
       return
     }
 
     // A or Arrow key Left clicked (move left)
     if (["a", "A", "ArrowLeft"].includes(key)) {
-      if (socket !== undefined && socket !== null) {
-        socket.emit("send_action", {
-          "action": "move",
-          "direction": "left"
-        })
-      }
-      console.log("arrow left clicked")
+      gameSocketEmit("send_action", {
+        "action": "move",
+        "direction": "left"
+      })
+
       return
     }
 
     // S or Arrow key Down clicked (move down)
     if (["s", "S", "ArrowDown"].includes(key)) {
-      if (socket !== undefined && socket !== null) {
-        socket.emit("send_action", {
-          "action": "move",
-          "direction": "down"
-        })
-      }
-      console.log("arrow down clicked")
+      gameSocketEmit("send_action", {
+        "action": "move",
+        "direction": "down"
+      })
+
       return
     }
 
     // D or Arrow key Right clicked (move right)
     if (["d", "D", "ArrowRight"].includes(key)) {
-      if (socket !== undefined && socket !== null) {
-        socket.emit("send_action", {
-          "action": "move",
-          "direction": "right"
-        })
-      }
-      console.log("arrow right clicked")
+      gameSocketEmit("send_action", {
+        "action": "move",
+        "direction": "right"
+      })
+
       return
     }
   });
 
   useEffect(() => {
-    if (sharedState.isGameActive && socket === undefined)
+    if (sharedState.isGameActive)
       if (checkCookies("1337token")) {
-        const socket = io("http://localhost:5000", {
-          auth: (cb) => {
-            cb({ token: getCookie("1337token") })
-          }
-        })
+        // Game socket initialization
+        if (gameSocket === undefined) {
+          const socket = io("http://localhost:5000", {
+            auth: (cb) => {
+              cb({ token: getCookie("1337token") })
+            }
+          })
 
-        socket.on("user_data", (data) => {
-          console.log("connected ...")
-          setLogBuffer(`Hello and welcome to daskom1337 codeventure, ${data["user_nickname"]}`)
+          socket.on("user_data", (data) => {
+            setLogBuffer(`Hello and welcome to daskom1337 codeventure, ${data["user_nickname"]}`)
 
-          if (data["user_datas"].length === 0) {
-            socket.emit("send_action", {
-              "action": "initialize_data"
-            }, (response) => {
-              if (response !== "OK") {
-                console.log("Error happened...")
-              }
-            })
-          }
-        })
+            if (data["user_datas"].length === 0) {
+              socket.emit("send_action", {
+                "action": "initialize_data"
+              }, (response) => {
+                if (response !== "OK") {
+                  console.log("Error connecting to game socket...")
+                }
+              })
+            }
+          })
 
-        setSocket(socket)
+          setGameSocket(socket)
+        }
+
+        // Chat socket initialization
+        if (chatSocket === undefined) {
+          const socket = io("http://localhost:5000/chat", {
+            auth: (cb) => {
+              cb({ token: getCookie("1337token") })
+            }
+          })
+
+          socket.on("send_message", (data) => {
+            addChat(data)
+          })
+
+          setChatSocket(socket)
+        }
       }
 
-    if (!sharedState.isGameActive && socket !== undefined) {
-      setSocket(undefined)
+    if (!sharedState.isGameActive) {
+      if (gameSocket !== undefined) setGameSocket(undefined)
+      if (chatSocket !== undefined) setChatSocket(undefined)
       setMenu("about-us")
     }
   }, [sharedState.isGameActive])
@@ -163,14 +201,16 @@ export default function Home({ peopleList, fileTree }) {
               <div className="w-full text-black bg-green-400 text-xs tracking-wide font-bold font-merriw rounded-t-md px-2 py-1 border-b-2 border-slate-400">
                 Game logs - (always read before you ask please...)
               </div>
-              <div className="w-full flex-auto text-white font-sourcesans font-medium text-base p-2">
+              <div className="w-full flex-auto text-white font-overpassm tracking-tighter font-normal text-sm p-2">
                 { logBuffer }
               </div>
               <div className="flex w-full px-2">
                 <input 
                   className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" 
                   onFocus={() => setInputsFocused(arr => [...arr, "logs"])}
-                  onBlur={() => setInputsFocused(inputsFocused.filter((_, id) => id !== inputsFocused.length - 1))} />
+                  onBlur={() => setInputsFocused(inputsFocused.filter((_, id) => id !== inputsFocused.length - 1))} 
+                  value={logInput}
+                  onChange={el => setLogInput(el.target.value)} />
               </div>
             </div>
           )  
@@ -257,14 +297,45 @@ export default function Home({ peopleList, fileTree }) {
                   <div className="w-full text-black bg-green-400 text-xs tracking-wide font-bold font-merriw rounded-t-md px-2 py-1 border-b-2 border-slate-400">
                     Chat - (go talk to other people you nerd!)
                   </div>
-                  <div className="w-full flex-auto">
-
-                  </div>
+                  <SimpleBar className="flex w-full flex-auto text-white font-normal overflow-auto font-sourcesans text-sm p-2">
+                    {
+                      chats.map((chat, i) => 
+                        <div className="flex w-full gap-1" key={i}>
+                          <span className={
+                            "whitespace-nowrap font-bold " +
+                            (chat.user_role === "mentor" ? "text-amber-300" : "text-green-100")
+                          }>
+                            { chat.user_nickname }
+                          </span>
+                          <span>
+                            :
+                          </span>
+                          <span className="shrink break-all max-w-full">
+                            { chat.user_chat }
+                          </span>
+                        </div> 
+                      )
+                    }
+                  </SimpleBar>
                   <div className="flex w-full px-2">
                     <input 
                       className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" 
                       onFocus={() => setInputsFocused(arr => [...arr, "chat"])}
-                      onBlur={() => setInputsFocused(inputsFocused.filter((_, id) => id !== inputsFocused.length - 1))} />
+                      onBlur={() => setInputsFocused(inputsFocused.filter((_, id) => id !== inputsFocused.length - 1))}
+                      value={chatInput}
+                      onChange={el => setChatInput(el.target.value)}
+                      onKeyDown={
+                        event => {
+                          if (event.key === "Enter") {
+                            chatSocketEmit("send_message", chatInput, (response) => {
+                              if (response !== undefined) {
+                                addChat(response)
+                                setChatInput("")
+                              }
+                            })
+                          }
+                        }
+                      } />
                   </div>
                 </div>
                 <div className="flex flex-col w-2/6 h-full rounded-lg border-2 border-slate-400 bg-slate-900">

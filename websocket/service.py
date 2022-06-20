@@ -156,7 +156,7 @@ def connect(sid, _, auth):
         pass
 
     sio.enter_room(sid, user_id)
-    print(f"User connected: {sid}")
+    print(f"User connected to game socket: {sid}\n\n")
 
     sio.emit(
         "user_data",
@@ -224,7 +224,7 @@ def disconnect(sid):
     )
 
     sio.leave_room(sid, session["user_id"])
-    print(f"User disconnected: {sid}")
+    print(f"User disconnected from game socket: {sid}\n\n")
     return "OK", 200
 
 
@@ -336,7 +336,7 @@ def leave_map(sid, data):
     sio.leave_room(sid, data["map"])
     return "OK", 200
 
-sio.register_namespace(ChatNamespace('/chat'))
+sio.register_namespace(ChatNamespace("/chat"))
 
 
 if __name__ == "__main__":
