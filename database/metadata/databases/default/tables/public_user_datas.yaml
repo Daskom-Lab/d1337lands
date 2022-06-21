@@ -6,37 +6,91 @@ object_relationships:
     using:
       foreign_key_constraint_on: user_id
 insert_permissions:
-  - role: player
+  - role: mentor
     permission:
-      check: {}
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
       columns:
         - id
         - user_id
+        - is_online
         - map
         - position
         - created_at
         - updated_at
       backend_only: false
+  - role: player
+    permission:
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+      columns:
+        - created_at
+        - id
+        - is_online
+        - map
+        - position
+        - updated_at
+        - user_id
+      backend_only: false
 select_permissions:
-  - role: player
+  - role: mentor
     permission:
       columns:
         - id
         - user_id
+        - is_online
         - map
         - position
         - created_at
         - updated_at
-      filter: {}
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+  - role: player
+    permission:
+      columns:
+        - created_at
+        - id
+        - is_online
+        - map
+        - position
+        - updated_at
+        - user_id
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
 update_permissions:
-  - role: player
+  - role: mentor
     permission:
       columns:
         - id
         - user_id
+        - is_online
         - map
         - position
         - created_at
         - updated_at
-      filter: {}
-      check: null
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
+  - role: player
+    permission:
+      columns:
+        - created_at
+        - id
+        - is_online
+        - map
+        - position
+        - updated_at
+        - user_id
+      filter:
+        user_id:
+          _eq: X-Hasura-User-Id
+      check:
+        user_id:
+          _eq: X-Hasura-User-Id
