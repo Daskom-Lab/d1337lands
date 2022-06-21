@@ -12,6 +12,7 @@ from subservices.chatService import ChatNamespace
 
 game_url = "http://localhost:8080"
 auth_validation_url = "http://localhost:4444/api/authentication/validate"
+users_presence_url = "http://localhost:3000/api/user/presence"
 graphql_endpoint_url = "http://localhost:3333/v1/graphql"
 hasura_admin_secret = "hSK6kPeZN2zTLsvd2grPNtapLbeNzD9QU9aPd38f894JsmxM7Ecpb9hkAxeX"
 
@@ -96,10 +97,12 @@ def getNextPosition(map_name, position, direction):
         return position
 
 
+def isFromWeb(connection_source):
+    return connection_source == "web"
+    
+
 @sio.event
 def connect(sid, _, auth):
-    # TODO: we have to fingerprint if this connections is coming from the game or the ui
-    #       so that the remaining data save will only occur on either of one side but not both
     req = requests.post(
         auth_validation_url, headers={"Authorization": f"Bearer {auth['token']}"}
     )
@@ -120,6 +123,7 @@ def connect(sid, _, auth):
         "user_name": user_name,
         "user_role": user_role,
         "user_nickname": user_nickname,
+        "connection_source": auth["connection_source"],
     }
 
     sio.save_session(sid, user_session)
@@ -158,6 +162,54 @@ def connect(sid, _, auth):
     sio.enter_room(sid, user_id)
     print(f"User connected to game socket: {sid}\n\n")
 
+    if isFromWeb(auth["connection_source"]):
+        _ = client.execute(
+            gql(
+                r"""
+                mutation updateUserData($userId: bigint!, $is_online: Boolean!) {
+                    update_user_datas(where: {user_id: {_eq: $userId}}, _set: {is_online: $is_online}) {
+                        affected_rows
+                    }
+                }
+            """
+            ),
+            variable_values={
+                "userId": user_id,
+                "is_online": True,
+            },
+        )
+
+        sio.emit(
+            "user_connect",
+            {
+                "user_id": user_id,
+                "user_nickname": user_nickname,
+                "user_role": user_role,
+                "user_datas": result["user_datas"][0]
+                if len(result["user_datas"]) > 0
+                else {},
+            },
+        )
+
+        with requests.get(
+            users_presence_url, headers={"Authorization": f"Bearer {auth['token']}"}
+        ) as r:
+            for user in json.loads(r.text)["result"]:
+                if user["is_online"] and user["user_id"] != user_id:
+                    sio.emit(
+                        "user_connect",
+                        {
+                            "user_id": user["user_id"],
+                            "user_nickname": user["nickname"],
+                            "user_role": user["role"],
+                            "user_datas": {
+                                "map": user["map"],
+                                "position": user["position"],
+                            },
+                        },
+                        room=user_id,
+                    )
+
     sio.emit(
         "user_data",
         {
@@ -165,7 +217,9 @@ def connect(sid, _, auth):
             "user_name": user_name,
             "user_role": user_role,
             "user_nickname": user_nickname,
-            "user_datas": result["user_datas"][0] if len(result["user_datas"]) > 0 else [],
+            "user_datas": result["user_datas"][0]
+            if len(result["user_datas"]) > 0
+            else {},
         },
         room=user_id,
     )
@@ -177,35 +231,35 @@ def connect(sid, _, auth):
 def disconnect(sid):
     session = sio.get_session(sid)
 
-    transport = RequestsHTTPTransport(
-        url=graphql_endpoint_url,
-        verify=True,
-        retries=3,
-        headers={
-            "content-type": "application/json",
-            "x-hasura-admin-secret": hasura_admin_secret,
-        },
-    )
-    client = Client(transport=transport, fetch_schema_from_transport=True)
+    if isFromWeb(session["connection_source"]):
+        transport = RequestsHTTPTransport(
+            url=graphql_endpoint_url,
+            verify=True,
+            retries=3,
+            headers={
+                "content-type": "application/json",
+                "x-hasura-admin-secret": hasura_admin_secret,
+            },
+        )
+        client = Client(transport=transport, fetch_schema_from_transport=True)
 
-    query = gql(
-        r"""
-        mutation updateUserData($userId: bigint!, $map: String!, $position: String!) {
-            update_user_datas(where: {user_id: {_eq: $userId}}, _set: {map: $map, position: $position}) {
-                affected_rows
-            }
-        }
-    """
-    )
-
-    _ = client.execute(
-        query,
-        variable_values={
-            "userId": session["user_id"],
-            "map": session["user_datas"]["map"],
-            "position": f"{session['user_datas']['position']}",
-        },
-    )
+        _ = client.execute(
+            gql(
+                r"""
+                mutation updateUserData($userId: bigint!, $map: String!, $position: String!, $is_online: Boolean!) {
+                    update_user_datas(where: {user_id: {_eq: $userId}}, _set: {map: $map, position: $position, is_online: $is_online}) {
+                        affected_rows
+                    }
+                }
+            """
+            ),
+            variable_values={
+                "userId": session["user_id"],
+                "map": session["user_datas"]["map"],
+                "position": f"{session['user_datas']['position']}",
+                "is_online": False,
+            },
+        )
 
     data_to_emit = {
         "map": {
@@ -215,6 +269,15 @@ def disconnect(sid):
             "position": "-1",
         }
     }
+
+    sio.emit(
+        "user_disconnect",
+        {
+            "user_id": session["user_id"],
+            "user_nickname": session["user_nickname"],
+            "user_role": session["user_role"],
+        },
+    )
 
     sio.emit(
         "map_state",
@@ -335,6 +398,7 @@ def enter_map(sid, data):
 def leave_map(sid, data):
     sio.leave_room(sid, data["map"])
     return "OK", 200
+
 
 sio.register_namespace(ChatNamespace("/chat"))
 

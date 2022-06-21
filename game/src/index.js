@@ -121,7 +121,10 @@ export class GameScene extends Phaser.Scene {
   create() {
     const socket = io("http://localhost:5000", {
       auth: (cb) => {
-        cb({ token: Cookies.get("1337token") });
+        cb({ 
+          token: Cookies.get("1337token"),
+          connection_source: "game"
+        });
       },
     });
 
@@ -141,17 +144,12 @@ export class GameScene extends Phaser.Scene {
     })
 
     socket.on("handle_action", (data) => {
-      console.log(`handle_action = ${JSON.stringify(data)}`)
       if (this.getMainPlayer() !== undefined) {
         this.getMainPlayer().setPosition(parseInt(data["position"]));
       }
     })
 
     socket.on("user_data", (data) => {
-      console.log(
-        `Hello and welcome to daskom1337 codeventure, ${data["user_nickname"]}`
-      );
-
       if (data["user_datas"].length === 0) {
         socket.disconnect();
         socket.connect();

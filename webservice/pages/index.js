@@ -51,6 +51,7 @@ export default function Home({ peopleList, fileTree }) {
   const [chatInput, setChatInput] = useState("")
   const [logInput, setLogInput] = useState("")
   const [chats, setChats] = useState([])
+  const [users, setUsers] = useState([])
   const sharedState = useAppContext()
 
   let addLogBuffer = function (newLogBuffer) {
@@ -63,6 +64,29 @@ export default function Home({ peopleList, fileTree }) {
 
   let addChat = function (newChat) {
     setChats(chats => [...chats, newChat]);
+  }
+
+  let addUser = function (newUser) {
+    setUsers(users => {
+      if (!users.map(user => user.user_id).includes(newUser.user_id))
+        return [...users, newUser]
+      else return users
+    });
+  }
+
+  let removeUser = function (userId) {
+    setUsers(users => {
+      if (users.map(user => user.user_id).includes(userId))
+        return users.filter(
+          user => user.user_id !== userId
+        )
+      else return users
+    })
+  }
+
+  let isEmptyObject = function (object) {
+    for (var _ in object) return false;
+    return true;
   }
 
   let gameSocketEmit = function (event, data, callbackfn) {
@@ -137,14 +161,17 @@ export default function Home({ peopleList, fileTree }) {
         if (gameSocket === undefined) {
           const socket = io("http://localhost:5000", {
             auth: (cb) => {
-              cb({ token: getCookie("1337token") })
+              cb({ 
+                token: getCookie("1337token"),
+                connection_source: "web"
+              })
             }
           })
 
           socket.on("user_data", (data) => {
             setLogBuffer(`Hello and welcome to daskom1337 codeventure, ${data["user_nickname"]}`)
 
-            if (data["user_datas"].length === 0) {
+            if (isEmptyObject(data["user_datas"])) {
               socket.emit("send_action", {
                 "action": "initialize_data"
               }, (response) => {
@@ -153,6 +180,14 @@ export default function Home({ peopleList, fileTree }) {
                 }
               })
             }
+          })
+
+          socket.on("user_connect", (data) => {
+            addUser(data)
+          })
+
+          socket.on("user_disconnect", (data) => {
+            removeUser(data.user_id)
           })
 
           setGameSocket(socket)
@@ -344,9 +379,23 @@ export default function Home({ peopleList, fileTree }) {
                   <div className="w-full text-black bg-green-400 text-xs tracking-wide font-bold font-merriw rounded-t-md px-2 py-1 border-b-2 border-slate-400">
                     User activity - (look at these human being, meh)
                   </div>
-                  <div className="w-full flex-auto">
-
-                  </div>
+                  <SimpleBar className="flex w-full flex-auto text-white font-normal overflow-auto font-sourcesans text-sm p-2">
+                    {
+                      users.map((user, _) => 
+                        <div className="flex w-full gap-1" key={user.user_id}>
+                          <span className={
+                            "whitespace-nowrap font-bold " +
+                            (user.user_role === "mentor" ? "text-amber-300" : "text-green-100")
+                          }>
+                            { user.user_nickname }
+                          </span>
+                          <span className="shrink break-all max-w-full">
+                            [ { !isEmptyObject(user.user_datas) ? `currently in ${user.user_datas.map}` : "just landed" } ]
+                          </span>
+                        </div> 
+                      )
+                    }
+                  </SimpleBar>
                 </div>
               </div>
             )

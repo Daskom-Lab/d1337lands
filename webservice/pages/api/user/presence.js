@@ -11,7 +11,7 @@ async function handler(req, res) {
   }
 
   postgresPool.query(
-    `SELECT user_datas.user_id, user_datas.position, user_datas.map, users.username, users.role
+    `SELECT user_datas.user_id, user_datas.position, user_datas.map, user_datas.is_online, users.nickname, users.role
       FROM users
       LEFT JOIN user_datas
       ON user_datas.user_id = users.id`, 
