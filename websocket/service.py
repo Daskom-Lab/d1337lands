@@ -18,29 +18,75 @@ hasura_admin_secret = "hSK6kPeZN2zTLsvd2grPNtapLbeNzD9QU9aPd38f894JsmxM7Ecpb9hkA
 
 
 def getMapData(map_name):
-    collisions = []
-    with requests.get(f"{game_url}/assets/maps/{map_name}/collision.json") as r:
-        collisions = [pos for pos, x in enumerate(json.loads(r.text)["data"]) if x > 0]
-
-    startpositions = []
-    with requests.get(f"{game_url}/assets/maps/{map_name}/startpositions.json") as r:
-        startpositions = [
-            pos for pos, x in enumerate(json.loads(r.text)["data"]) if x > 0
-        ]
+    map_metadata = {}
+    with requests.get(f"{game_url}/assets/maps/{map_name}/positioning.json") as r:
+        map_metadata = json.loads(r.text)
 
     map_size = {}
-    with requests.get(f"{game_url}/assets/maps/{map_name}/map.json") as r:
-        map_data = json.loads(r.text)
-        map_size = {"width": int(map_data["width"]), "height": int(map_data["height"])}
+    with requests.get(f"{game_url}/assets/maps/{map_name}/{map_name}.json") as r:
+        data = json.loads(r.text)
+        map_size = {"width": int(data["width"]), "height": int(data["height"])}
 
-    return {
-        "startpositions": startpositions,
-        "collisions": collisions,
+    map_data = {
+        "collisions": map_metadata["Collision"],
         "map_size": map_size,
-    }
+    } 
+
+    if map_name == "town":
+        map_data["start_positions"] = map_metadata["RandomStart"]
+
+        map_data["events"] = {
+            # Main events
+            "shop": map_metadata["ShopPos"],
+            "leaderboard": map_metadata["LeaderboardPos"],
+            "hall_of_fame": map_metadata["HoFPos"],
+            "luck_pond": map_metadata["LuckPondPos"],
+            "teleportation": map_metadata["TeleportationPos"],
+
+            # Mentor castle teleportation
+            "mentor_castle_right": map_metadata["MentorCastleRightPos"],
+            "mentor_castle_left": map_metadata["MentorCastleLeftPos"],
+
+            # Easter egg stuff
+            "easter_egg_random": map_metadata["EasterEggRandomStart"],
+            "easter_egg_activation": map_metadata["EasterEggActivationPos"],
+
+            # Secret chess stuff
+            "secret_chess_level_1": map_metadata["SecretChess1Pos"],
+            "secret_chess_level_2": map_metadata["SecretChess2Pos"],
+            "secret_chess_level_1_activation": map_metadata["SecretChess1ActivationPos"],
+            "secret_chess_level_2_activation": map_metadata["SecretChess2ActivationPos"],
+        }
+    elif map_name == "mentorcastle":
+        map_data["start_positions"] = [map_metadata["TeleportationLeftPos"], map_metadata["TeleportationRightPos"]]
+
+        map_data["events"] = {
+            # Main events
+            "submission_check": map_metadata["SubmissionCheckPos"],
+        }
+    else:
+        map_data["start_positions"] = map_metadata["TeleportationPos"]
+
+        map_data["events"] = {
+            # Main events
+            "hint": map_metadata["HintPos"],
+            "quest": map_metadata["QuestPos"],
+            "submission": map_metadata["SubmissionPos"],
+            "submit_quest": map_metadata["SubmitQuestPos"],
+        }
+
+    return map_data
 
 
-maps = ["town"]
+maps = [
+    "town",
+    "codeisland",
+    "algoisland",
+    "hackisland",
+    "dataisland",
+    "netisland",
+    "mentorcastle",
+]
 
 maps_data = {}
 for map in maps:
@@ -58,7 +104,7 @@ app = socketio.WSGIApp(sio)
 
 
 def getRandomStartPosition(map_name):
-    return random.choice(maps_data[map_name]["startpositions"])
+    return random.choice(maps_data[map_name]["start_positions"])
 
 
 @lru_cache

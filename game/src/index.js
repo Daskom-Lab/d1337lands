@@ -3,8 +3,10 @@ import Cookies from "js-cookie"
 import { Player } from "./player";
 import { io } from "socket.io-client"
 
-import mapTilesImage from "../assets/maps/town/map_tiles.png"
-import mapJson from "../assets/maps/town/map.json"
+import townGroundTiles from "../assets/maps/town/ground_tiles.png"
+import townStuffTiles from "../assets/maps/town/stuff_tiles.png"
+import townJson from "../assets/maps/town/town.json"
+
 import characterBase from "../assets/characters/base.png"
 
 const CANVAS_WIDTH = 800;
@@ -34,6 +36,17 @@ export class GameScene extends Phaser.Scene {
 
   setMainPlayer(mainPlayer) {
     this.mainPlayer = mainPlayer;
+  }
+
+  setMainPlayerPosition(position) {
+    if (this.getMainPlayer() !== undefined) {
+      this.getMainPlayer().setPosition(position);
+    }
+  }
+
+  isEmptyObject(object) {
+    for (var _ in object) return false;
+    return true;
   }
 
   showLoadingScene() {
@@ -110,9 +123,11 @@ export class GameScene extends Phaser.Scene {
   preload() {
     this.showLoadingScene();
 
-    this.load.image("map-tiles", mapTilesImage);
-    this.load.tilemapTiledJSON("map", mapJson);
-    this.load.spritesheet("player", characterBase, {
+    this.load.image("town-ground-tiles", townGroundTiles);
+    this.load.image("town-stuff-tiles", townStuffTiles);
+    this.load.tilemapTiledJSON("town", townJson);
+
+    this.load.spritesheet("base-character", characterBase, {
       frameWidth: 64,
       frameHeight: 64,
     });
@@ -129,7 +144,6 @@ export class GameScene extends Phaser.Scene {
     });
 
     socket.on("connect", () => {
-      console.log("connected ...");
       if (this.percentText.displayList !== null)
         this.percentText.setText("95%")
       
@@ -144,13 +158,11 @@ export class GameScene extends Phaser.Scene {
     })
 
     socket.on("handle_action", (data) => {
-      if (this.getMainPlayer() !== undefined) {
-        this.getMainPlayer().setPosition(parseInt(data["position"]));
-      }
+      this.setMainPlayerPosition(parseInt(data["position"]))
     })
 
     socket.on("user_data", (data) => {
-      if (data["user_datas"].length === 0) {
+      if (this.isEmptyObject(data["user_datas"])) {
         socket.disconnect();
         socket.connect();
       } else {
@@ -161,65 +173,44 @@ export class GameScene extends Phaser.Scene {
         this.assetText.setText("Iniating the map");
         this.closeLoadingScene();
 
-        const map = this.make.tilemap({
-          key: "map",
+        const town = this.make.tilemap({
+          key: "town",
         });
-        const tileset = map.addTilesetImage("tiles", "map-tiles");
-        const layer = map.createLayer("layer", tileset, 0, 0);
-        layer.setDepth(0);
 
-        const playerSprite = this.add.sprite(0, 0, "player");
-        playerSprite.setDepth(2);
+        //TODO: Need to make changes on the map layering (between ground and stuff)
+        ///     due to bad depth sorting caused by the character that occupy 2 blocks instead of 1
 
-        this.anims.create({
-          key: "walk-up",
-          frames: this.anims.generateFrameNumbers("player", {
-            frames: Array.from({ length: 9 }, (_, i) => i + 104),
-          }),
-          frameRate: 10,
-          repeat: -1,
-        });
-        this.anims.create({
-          key: "walk-down",
-          frames: this.anims.generateFrameNumbers("player", {
-            frames: Array.from({ length: 9 }, (_, i) => i + 117),
-          }),
-          frameRate: 10,
-          repeat: -1,
-        });
-        this.anims.create({
-          key: "walk-left",
-          frames: this.anims.generateFrameNumbers("player", {
-            frames: Array.from({ length: 9 }, (_, i) => i + 130),
-          }),
-          frameRate: 10,
-          repeat: -1,
-        });
-        this.anims.create({
-          key: "walk-right",
-          frames: this.anims.generateFrameNumbers("player", {
-            frames: Array.from({ length: 9 }, (_, i) => i + 143),
-          }),
-          frameRate: 10,
-          repeat: -1,
-        });
+        const townGroundTileset = town.addTilesetImage("ground_tiles", "town-ground-tiles");
+        const townGroundLayer = town.createLayer("ground", townGroundTileset, 0, 0);
+        townGroundLayer.setDepth(0);
+
+        const townStuffTileset = town.addTilesetImage("stuff_tiles", "town-stuff-tiles");
+        const townStuffLayer = town.createLayer("stuff", townStuffTileset, 0, 0);
+        townStuffLayer.setDepth(2);
+
+        const playerSprite = this.add.sprite(0, 0, "base-character");
+        playerSprite.setDepth(1);
 
         this.cameras.main.setBounds(
           0,
           0,
-          (mapJson["width"]) * GameScene.TILE_SIZE,
-          (mapJson["height"] + 1) * GameScene.TILE_SIZE
+          (townJson["width"]) * GameScene.TILE_SIZE,
+          (townJson["height"] + 1) * GameScene.TILE_SIZE
         );
         this.cameras.main.startFollow(playerSprite);
         this.cameras.main.roundPixels = true;
-        
-        this.setMainPlayer(
-          new Player(
-            playerSprite,
-            data["user_datas"]["position"],
-            new Phaser.Math.Vector2(mapJson["width"], mapJson["height"])
-          )
-        );
+       
+        if (this.getMainPlayer() === undefined) {
+          this.setMainPlayer(
+            new Player(
+              playerSprite,
+              data["user_datas"]["position"],
+              new Phaser.Math.Vector2(townJson["width"], townJson["height"])
+            )
+          );
+
+          this.getMainPlayer().setPlayerAnimation("base-character");
+        }
       }
     });
   }

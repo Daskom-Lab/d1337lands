@@ -11,6 +11,41 @@ export class Player {
     this.setPosition(tilePos);
   }
 
+  setPlayerAnimation(key) {
+    this.sprite.anims.create({
+      key: "walk-up",
+      frames: this.sprite.anims.generateFrameNumbers(key, {
+        frames: Array.from({ length: 9 }, (_, i) => i + 104),
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.sprite.anims.create({
+      key: "walk-down",
+      frames: this.sprite.anims.generateFrameNumbers(key, {
+        frames: Array.from({ length: 9 }, (_, i) => i + 117),
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.sprite.anims.create({
+      key: "walk-left",
+      frames: this.sprite.anims.generateFrameNumbers(key, {
+        frames: Array.from({ length: 9 }, (_, i) => i + 130),
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.sprite.anims.create({
+      key: "walk-right",
+      frames: this.sprite.anims.generateFrameNumbers(key, {
+        frames: Array.from({ length: 9 }, (_, i) => i + 143),
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+  }
+
   getPosition() {
     return this.sprite.getBottomCenter();
   }
