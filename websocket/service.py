@@ -30,7 +30,7 @@ def getMapData(map_name):
     map_data = {
         "collisions": map_metadata["Collision"],
         "map_size": map_size,
-    } 
+    }
 
     if map_name == "town":
         map_data["start_positions"] = map_metadata["RandomStart"]
@@ -42,23 +42,27 @@ def getMapData(map_name):
             "hall_of_fame": map_metadata["HoFPos"],
             "luck_pond": map_metadata["LuckPondPos"],
             "teleportation": map_metadata["TeleportationPos"],
-
             # Mentor castle teleportation
             "mentor_castle_right": map_metadata["MentorCastleRightPos"],
             "mentor_castle_left": map_metadata["MentorCastleLeftPos"],
-
             # Easter egg stuff
             "easter_egg_random": map_metadata["EasterEggRandomStart"],
             "easter_egg_activation": map_metadata["EasterEggActivationPos"],
-
             # Secret chess stuff
             "secret_chess_level_1": map_metadata["SecretChess1Pos"],
             "secret_chess_level_2": map_metadata["SecretChess2Pos"],
-            "secret_chess_level_1_activation": map_metadata["SecretChess1ActivationPos"],
-            "secret_chess_level_2_activation": map_metadata["SecretChess2ActivationPos"],
+            "secret_chess_level_1_activation": map_metadata[
+                "SecretChess1ActivationPos"
+            ],
+            "secret_chess_level_2_activation": map_metadata[
+                "SecretChess2ActivationPos"
+            ],
         }
     elif map_name == "mentorcastle":
-        map_data["start_positions"] = [map_metadata["TeleportationLeftPos"], map_metadata["TeleportationRightPos"]]
+        map_data["start_positions"] = [
+            map_metadata["TeleportationLeftPos"],
+            map_metadata["TeleportationRightPos"],
+        ]
 
         map_data["events"] = {
             # Main events
@@ -108,7 +112,7 @@ def getRandomStartPosition(map_name):
 
 
 @lru_cache
-def getNextPosition(map_name, position, direction):
+def getNextPosition(map_name, position, direction, check_collision=True):
     """
     Check if character can move to next position or not
     and get the next position if they can
@@ -137,15 +141,125 @@ def getNextPosition(map_name, position, direction):
     ):
         next_position = position + 1
 
+    if not check_collision:
+        return next_position
+
     if next_position and next_position not in maps_data[map_name]["collisions"]:
         return next_position
     else:
         return position
 
 
+@lru_cache
+def getNearbyEvent(map_name, position, threshold=1):
+    """
+    Check for nearby events from the current position of
+    the player
+
+    Note:
+        * position should be 1-indexed number for the
+        specific calculation implemented here
+        * will return the event name and a boolean that
+        check if the event is at the exact position as with
+        the current player or not and will return None if
+        there are no events nearby
+        * exact location of the trigger is actually the
+        position of that trigger + 1 blocks of threshold
+        so threshold must be at least 1
+    """
+    exact_positions = []
+    positions = [position]
+    current_pos = position
+
+    threshold = max(1, threshold)
+
+    # Create a square movement to find nearby event within x blocks
+    for x in range(1, threshold + 1):
+        blocking = []
+        next_pos = getNextPosition(map_name, current_pos, "up", False)
+
+        if next_pos:
+            current_pos = next_pos
+            positions.append(current_pos)
+        else:
+            blocking.append("up")
+
+        for _ in range(x):
+            next_pos = getNextPosition(map_name, current_pos, "right", False)
+
+            if next_pos:
+                current_pos = next_pos
+                positions.append(current_pos)
+            else:
+                blocking.append("right")
+
+        for _ in range(x * 2):
+            if "up" in blocking:
+                blocking.remove("up")
+                continue
+
+            next_pos = getNextPosition(map_name, current_pos, "down", False)
+
+            if next_pos:
+                current_pos = next_pos
+                positions.append(current_pos)
+            else:
+                blocking.append("down")
+
+        for _ in range(x * 2):
+            if "right" in blocking:
+                blocking.remove("right")
+                continue
+
+            next_pos = getNextPosition(map_name, current_pos, "left", False)
+
+            if next_pos:
+                current_pos = next_pos
+                positions.append(current_pos)
+            else:
+                blocking.append("left")
+
+        for _ in range(x * 2):
+            if "down" in blocking:
+                blocking.remove("down")
+                continue
+
+            next_pos = getNextPosition(map_name, current_pos, "up", False)
+
+            if next_pos:
+                current_pos = next_pos
+                positions.append(current_pos)
+
+        for y in range(x):
+            if "left" in blocking:
+                blocking.remove("left")
+                continue
+
+            next_pos = getNextPosition(map_name, current_pos, "right", False)
+
+            if next_pos:
+                current_pos = next_pos
+                if y != x - 1:
+                    positions.append(current_pos)
+
+        if x == 1:
+            exact_positions.extend(positions)
+
+    events = maps_data[map_name]["events"]
+    for event_name in events.keys():
+        for event_pos in events[event_name]:
+            if event_pos in exact_positions:
+                return [event_name, True]
+
+            if event_pos in positions:
+                return [event_name, False]
+
+    return None
+
+
 def isFromWeb(connection_source):
     return connection_source == "web"
-    
+
 
 @sio.event
 def connect(sid, _, auth):
@@ -389,46 +503,68 @@ def send_action(sid, data):
         sio.save_session(sid, session)
 
     elif data["action"] == "move":
-        next_position = getNextPosition(
-            session["user_datas"]["map"],
-            session["user_datas"]["position"],
-            data["direction"],
-        )
+        if session["user_datas"]:
+            next_position = getNextPosition(
+                session["user_datas"]["map"],
+                session["user_datas"]["position"],
+                data["direction"],
+            )
 
-        new_user_datas = {
-            "map": session["user_datas"]["map"],
-            "position": next_position,
-        }
+            event_data = getNearbyEvent(session["user_datas"]["map"], next_position, 3)
 
-        data_to_emit["action"] = {
-            "action": data["action"],
-            "direction": data["direction"],
-            **new_user_datas,
-        }
+            nearby_event_data = {
+                "event_name": event_data[0] if event_data else None,
+            }
 
-        data_to_emit["map"] = {
-            "user_id": session["user_id"],
-            "user_nickname": session["user_nickname"],
-            **new_user_datas,
-        }
+            new_user_datas = {
+                "map": session["user_datas"]["map"],
+                "position": next_position,
+            }
 
-        session["user_datas"] = new_user_datas
-        sio.save_session(sid, session)
+            data_to_emit["action"] = {
+                "action": data["action"],
+                "direction": data["direction"],
+                **new_user_datas,
+                **nearby_event_data,
+            }
 
-    if data_to_emit["action"]:
+            data_to_emit["map"] = {
+                "user_id": session["user_id"],
+                "user_nickname": session["user_nickname"],
+                **new_user_datas,
+                **nearby_event_data,
+            }
+
+            session["user_datas"] = new_user_datas
+            sio.save_session(sid, session)
+
+    elif data["action"] == "run_event":
+        if session["user_datas"]:
+            event_data = getNearbyEvent(
+                session["user_datas"]["map"],
+                session["user_datas"]["position"],
+            )
+
+            nearby_event_data = {
+                "event_name": event_data[0] if event_data and event_data[1] else None,
+            }
+
+            data_to_emit["action"] = {"action": data["action"], **nearby_event_data}
+
+    if "action" in data_to_emit and data_to_emit["action"]:
         sio.emit(
             "handle_action",
             data_to_emit["action"],
             room=session["user_id"],
-            skip_sid=sid,
+            skip_sid=sid if data["action"] != "run_event" else None,
         )
 
-    if data_to_emit["map"]:
+    if "map" in data_to_emit and data_to_emit["map"]:
         sio.emit(
             "map_state",
             data_to_emit["map"],
             room=data_to_emit["map"]["map"],
-            skip_sid=sid,
+            skip_sid=sid if data["action"] != "run_event" else None,
         )
 
     return "OK", 200

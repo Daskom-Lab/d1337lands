@@ -158,11 +158,13 @@ export class GameScene extends Phaser.Scene {
     })
 
     socket.on("handle_action", (data) => {
-      this.setMainPlayerPosition(parseInt(data["position"]))
+      if (data.action === "move") {
+        this.setMainPlayerPosition(parseInt(data.position))
+      }
     })
 
     socket.on("user_data", (data) => {
-      if (this.isEmptyObject(data["user_datas"])) {
+      if (this.isEmptyObject(data.user_datas)) {
         socket.disconnect();
         socket.connect();
       } else {
@@ -194,8 +196,8 @@ export class GameScene extends Phaser.Scene {
         this.cameras.main.setBounds(
           0,
           0,
-          (townJson["width"]) * GameScene.TILE_SIZE,
-          (townJson["height"] + 1) * GameScene.TILE_SIZE
+          (townJson.width) * GameScene.TILE_SIZE,
+          (townJson.height + 1) * GameScene.TILE_SIZE
         );
         this.cameras.main.startFollow(playerSprite);
         this.cameras.main.roundPixels = true;
@@ -204,8 +206,8 @@ export class GameScene extends Phaser.Scene {
           this.setMainPlayer(
             new Player(
               playerSprite,
-              data["user_datas"]["position"],
-              new Phaser.Math.Vector2(townJson["width"], townJson["height"])
+              data.user_datas.position,
+              new Phaser.Math.Vector2(townJson.width, townJson.height)
             )
           );
 
