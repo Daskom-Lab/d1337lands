@@ -25,6 +25,7 @@
   "dependencies": {
     "js-cookie": "^3.0.1",
     "phaser": "^3.55.2",
-    "socket.io-client": "^4.5.0"
+    "socket.io-client": "^4.5.0",
+    "toastify-js": "^1.11.2"
   }
 }

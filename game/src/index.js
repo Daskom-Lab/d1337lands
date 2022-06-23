@@ -1,7 +1,8 @@
 import Phaser from "phaser";
 import Cookies from "js-cookie"
+import Toastify from 'toastify-js'
 import { Player } from "./player";
-import { io } from "socket.io-client"
+import { io } from "socket.io-client";
 
 import townGroundTiles from "../assets/maps/town/ground_tiles.png"
 import townStuffTiles from "../assets/maps/town/stuff_tiles.png"
@@ -20,6 +21,7 @@ export class GameScene extends Phaser.Scene {
 
     this.mainPlayer = undefined;
     this.chosenMap = undefined;
+    this.nearbyEvent = "";
   }
 
   getChosenMap() {
@@ -47,6 +49,44 @@ export class GameScene extends Phaser.Scene {
   isEmptyObject(object) {
     for (var _ in object) return false;
     return true;
+  }
+
+  toast(text, gravity = "bottom", position = "center") {
+    Toastify({
+      text: text,
+      duration: 3000,
+      gravity: gravity,
+      position: position,
+      stopOnFocus: true,
+      escapeMarkup: false,
+      style: {
+        "font-weight": "400",
+        "font-family": "Merriweather Sans",
+        "margin-left": "auto",
+        "margin-right": "auto",
+        left: "0",
+        right: "0",
+        position: "absolute",
+        width: "max-content",
+        color: "black",
+        background: "linear-gradient(180deg, rgba(55,255,133,1) 0%, rgba(30,140,73,1) 100%)",
+        border: "2px solid black",
+        "border-radius": "0.5rem",
+      },
+    }).showToast();
+  }
+
+  toTitleCase(text) {
+    let textToReturn = "";
+
+    for (let i = 0; i < text.length; i++) {
+      const el = text[i];
+      if (el === "_") textToReturn += " ";
+      else if (i === 0 || text[i - 1] === " " || text[i - 1] === "_") textToReturn += el.toUpperCase();
+      else textToReturn += el.toLowerCase();
+    }
+
+    return textToReturn;
   }
 
   showLoadingScene() {
@@ -136,7 +176,7 @@ export class GameScene extends Phaser.Scene {
   create() {
     const socket = io("http://localhost:5000", {
       auth: (cb) => {
-        cb({ 
+        cb({
           token: Cookies.get("1337token"),
           connection_source: "game"
         });
@@ -146,7 +186,7 @@ export class GameScene extends Phaser.Scene {
     socket.on("connect", () => {
       if (this.percentText.displayList !== null)
         this.percentText.setText("95%")
-      
+
       if (this.progressBar.displayList !== null) {
         this.progressBar.clear();
         this.progressBar.fillStyle(0xffffff, 1);
@@ -159,6 +199,16 @@ export class GameScene extends Phaser.Scene {
 
     socket.on("handle_action", (data) => {
       if (data.action === "move") {
+        if (data.event_name !== null && data.event_name !== undefined) {
+          if (this.nearbyEvent === "" || this.nearbyEvent !== data.event_name) {
+            const event_name = this.toTitleCase(data.event_name);
+            this.toast(`There is a <b>${event_name}</b> nearby`);
+          }
+          this.nearbyEvent = data.event_name;
+        } else {
+          this.nearbyEvent = "";
+        }
+
         this.setMainPlayerPosition(parseInt(data.position))
       }
     })
@@ -171,7 +221,7 @@ export class GameScene extends Phaser.Scene {
         this.percentText.setText("100%")
         this.progressBar.clear();
         this.progressBar.fillStyle(0xffffff, 1);
-        this.progressBar.fillRect(250, 280, 300, 30); 
+        this.progressBar.fillRect(250, 280, 300, 30);
         this.assetText.setText("Iniating the map");
         this.closeLoadingScene();
 
@@ -201,7 +251,7 @@ export class GameScene extends Phaser.Scene {
         );
         this.cameras.main.startFollow(playerSprite);
         this.cameras.main.roundPixels = true;
-       
+
         if (this.getMainPlayer() === undefined) {
           this.setMainPlayer(
             new Player(
