@@ -108,8 +108,9 @@ export default function Home({ peopleList, fileTree }) {
 
     // Space or Enter clicked (goes into action)
     if ([" ", "Enter"].includes(key)) {
-
-      console.log("enter clicked")
+      gameSocketEmit("send_action", {
+        "action": "run_event"
+      })
       return
     }
 
@@ -169,9 +170,25 @@ export default function Home({ peopleList, fileTree }) {
           })
 
           socket.on("user_data", (data) => {
-            setLogBuffer(`Hello and welcome to daskom1337 codeventure, ${data["user_nickname"]}`)
+            // Please dont optimize these string, it was intended 
+            // to be written like this for beautiful code purposes :D
+            setLogBuffer(`Hello and welcome to daskom1337 codeventure, ${data.user_nickname}.`)
+            addLogBuffer(`                                                         `)
+            addLogBuffer(`Walk anywhere across the maps using these keys:          `)
+            addLogBuffer(`                                                         `)
+            addLogBuffer(`                ("up arrow" or "w")                      `)
+            addLogBuffer(`                        Ʌ                                `)
+            addLogBuffer(`  ("left arrow" or a) < + > ("right arrow" or d)         `)
+            addLogBuffer(`                        V                                `)
+            addLogBuffer(`               ("down arrow" or "s")                     `)
+            addLogBuffer(`                                                         `)
+            addLogBuffer(`Click "enter" or "spacebar" to run event whenever you are`)
+            addLogBuffer(`inside the event trigger location.                       `)
+            addLogBuffer(`                                                         `)
+            addLogBuffer(`Where is the event trigger location ?                    `)
+            addLogBuffer(`well, it is for you to find out :D                       `)
 
-            if (isEmptyObject(data["user_datas"])) {
+            if (isEmptyObject(data.user_datas)) {
               socket.emit("send_action", {
                 "action": "initialize_data"
               }, (response) => {
@@ -180,6 +197,9 @@ export default function Home({ peopleList, fileTree }) {
                 }
               })
             }
+          })
+
+          socket.on("handle_action", (data) => {
           })
 
           socket.on("user_connect", (data) => {
@@ -238,9 +258,11 @@ export default function Home({ peopleList, fileTree }) {
               <div className="w-full text-black bg-green-400 text-xs tracking-wide font-bold font-merriw rounded-t-md px-2 py-1 border-b-2 border-slate-400">
                 Game logs - (always read before you ask please...)
               </div>
-              <div className="w-full flex-auto text-white font-overpassm tracking-tighter font-normal text-sm p-2">
-                { logBuffer }
-              </div>
+              <SimpleBar className="w-full flex-auto text-white font-overpassm tracking-tighter font-normal text-sm p-2 overflow-auto">
+                <span className="whitespace-pre-wrap">
+                  { logBuffer }
+                </span>
+              </SimpleBar>
               <div className="flex w-full px-2">
                 <input 
                   className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" 
