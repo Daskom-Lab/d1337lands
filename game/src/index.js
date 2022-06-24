@@ -8,6 +8,30 @@ import townGroundTiles from "../assets/maps/town/ground_tiles.png"
 import townStuffTiles from "../assets/maps/town/stuff_tiles.png"
 import townJson from "../assets/maps/town/town.json"
 
+import algoislandGroundTiles from "../assets/maps/algoisland/ground_tiles.png"
+import algoislandStuffTiles from "../assets/maps/algoisland/stuff_tiles.png"
+import algoislandJson from "../assets/maps/algoisland/algoisland.json"
+
+import codeislandGroundTiles from "../assets/maps/codeisland/ground_tiles.png"
+import codeislandStuffTiles from "../assets/maps/codeisland/stuff_tiles.png"
+import codeislandJson from "../assets/maps/codeisland/codeisland.json"
+
+import dataislandGroundTiles from "../assets/maps/dataisland/ground_tiles.png"
+import dataislandStuffTiles from "../assets/maps/dataisland/stuff_tiles.png"
+import dataislandJson from "../assets/maps/dataisland/dataisland.json"
+
+import hackislandGroundTiles from "../assets/maps/hackisland/ground_tiles.png"
+import hackislandStuffTiles from "../assets/maps/hackisland/stuff_tiles.png"
+import hackislandJson from "../assets/maps/hackisland/hackisland.json"
+
+import netislandGroundTiles from "../assets/maps/netisland/ground_tiles.png"
+import netislandStuffTiles from "../assets/maps/netisland/stuff_tiles.png"
+import netislandJson from "../assets/maps/netisland/netisland.json"
+
+import mentorcastleGroundTiles from "../assets/maps/mentorcastle/ground_tiles.png"
+import mentorcastleStuffTiles from "../assets/maps/mentorcastle/stuff_tiles.png"
+import mentorcastleJson from "../assets/maps/mentorcastle/mentorcastle.json"
+
 import characterBase from "../assets/characters/base.png"
 
 const CANVAS_WIDTH = 800;
@@ -22,6 +46,44 @@ export class GameScene extends Phaser.Scene {
     this.mainPlayer = undefined;
     this.chosenMap = undefined;
     this.nearbyEvent = "";
+
+    this.maps = {
+      town: {
+        groundTiles: townGroundTiles,
+        stuffTiles: townStuffTiles,
+        json: townJson,
+      },
+      algoisland: {
+        groundTiles: algoislandGroundTiles,
+        stuffTiles: algoislandStuffTiles,
+        json: algoislandJson,
+      },
+      codeisland: {
+        groundTiles: codeislandGroundTiles,
+        stuffTiles: codeislandStuffTiles,
+        json: codeislandJson,
+      },
+      dataisland: {
+        groundTiles: dataislandGroundTiles,
+        stuffTiles: dataislandStuffTiles,
+        json: dataislandJson,
+      },
+      hackisland: {
+        groundTiles: hackislandGroundTiles,
+        stuffTiles: hackislandStuffTiles,
+        json: hackislandJson,
+      },
+      netisland: {
+        groundTiles: netislandGroundTiles,
+        stuffTiles: netislandStuffTiles,
+        json: netislandJson,
+      },
+      mentorcastle: {
+        groundTiles: mentorcastleGroundTiles,
+        stuffTiles: mentorcastleStuffTiles,
+        json: mentorcastleJson,
+      }
+    }
   }
 
   getChosenMap() {
@@ -163,9 +225,11 @@ export class GameScene extends Phaser.Scene {
   preload() {
     this.showLoadingScene();
 
-    this.load.image("town-ground-tiles", townGroundTiles);
-    this.load.image("town-stuff-tiles", townStuffTiles);
-    this.load.tilemapTiledJSON("town", townJson);
+    for (const [map, mapdata] of Object.entries(this.maps)) {
+      this.load.image(`${map}-ground-tiles`, mapdata.groundTiles);
+      this.load.image(`${map}-stuff-tiles`, mapdata.stuffTiles);
+      this.load.tilemapTiledJSON(`${map}`, mapdata.json);
+    }
 
     this.load.spritesheet("base-character", characterBase, {
       frameWidth: 64,
