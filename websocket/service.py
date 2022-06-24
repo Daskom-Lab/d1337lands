@@ -1,3 +1,4 @@
+from ast import match_case
 from functools import lru_cache
 import eventlet
 import socketio
@@ -107,7 +108,16 @@ sio = socketio.Server(
 app = socketio.WSGIApp(sio)
 
 
-def getRandomStartPosition(map_name):
+def getRandomStartPosition(map_name, which=None):
+    if map_name == "mentorcastle":
+        if not which or which not in ["left", "right"]:
+            raise ValueError(
+                "which have to be either 'left' or 'right' for mentorcastle"
+            )
+
+        return random.choice(
+            maps_data[map_name]["start_positions"][0 if which == "left" else 1]
+        )
     return random.choice(maps_data[map_name]["start_positions"])
 
 
@@ -459,7 +469,7 @@ def send_action(sid, data):
     if data["action"] == "initialize_data":
         initial_user_datas = {
             "map": "town",
-            "position": f"{getRandomStartPosition('town')}",
+            "position": getRandomStartPosition("town"),
         }
 
         try:
@@ -549,14 +559,88 @@ def send_action(sid, data):
                 "event_name": event_data[0] if event_data and event_data[1] else None,
             }
 
-            data_to_emit["action"] = {"action": data["action"], **nearby_event_data}
+            packed_data = {
+                "packed_data": None,
+            }
+            if nearby_event_data["event_name"]:
+                event_name, _ = event_data
+
+                if event_name == "teleportation":
+                    packed_data["packed_data"] = {
+                        "maps": [x for x in maps if x.endswith("island")]
+                    }
+
+                session["chosen_event"] = event_name
+                sio.save_session(sid, session)
+
+            data_to_emit["action"] = {
+                "action": data["action"],
+                **nearby_event_data,
+                **packed_data,
+            }
+
+    elif data["action"] == "run_action":
+        packed_data = data["packed_data"]
+        chosen_event = session["chosen_event"]
+
+        error_data = {}
+        success_data = {}
+        if chosen_event and packed_data:
+            if chosen_event == "teleportation":
+                try:
+                    eligible_maps = [x for x in maps if x.endswith("island")]
+
+                    chosen_map = int(packed_data["chosen_map"])
+                    new_user_datas = {
+                        "map": eligible_maps[chosen_map],
+                        "position": getRandomStartPosition(eligible_maps[chosen_map]),
+                    }
+
+                    data_to_emit["map"] = {
+                        "user_id": session["user_id"],
+                        "user_nickname": session["user_nickname"],
+                        **new_user_datas,
+                    }
+
+                    success_data = new_user_datas
+                    session["user_datas"] = new_user_datas
+                    sio.save_session(sid, session)
+                except:
+                    error_data = {"error_text": "Your input data is wrong!"}
+
+        if not packed_data:
+            error_data = {"error_text": "Please give an input data first!"}
+
+        if not chosen_event:
+            error_data = {
+                "error_text": """
+                    \rChoose an event first by hitting "enter" or 
+                    \r"spacebar" key on the event trigger location
+                """
+            }
+
+        if not error_data:
+            data_to_emit["action"] = {
+                "action": data["action"],
+                **error_data,
+            }
+        else:
+            data_to_emit["action"] = {
+                "action": data["action"],
+                **success_data,
+            }
+
+    elif data["action"] == "clear_state":
+        session["current_state"] = None
+        session["chosen_event"] = None
+        sio.save_session(sid, session)
 
     if "action" in data_to_emit and data_to_emit["action"]:
         sio.emit(
             "handle_action",
             data_to_emit["action"],
             room=session["user_id"],
-            skip_sid=sid if data["action"] != "run_event" else None,
+            skip_sid=sid if data["action"] not in ["run_event", "run_action"] else None,
         )
 
     if "map" in data_to_emit and data_to_emit["map"]:
@@ -564,7 +648,7 @@ def send_action(sid, data):
             "map_state",
             data_to_emit["map"],
             room=data_to_emit["map"]["map"],
-            skip_sid=sid if data["action"] != "run_event" else None,
+            skip_sid=sid if data["action"] not in ["run_event", "run_action"] else None,
         )
 
     return "OK", 200

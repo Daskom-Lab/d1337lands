@@ -22,13 +22,13 @@ const Playground = dynamic(() => import("@/components/Playground"), {
 
 export async function getStaticProps() {
   const peopleList = getPeopleList();
-  
+
   peopleList.forEach(people => {
     if (people.Avatar.endsWith(".html"))
       people.Avatar = getAssetFile(people.Avatar);
 
     // Remove newline at start and end of description
-    people.Description = people.Description.replace(/^(\n|\r\n|\r)+|(\n|\r\n|\r)+$/g, ''); 
+    people.Description = people.Description.replace(/^(\n|\r\n|\r)+|(\n|\r\n|\r)+$/g, '');
   });
 
   const fileTree = getFileTree();
@@ -50,16 +50,38 @@ export default function Home({ peopleList, fileTree }) {
   const [logBuffer, setLogBuffer] = useState("")
   const [chatInput, setChatInput] = useState("")
   const [logInput, setLogInput] = useState("")
+  const [userData, setUserData] = useState({})
   const [chats, setChats] = useState([])
   const [users, setUsers] = useState([])
   const sharedState = useAppContext()
 
   let addLogBuffer = function (newLogBuffer) {
-    setLogBuffer(logBuffer => logBuffer + "\n" + newLogBuffer)
+    setLogBuffer(logBuffer => logBuffer + (logBuffer === "" ? "" : "\n") + newLogBuffer)
   }
 
-  let clearLogBuffer = function () {
-    setLogBuffer("")
+  let printWelcomingPrompt = function (data, place = "daskom1337 codeventure") {
+    // Please dont optimize these string, it was intended 
+    // to be written like this for beautiful code purposes :D
+    if (data !== undefined)
+      setLogBuffer(`Hello and welcome to ${place}, ${data.user_nickname}.`)
+    else
+      setLogBuffer(`Hello and welcome to ${place}, ${userData.user_nickname}.`)
+    addLogBuffer(`                                                         `)
+    addLogBuffer(`Walk anywhere across the maps using these keys:          `)
+    addLogBuffer(`                                                         `)
+    addLogBuffer(`                ("up arrow" or "w")                      `)
+    addLogBuffer(`                        Ʌ                                `)
+    addLogBuffer(`  ("left arrow" or a) < + > ("right arrow" or d)         `)
+    addLogBuffer(`                        V                                `)
+    addLogBuffer(`               ("down arrow" or "s")                     `)
+    addLogBuffer(`                                                         `)
+    addLogBuffer(`Click "enter" or "spacebar" to run event whenever you are`)
+    addLogBuffer(`inside the event trigger location.                       `)
+    addLogBuffer(`                                                         `)
+    addLogBuffer(`Where is the event trigger location ?                    `)
+    addLogBuffer(`well, it is for you to find out :D                       `)
+
+    gameSocketEmit("clear_state");
   }
 
   let addChat = function (newChat) {
@@ -84,6 +106,8 @@ export default function Home({ peopleList, fileTree }) {
     })
   }
 
+  let sleep = ms => new Promise(r => setTimeout(r, ms));
+
   let isEmptyObject = function (object) {
     for (var _ in object) return false;
     return true;
@@ -92,14 +116,16 @@ export default function Home({ peopleList, fileTree }) {
   let gameSocketEmit = function (event, data, callbackfn) {
     if (gameSocket !== undefined && gameSocket !== null) {
       if (!!callbackfn) gameSocket.emit(event, data, callbackfn)
-      else gameSocket.emit(event, data)
+      else if (!!data) gameSocket.emit(event, data)
+      else gameSocket.emit(event)
     }
   }
 
   let chatSocketEmit = function (event, data, callbackfn) {
     if (chatSocket !== undefined && chatSocket !== null) {
       if (!!callbackfn) chatSocket.emit(event, data, callbackfn)
-      else chatSocket.emit(event, data)
+      else if (!!data) chatSocket.emit(event, data)
+      else chatSocket.emit(event)
     }
   }
 
@@ -119,8 +145,10 @@ export default function Home({ peopleList, fileTree }) {
       gameSocketEmit("send_action", {
         "action": "move",
         "direction": "up"
+      }, (response) => {
+        if (response === "OK") printWelcomingPrompt();
       })
-      
+
       return
     }
 
@@ -129,6 +157,8 @@ export default function Home({ peopleList, fileTree }) {
       gameSocketEmit("send_action", {
         "action": "move",
         "direction": "left"
+      }, (response) => {
+        if (response === "OK") printWelcomingPrompt();
       })
 
       return
@@ -139,6 +169,8 @@ export default function Home({ peopleList, fileTree }) {
       gameSocketEmit("send_action", {
         "action": "move",
         "direction": "down"
+      }, (response) => {
+        if (response === "OK") printWelcomingPrompt();
       })
 
       return
@@ -149,6 +181,8 @@ export default function Home({ peopleList, fileTree }) {
       gameSocketEmit("send_action", {
         "action": "move",
         "direction": "right"
+      }, (response) => {
+        if (response === "OK") printWelcomingPrompt();
       })
 
       return
@@ -162,31 +196,16 @@ export default function Home({ peopleList, fileTree }) {
         if (gameSocket === undefined) {
           const socket = io("http://localhost:5000", {
             auth: (cb) => {
-              cb({ 
+              cb({
                 token: getCookie("1337token"),
                 connection_source: "web"
               })
             }
           })
 
-          socket.on("user_data", (data) => {
-            // Please dont optimize these string, it was intended 
-            // to be written like this for beautiful code purposes :D
-            setLogBuffer(`Hello and welcome to daskom1337 codeventure, ${data.user_nickname}.`)
-            addLogBuffer(`                                                         `)
-            addLogBuffer(`Walk anywhere across the maps using these keys:          `)
-            addLogBuffer(`                                                         `)
-            addLogBuffer(`                ("up arrow" or "w")                      `)
-            addLogBuffer(`                        Ʌ                                `)
-            addLogBuffer(`  ("left arrow" or a) < + > ("right arrow" or d)         `)
-            addLogBuffer(`                        V                                `)
-            addLogBuffer(`               ("down arrow" or "s")                     `)
-            addLogBuffer(`                                                         `)
-            addLogBuffer(`Click "enter" or "spacebar" to run event whenever you are`)
-            addLogBuffer(`inside the event trigger location.                       `)
-            addLogBuffer(`                                                         `)
-            addLogBuffer(`Where is the event trigger location ?                    `)
-            addLogBuffer(`well, it is for you to find out :D                       `)
+          socket.on("user_data", async (data) => {
+            setUserData(data);
+            printWelcomingPrompt(data);
 
             if (isEmptyObject(data.user_datas)) {
               socket.emit("send_action", {
@@ -200,6 +219,39 @@ export default function Home({ peopleList, fileTree }) {
           })
 
           socket.on("handle_action", (data) => {
+            if (data.action === "run_event") {
+              if (data.event_name !== null && data.event_name !== undefined) {
+                switch (data.event_name) {
+                  case "teleportation":
+                    setLogBuffer(`Welcome to the teleportation, ${userData.user_nickname}`)
+                    addLogBuffer(`                                                       `)
+                    addLogBuffer(`Please choose between these islands to teleport to:`)
+                    addLogBuffer(`(write the number of the islands which you want`)
+                    addLogBuffer(`to teleport to and click enter in the input bar below)`)
+                    addLogBuffer(`                                                       `)
+                    data.packed_data.maps.forEach((element, pos) => {
+                      addLogBuffer(`${pos + 1}. ${element}`)
+                    });
+                    break;
+
+                  default:
+                    break;
+                }
+              } else {
+                setLogBuffer("You are not in any event trigger location currently,");
+                addLogBuffer("try to get closer to the event place if there are events nearby");
+              }
+            } else if (data.action === "run_action") {
+              if (data.error_text) {
+                setLogBuffer(`ERROR: ${data.error_text}`);
+                return;
+              }
+
+              if (data.map) {
+                printWelcomingPrompt(undefined, data.map);
+                return;
+              }
+            }
           })
 
           socket.on("user_connect", (data) => {
@@ -260,22 +312,34 @@ export default function Home({ peopleList, fileTree }) {
               </div>
               <SimpleBar className="w-full flex-auto text-white font-overpassm tracking-tighter font-normal text-sm p-2 overflow-auto">
                 <span className="whitespace-pre-wrap">
-                  { logBuffer }
+                  {logBuffer}
                 </span>
               </SimpleBar>
               <div className="flex w-full px-2">
-                <input 
-                  className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" 
+                <input
+                  className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none"
                   onFocus={() => setInputsFocused(arr => [...arr, "logs"])}
-                  onBlur={() => setInputsFocused(inputsFocused.filter((_, id) => id !== inputsFocused.length - 1))} 
+                  onBlur={() => setInputsFocused(inputsFocused.filter((_, id) => id !== inputsFocused.length - 1))}
                   value={logInput}
-                  onChange={el => setLogInput(el.target.value)} />
+                  onChange={el => setLogInput(el.target.value)}
+                  onKeyDown={
+                    event => {
+                      if (event.key === "Enter") {
+                        gameSocketEmit("send_action", {
+                          "action": "run_action",
+                          "packed_data": {
+                            "chosen_map": logInput,
+                          }
+                        })
+                      }
+                    }
+                  } />
               </div>
             </div>
-          )  
+          )
         }
         <div className={
-          "flex flex-col m-auto flex-auto transition-all duration-700 " + 
+          "flex flex-col m-auto flex-auto transition-all duration-700 " +
           (sharedState.isGameActive ? "h-full max-w-full" : "h-[75%] max-w-6xl")
         }>
           <div className={
@@ -285,7 +349,7 @@ export default function Home({ peopleList, fileTree }) {
             Daskom1337 Community
           </div>
           <div className={
-            "w-full border-2 border-slate-400 bg-slate-900 rounded-xl shadow-l transition-all duration-700 " + 
+            "w-full border-2 border-slate-400 bg-slate-900 rounded-xl shadow-l transition-all duration-700 " +
             (sharedState.isGameActive ? "h-4/6" : "mt-6 h-[75%]")
           }>
             {
@@ -358,27 +422,27 @@ export default function Home({ peopleList, fileTree }) {
                   </div>
                   <SimpleBar className="flex w-full flex-auto text-white font-normal overflow-auto font-sourcesans text-sm p-2">
                     {
-                      chats.map((chat, i) => 
+                      chats.map((chat, i) =>
                         <div className="flex w-full gap-1" key={i}>
                           <span className={
                             "whitespace-nowrap font-bold " +
                             (chat.user_role === "mentor" ? "text-amber-300" : "text-green-100")
                           }>
-                            { chat.user_nickname }
+                            {chat.user_nickname}
                           </span>
                           <span>
                             :
                           </span>
                           <span className="shrink break-all max-w-full">
-                            { chat.user_chat }
+                            {chat.user_chat}
                           </span>
-                        </div> 
+                        </div>
                       )
                     }
                   </SimpleBar>
                   <div className="flex w-full px-2">
-                    <input 
-                      className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none" 
+                    <input
+                      className="border-2 font-sourcesans border-slate-400 rounded-lg w-full mx-auto mb-2 appearance-none text-md p-[4px] focus:border-green-600 leading-tight focus:outline-none"
                       onFocus={() => setInputsFocused(arr => [...arr, "chat"])}
                       onBlur={() => setInputsFocused(inputsFocused.filter((_, id) => id !== inputsFocused.length - 1))}
                       value={chatInput}
@@ -403,18 +467,18 @@ export default function Home({ peopleList, fileTree }) {
                   </div>
                   <SimpleBar className="flex w-full flex-auto text-white font-normal overflow-auto font-sourcesans text-sm p-2">
                     {
-                      users.map((user, _) => 
+                      users.map((user, _) =>
                         <div className="flex w-full gap-1" key={user.user_id}>
                           <span className={
                             "whitespace-nowrap font-bold " +
                             (user.user_role === "mentor" ? "text-amber-300" : "text-green-100")
                           }>
-                            { user.user_nickname }
+                            {user.user_nickname}
                           </span>
                           <span className="shrink break-all max-w-full">
-                            [ { !isEmptyObject(user.user_datas) ? `currently in ${user.user_datas.map}` : "just landed" } ]
+                            [ {!isEmptyObject(user.user_datas) ? `currently in ${user.user_datas.map}` : "just landed"} ]
                           </span>
-                        </div> 
+                        </div>
                       )
                     }
                   </SimpleBar>
