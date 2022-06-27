@@ -99,8 +99,12 @@ class Game:
             )
         return random.choice(self.maps_data[map_name]["start_positions"])
 
-    @lru_cache
     def getNextPosition(self, map_name, position, direction, check_collision=True):
+        return self.__getNextPosition(self, map_name, position, direction, check_collision)
+
+    @staticmethod
+    @lru_cache(maxsize=16)
+    def __getNextPosition(self, map_name, position, direction, check_collision):
         """
         Check if character can move to next position or not
         and get the next position if they can
@@ -146,8 +150,12 @@ class Game:
         else:
             return position
 
-    @lru_cache
     def getNearbyEvent(self, map_name, position, threshold=1):
+        return self.__getNearbyEvent(self, map_name, position, threshold)
+
+    @staticmethod
+    @lru_cache(maxsize=16)
+    def __getNearbyEvent(self, map_name, position, threshold):
         """
         Check for nearby events from the current position of
         the player
