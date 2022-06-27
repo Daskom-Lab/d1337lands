@@ -212,7 +212,7 @@ export default function Home({ peopleList, fileTree }) {
                 "action": "initialize_data"
               }, (response) => {
                 if (response !== "OK") {
-                  console.log("Error connecting to game socket...")
+                  console.log(`Error connecting to websocket -> ${response}`)
                 }
               })
             }
