@@ -358,7 +358,6 @@ export class GameScene extends Phaser.Scene {
         socket.disconnect();
         socket.connect();
       } else {
-        console.log("testestsetstes")
         this.percentText.setText("100%")
         this.progressBar.clear();
         this.progressBar.fillStyle(0xffffff, 1);
