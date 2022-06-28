@@ -1,6 +1,7 @@
 table:
   schema: public
   name: category
+is_enum: true
 array_relationships:
   - name: quests
     using:
