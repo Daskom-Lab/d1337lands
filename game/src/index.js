@@ -3,6 +3,7 @@ import Cookies from "js-cookie"
 import Toastify from 'toastify-js'
 import { Player } from "./player";
 import { io } from "socket.io-client";
+import { v5 as uuidv5 } from 'uuid';
 
 import townGroundTiles from "../assets/maps/town/ground_tiles.png"
 import townStuffTiles from "../assets/maps/town/stuff_tiles.png"
@@ -44,8 +45,9 @@ export class GameScene extends Phaser.Scene {
     super();
 
     this.mainPlayer = undefined;
-    this.chosenMap = undefined;
+    this.players = undefined;
     this.nearbyEvent = "";
+    this.chosenMap = [];
 
     this.maps = {
       town: {
@@ -90,8 +92,8 @@ export class GameScene extends Phaser.Scene {
     return this.chosenMap;
   }
 
-  setChosenMap() {
-    this.chosenMap = this.chosenMap;
+  setChosenMap(chosenMap) {
+    this.chosenMap = chosenMap;
   }
 
   getMainPlayer() {
@@ -102,10 +104,51 @@ export class GameScene extends Phaser.Scene {
     this.mainPlayer = mainPlayer;
   }
 
-  setMainPlayerPosition(position) {
-    if (this.getMainPlayer() !== undefined) {
-      this.getMainPlayer().setPosition(position);
+  setPlayerPosition(player, position) {
+    if (player === "mainPlayer") {
+      if (this.getMainPlayer() !== undefined) {
+        this.getMainPlayer().setPosition(position);
+      }
+    } else if (player !== undefined) {
+      player.setPosition(position)
     }
+  }
+
+  setCurrentRenderedMap(map) {
+    if (this.getChosenMap().length > 0) {
+      if (this.getChosenMap()[1] === map) return;
+      else this.getChosenMap()[0].destroy();
+    }
+
+    const tilemap = this.make.tilemap({
+      key: map,
+    });
+
+    //TODO: Need to make changes on the map layering IN TILED (between ground and stuff)
+    ///     due to bad depth sorting caused by the character that occupy 2 blocks instead of 1
+
+    //TODO: Remember to set tilesetnames in each of the map json files to match the ones used in
+    //      addTilesetImage method down below
+
+    //TODO: Mentorcastle map json is pretty much broken
+
+    const groundTileset = tilemap.addTilesetImage("ground_tiles", `${map}-ground-tiles`);
+    const groundLayer = tilemap.createLayer("ground", groundTileset, 0, 0);
+    groundLayer.setDepth(0);
+
+    const stuffTileset = tilemap.addTilesetImage("stuff_tiles", `${map}-stuff-tiles`);
+    const stuffLayer = tilemap.createLayer("stuff", stuffTileset, 0, 0);
+    stuffLayer.setDepth(2);
+
+    this.cameras.main.setBounds(
+      0,
+      0,
+      (this.maps[map].json.width) * GameScene.TILE_SIZE,
+      (this.maps[map].json.height + 1) * GameScene.TILE_SIZE
+    );
+    this.cameras.main.roundPixels = true;
+
+    this.setChosenMap([tilemap, map]);
   }
 
   isEmptyObject(object) {
@@ -113,7 +156,7 @@ export class GameScene extends Phaser.Scene {
     return true;
   }
 
-  toast(text, gravity = "bottom", position = "center") {
+  toast(text, isSuccess = true, gravity = "bottom", position = "center") {
     Toastify({
       text: text,
       duration: 3000,
@@ -130,8 +173,12 @@ export class GameScene extends Phaser.Scene {
         right: "0",
         position: "absolute",
         width: "max-content",
-        color: "black",
-        background: "linear-gradient(180deg, rgba(55,255,133,1) 0%, rgba(30,140,73,1) 100%)",
+        color: isSuccess
+          ? "black"
+          : "white",
+        background: isSuccess
+          ? "linear-gradient(180deg, rgba(55,255,133,1) 0%, rgba(30,140,73,1) 100%)"
+          : "linear-gradient(180deg, rgba(255,55,55,1) 0%, rgba(140,30,30,1) 100%);",
         border: "2px solid black",
         "border-radius": "0.5rem",
       },
@@ -222,6 +269,28 @@ export class GameScene extends Phaser.Scene {
     this.assetText.destroy();
   }
 
+  setCharacterSpritesheet(player, spritesheetUrl) {
+    const spriteId = uuidv5(spritesheetUrl, uuidv5.URL);
+    this.load.spritesheet(spriteId, spritesheetUrl, {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+
+    this.load.once("complete", () => {
+      const newSprite = this.add.sprite(0, 0, spriteId);
+      newSprite.setDepth(1);
+
+      player.setSprite(newSprite);
+      player.setPlayerAnimation(spriteId);
+    })
+
+    this.load.once("loaderror", (obj) => {
+      this.toast(`Loading of ${obj} sprite error`, false);
+    })
+
+    this.load.start();
+  }
+
   preload() {
     this.showLoadingScene();
 
@@ -263,6 +332,7 @@ export class GameScene extends Phaser.Scene {
 
     socket.on("handle_action", (data) => {
       if (data.action === "move") {
+        // Handler for nearby event
         if (data.event_name !== null && data.event_name !== undefined) {
           if (this.nearbyEvent === "" || this.nearbyEvent !== data.event_name) {
             const event_name = this.toTitleCase(data.event_name);
@@ -273,7 +343,13 @@ export class GameScene extends Phaser.Scene {
           this.nearbyEvent = "";
         }
 
-        this.setMainPlayerPosition(parseInt(data.position))
+        this.setPlayerPosition("mainPlayer", parseInt(data.position))
+      }
+    })
+
+    socket.on("map_state", (data) => {
+      if (data.map !== undefined && data.map !== this.getChosenMap()[1]) {
+        this.setCurrentRenderedMap(data.map);
       }
     })
 
@@ -282,6 +358,7 @@ export class GameScene extends Phaser.Scene {
         socket.disconnect();
         socket.connect();
       } else {
+        console.log("testestsetstes")
         this.percentText.setText("100%")
         this.progressBar.clear();
         this.progressBar.fillStyle(0xffffff, 1);
@@ -289,43 +366,27 @@ export class GameScene extends Phaser.Scene {
         this.assetText.setText("Iniating the map");
         this.closeLoadingScene();
 
-        const town = this.make.tilemap({
-          key: "town",
-        });
-
-        //TODO: Need to make changes on the map layering (between ground and stuff)
-        ///     due to bad depth sorting caused by the character that occupy 2 blocks instead of 1
-
-        const townGroundTileset = town.addTilesetImage("ground_tiles", "town-ground-tiles");
-        const townGroundLayer = town.createLayer("ground", townGroundTileset, 0, 0);
-        townGroundLayer.setDepth(0);
-
-        const townStuffTileset = town.addTilesetImage("stuff_tiles", "town-stuff-tiles");
-        const townStuffLayer = town.createLayer("stuff", townStuffTileset, 0, 0);
-        townStuffLayer.setDepth(2);
-
-        const playerSprite = this.add.sprite(0, 0, "base-character");
-        playerSprite.setDepth(1);
-
-        this.cameras.main.setBounds(
-          0,
-          0,
-          (townJson.width) * GameScene.TILE_SIZE,
-          (townJson.height + 1) * GameScene.TILE_SIZE
-        );
-        this.cameras.main.startFollow(playerSprite);
-        this.cameras.main.roundPixels = true;
+        this.setCurrentRenderedMap(data.user_datas.map);
 
         if (this.getMainPlayer() === undefined) {
-          this.setMainPlayer(
-            new Player(
-              playerSprite,
-              data.user_datas.position,
-              new Phaser.Math.Vector2(townJson.width, townJson.height)
-            )
-          );
+          const playerSprite = this.add.sprite(0, 0, "base-character");
+          playerSprite.setDepth(1);
 
-          this.getMainPlayer().setPlayerAnimation("base-character");
+          this.cameras.main.startFollow(playerSprite);
+          const mainPlayer = new Player(
+            playerSprite,
+            data.user_datas.position,
+            new Phaser.Math.Vector2(
+              this.maps[data.user_datas.map].json.width,
+              this.maps[data.user_datas.map].json.height
+            )
+          )
+
+          mainPlayer.setPlayerAnimation("base-character");
+          this.setMainPlayer(mainPlayer);
+
+        } else {
+          this.setPlayerPosition("mainPlayer", parseInt(data.user_datas.position));
         }
       }
     });

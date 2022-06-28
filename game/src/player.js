@@ -11,6 +11,18 @@ export class Player {
     this.setPosition(tilePos);
   }
 
+  destroy() {
+    if (this.sprite !== undefined) this.sprite.destroy();
+  }
+
+  setSprite(sprite) {
+    if (this.sprite !== undefined) this.sprite.destroy();
+
+    this.sprite = sprite;
+    this.sprite.setFrame(104);
+    this.sprite.setOrigin(0.5, 1);
+  }
+
   setPlayerAnimation(key) {
     this.sprite.anims.create({
       key: "walk-up",
