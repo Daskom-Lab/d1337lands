@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     userId = req.body.username;
     password = req.body.password; 
   } catch (error) {
-    res.status(400).send({ message: "Payload is missing username and password" });
+    res.status(400).send({ message: "Payload is missing username or password" });
     return
   }
 
