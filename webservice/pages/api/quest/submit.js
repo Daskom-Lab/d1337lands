@@ -26,6 +26,7 @@ async function handler(req, res) {
     return
   }
 
+  const jwt_claims = req.decoded_jwt["https://hasura.io/jwt/claims"]
   const user_id = jwt_claims["x-hasura-user-id"]
 
   postgresPool.query(
