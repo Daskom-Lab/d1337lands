@@ -124,13 +124,8 @@ export class GameScene extends Phaser.Scene {
       key: map,
     });
 
-    //TODO: Need to make changes on the map layering IN TILED (between ground and stuff)
-    ///     due to bad depth sorting caused by the character that occupy 2 blocks instead of 1
-
     //TODO: Remember to set tilesetnames in each of the map json files to match the ones used in
     //      addTilesetImage method down below
-
-    //TODO: Mentorcastle map json is pretty much broken
 
     const groundTileset = tilemap.addTilesetImage("ground_tiles", `${map}-ground-tiles`);
     const groundLayer = tilemap.createLayer("ground", groundTileset, 0, 0);
