@@ -50,7 +50,7 @@ async function handler(req, res) {
           text: `SELECT hint
                   FROM unlocked_hints
                   WHERE hint_id = $1 AND user_id = $2`,
-          values: [result.rows[0].id, user_id]
+          values: [paidHints.rows[0].id, user_id]
         },
         (err, unlockedHints) => {
           if (err) {
@@ -94,9 +94,9 @@ async function handler(req, res) {
 
               postgresPool.query(
                 {
-                  text: `DELETE FROM potions
-                          WHERE id = $1`,
-                  values: [potions.rows[0].id]
+                  text: `INSERT INTO unlocked_hints(hint_id, user_id)
+                          VALUES ($1, $2)`,
+                  values: [paidHints.rows[0].id, user_id]
                 },
                 (err, _) => {
                   if (err) {
@@ -106,9 +106,25 @@ async function handler(req, res) {
                     return;
                   }
 
-                  res.status(200).json({
-                    result: unlockedHints.rows,
-                  });
+                  postgresPool.query(
+                    {
+                      text: `DELETE FROM potions
+                              WHERE id = $1`,
+                      values: [potions.rows[0].id]
+                    },
+                    (err, _) => {
+                      if (err) {
+                        res.status(500).json({
+                          reason: "Data Not Found!"
+                        });
+                        return;
+                      }
+
+                      res.status(200).json({
+                        result: paidHints.rows,
+                      });
+                    }
+                  );
                 }
               );
             }
