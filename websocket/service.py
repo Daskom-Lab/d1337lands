@@ -337,8 +337,8 @@ def send_action(sid, data):
 
                         achievement_list = []
                         for key, _ in sorted(
-                            achievements.items(), key=lambda item: item[1]
-                        ).reverse():
+                            achievements.items(), key=lambda item: item[1], reverse=True
+                        ):
                             achievement_list.append(key)
                             leetcoin_list.remove(key)
 
@@ -382,13 +382,14 @@ def send_action(sid, data):
                                     }
                                 ]
 
-                        user_list = list(
-                            dict(
-                                sorted(
-                                    user_list.items(), key=lambda item: item[1]
-                                ).reverse()
-                            ).keys()
+                        user_list = dict(
+                            sorted(
+                                user_list.items(),
+                                key=lambda item: item[1],
+                                reverse=True,
+                            )
                         )
+
                         packed_data["packed_data"] = {"user_list": user_list}
                     elif (
                         event_name == "mentor_castle_right"
