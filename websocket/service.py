@@ -568,18 +568,24 @@ def send_action(sid, data):
                                 """.strip()
                             }
                         else:
-                            success_data = {"success_text": json.loads(res.text)["result"]}
+                            success_data = {
+                                "success_text": json.loads(res.text)["result"]
+                            }
                     except:
                         error_data = {"error_text": "Your input data is wrong!"}
             elif current_map == "mentorcastle":
                 if chosen_event == "submission_check":
                     try:
-                        submission_id, is_correct = packed_data["correction_data"].split("#")
-                        req = call_http_request(
-                            "/mentor/correction", session["user_authtoken"], {
+                        submission_id, is_correct = packed_data[
+                            "correction_data"
+                        ].split("#")
+                        res = call_http_request(
+                            "/mentor/correction",
+                            session["user_authtoken"],
+                            {
                                 "submission_id": int(submission_id),
                                 "is_correct": is_correct,
-                            }
+                            },
                         )
 
                         if res.status_code != 200:
@@ -590,7 +596,40 @@ def send_action(sid, data):
                                 """.strip()
                             }
                         else:
-                            success_data = {"success_text": json.loads(res.text)["result"]}
+                            success_data = {
+                                "success_text": json.loads(res.text)["result"]
+                            }
+                    except:
+                        error_data = {"error_text": "Your input data is wrong!"}
+            else:
+                if chosen_event == "hint":
+                    try:
+                        quest_id, hint_kind = packed_data["correction_data"].split("#")
+
+                        if hint_kind not in ["free", "paid"]:
+                            error_data = {
+                                "error_text": 'Hint kind can only be either "free" or "paid"'
+                            }
+
+                        res = call_http_request(
+                            f"/quest/{hint_kind}hint",
+                            session["user_authtoken"],
+                            {
+                                "quest_id": int(quest_id),
+                            },
+                        )
+
+                        if res.status_code != 200:
+                            error_data = {
+                                "error_text": """
+                                    Something is wrong in the system,
+                                    please try again later!
+                                """.strip()
+                            }
+                        else:
+                            success_data = {
+                                "success_text": json.loads(res.text)["result"]
+                            }
                     except:
                         error_data = {"error_text": "Your input data is wrong!"}
 
