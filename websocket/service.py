@@ -315,6 +315,7 @@ def send_action(sid, data):
                                 query getUsers {
                                     users(order_by: {leetcoin: desc}) {
                                         id
+                                        nickname
                                     }
                                 }
                             """,
@@ -343,8 +344,21 @@ def send_action(sid, data):
 
                         achievement_list.extend(leetcoin_list)
 
+                        score_list = []
+                        for x in achievement_list:
+                            score_list.append(
+                                {
+                                    "user_id": x,
+                                    "user_nickname": next(
+                                        item.nickname
+                                        for item in result["users"]
+                                        if int(item["id"]) == x
+                                    ),
+                                }
+                            )
+
                         packed_data["packed_data"] = {
-                            "achievement_list": achievement_list,
+                            "achievement_list": score_list,
                         }
                     elif event_name == "hall_of_fame":
                         req = call_http_request(
