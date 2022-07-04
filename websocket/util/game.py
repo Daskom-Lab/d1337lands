@@ -23,6 +23,9 @@ class Game:
         for map in self.maps:
             self.maps_data[map] = self.getMapData(map)
 
+    def getIslandMaps(self):
+        return [x for x in self.maps if x.endswith("island")]
+
     def getMapData(self, map_name):
         map_metadata = {}
         with requests.get(f"{game_url}/assets/maps/{map_name}/positioning.json") as r:

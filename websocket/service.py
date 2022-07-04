@@ -1,3 +1,4 @@
+from unicodedata import category
 import eventlet
 import socketio
 import requests
@@ -5,10 +6,8 @@ import json
 
 from subservices.chatService import ChatNamespace
 from util.game import Game
-from util.query import call_request
+from util.query import call_gql_request, call_http_request
 
-auth_validation_url = "http://localhost:4444/api/authentication/validate"
-users_presence_url = "http://localhost:3000/api/user/presence"
 
 sio = socketio.Server(
     cors_allowed_origins=[
@@ -29,7 +28,7 @@ def isFromWeb(connection_source):
 @sio.event
 def connect(sid, _, auth):
     req = requests.post(
-        auth_validation_url, headers={"Authorization": f"Bearer {auth['token']}"}
+        "/authentication/validate", headers={"Authorization": f"Bearer {auth['token']}"}
     )
     if req.status_code == 401:
         return "ERR: Authorization error", 401
@@ -48,6 +47,7 @@ def connect(sid, _, auth):
         "user_name": user_name,
         "user_role": user_role,
         "user_nickname": user_nickname,
+        "user_authtoken": auth["token"],
         "connection_source": auth["connection_source"],
     }
 
@@ -56,12 +56,16 @@ def connect(sid, _, auth):
     result = {"user_datas": []}
 
     try:
-        result = call_request(
+        result = call_gql_request(
             r"""
                 query getUserData ($userId: bigint!) {
                     user_datas(where: {user_id: {_eq: $userId}}) {
                         map
                         position
+                        user {
+                            character
+                            chosen_title
+                        }
                     }
                 }
             """,
@@ -83,7 +87,7 @@ def connect(sid, _, auth):
     print(f"User connected to game socket: {sid}\n\n")
 
     if isFromWeb(auth["connection_source"]):
-        _ = call_request(
+        _ = call_gql_request(
             r"""
                 mutation updateUserData($userId: bigint!, $is_online: Boolean!) {
                     update_user_datas(where: {user_id: {_eq: $userId}}, _set: {is_online: $is_online}) {
@@ -111,7 +115,7 @@ def connect(sid, _, auth):
         )
 
         with requests.get(
-            users_presence_url, headers={"Authorization": f"Bearer {auth['token']}"}
+            "/user/presence", headers={"Authorization": f"Bearer {auth['token']}"}
         ) as r:
             for user in json.loads(r.text)["result"]:
                 if user["is_online"] and user["user_id"] != user_id:
@@ -124,6 +128,8 @@ def connect(sid, _, auth):
                             "user_datas": {
                                 "map": user["map"],
                                 "position": user["position"],
+                                "character": user["character"],
+                                "chosen_title": user["chosen_title"],
                             },
                         },
                         room=user_id,
@@ -151,7 +157,7 @@ def disconnect(sid):
     session = sio.get_session(sid)
 
     if isFromWeb(session["connection_source"]) and "user_datas" in session:
-        _ = call_request(
+        _ = call_gql_request(
             r"""
                 mutation updateUserData($userId: bigint!, $map: String!, $position: String!, $is_online: Boolean!) {
                     update_user_datas(where: {user_id: {_eq: $userId}}, _set: {map: $map, position: $position, is_online: $is_online}) {
@@ -212,7 +218,7 @@ def send_action(sid, data):
         }
 
         try:
-            _ = call_request(
+            _ = call_gql_request(
                 r"""
                     mutation insertUserData($userId: bigint!, $map: String!, $position: String!) {
                         insert_user_datas_one(object: {map: $map, position: $position, user_id: $userId}) {
@@ -292,10 +298,61 @@ def send_action(sid, data):
             if nearby_event_data["event_name"]:
                 event_name, _ = event_data
 
-                if event_name == "teleportation":
-                    packed_data["packed_data"] = {
-                        "maps": [x for x in game.maps if x.endswith("island")]
-                    }
+                current_map = session["user_datas"]["map"]
+                if current_map == "town":
+                    if event_name == "teleportation":
+                        packed_data["packed_data"] = {"maps": game.getIslandMaps()}
+                elif current_map == "mentorcastle":
+                    if event_name == "submission_check":
+                        req = call_http_request(
+                            "/mentor/check", session["user_authtoken"], {}
+                        )
+                        packed_data["packed_data"] = {
+                            "submission_list": json.loads(req.text)["result"]
+                        }
+                else:
+                    if event_name == "hint":
+                        packed_data["packed_data"] = {
+                            "prompt": r"""
+                                Hello there codeventurer, tell me which quest that
+                                you are stuck with and what kind of hints you want me to give!
+
+                                Remember that i only accept your wishes in this format 
+                                {quest_id}\#{free||paid}
+
+                                ex: 1\#free
+
+                                You can find the quest_id from a person that will give you quest
+                                when you talk to em!
+                            """.strip()
+                        }
+                    elif event_name == "quest":
+                        packed_data["packed_data"] = {"maps": game.getIslandMaps()}
+                    elif event_name == "submission":
+                        req = call_http_request(
+                            "/quest/submission", session["user_authtoken"], {}
+                        )
+                        packed_data["packed_data"] = {
+                            "submission_list": json.loads(req.text)["result"]
+                        }
+                    elif event_name == "submit_quest":
+                        packed_data["packed_data"] = {
+                            "prompt": r"""
+                                Hello there codeventurer, you must've been in a very long 
+                                code journey aint ya ?
+
+                                You can submit your answer to me and worry not, i will pass 
+                                it on to the mentors in the castle... i accept your answer
+                                in this kind of format
+                                {quest_id}\#\#\#{answer}
+
+                                ex: 1\#\#\#https://paste.sh/6IktKHqS\#Kg-rYPIyi7DLM_De-8kNr5ma
+
+                                Note that i only accept the answer part in a kind of URL (Uniform
+                                Resource Locators) and please dont give me your localhost URL or the
+                                mentors are going to be very mad at me, and they might fire me :((
+                            """.strip()
+                        }
 
                 session["chosen_event"] = event_name
                 sio.save_session(sid, session)
@@ -315,7 +372,7 @@ def send_action(sid, data):
         if chosen_event and packed_data:
             if chosen_event == "teleportation":
                 try:
-                    eligible_maps = [x for x in game.maps if x.endswith("island")]
+                    eligible_maps = game.getIslandMaps()
 
                     chosen_map = int(packed_data["chosen_map"])
                     new_user_datas = {
@@ -347,9 +404,9 @@ def send_action(sid, data):
         if not chosen_event:
             error_data = {
                 "error_text": """
-                    \rChoose an event first by hitting "enter" or 
-                    \r"spacebar" key on the event trigger location
-                """
+                    Choose an event first by hitting "enter" or 
+                    "spacebar" key on the event trigger location
+                """.strip()
             }
 
         if error_data:
