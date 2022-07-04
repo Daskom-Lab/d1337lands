@@ -302,6 +302,81 @@ def send_action(sid, data):
                 if current_map == "town":
                     if event_name == "teleportation":
                         packed_data["packed_data"] = {"maps": game.getIslandMaps()}
+                    elif event_name == "shop":
+                        req = call_http_request(
+                            "/shop/list", session["user_authtoken"], {}
+                        )
+                        packed_data["packed_data"] = {
+                            "shop_list": json.loads(req.text)["result"]
+                        }
+                    elif event_name == "leaderboard":
+                        result = call_gql_request(
+                            r"""
+                                query getUsers {
+                                    users(order_by: {leetcoin: desc}) {
+                                        id
+                                    }
+                                }
+                            """,
+                        )
+
+                        if len(result["users"]) > 0:
+                            leetcoin_list = [res["id"] for res in result["users"]]
+
+                        req = call_http_request(
+                            "/user/achievement", session["user_authtoken"], {}
+                        )
+
+                        achievements = {}
+                        for res in json.loads(req.text)["result"]:
+                            try:
+                                achievements[res["id"]] += 1
+                            except:
+                                achievements[res["id"]] = 1
+
+                        achievement_list = []
+                        for key, _ in sorted(
+                            achievements.items(), key=lambda item: item[1]
+                        ).reverse():
+                            achievement_list.append(key)
+                            leetcoin_list.remove(key)
+
+                        achievement_list.extend(leetcoin_list)
+
+                        packed_data["packed_data"] = {
+                            "achievement_list": achievement_list,
+                        }
+                    elif event_name == "hall_of_fame":
+                        req = call_http_request(
+                            "/user/titles", session["user_authtoken"], {}
+                        )
+
+                        user_list = {}
+                        for title in json.loads(req.text)["result"]:
+                            try:
+                                user_list[title["nickname"]].append(
+                                    {
+                                        "title": title["title"],
+                                        "description": title["description"],
+                                    }
+                                )
+                            except:
+                                user_list[title["nickname"]] = [
+                                    {
+                                        "title": title["title"],
+                                        "description": title["description"],
+                                    }
+                                ]
+
+                        user_list = list(
+                            dict(
+                                sorted(
+                                    user_list.items(), key=lambda item: item[1]
+                                ).reverse()
+                            ).keys()
+                        )
+                        packed_data["packed_data"] = {"user_list": user_list}
+
                 elif current_map == "mentorcastle":
                     if event_name == "submission_check":
                         req = call_http_request(
