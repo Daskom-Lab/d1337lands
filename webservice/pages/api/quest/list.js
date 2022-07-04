@@ -21,7 +21,7 @@ async function handler(req, res) {
 
   postgresPool.query(
     {
-      text: `SELECT title, description, level, reward, created_at 
+      text: `SELECT id, title, description, level, reward, created_at 
               FROM quests
               WHERE category = $1`,
       values: [category]
