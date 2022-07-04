@@ -252,6 +252,7 @@ export default function Home({ peopleList, fileTree }) {
                 return;
               }
 
+              if (data.success_text) setLogBuffer(`${data.success_text}`);
               if (data.map) {
                 printWelcomingPrompt(undefined, data.map);
                 return;

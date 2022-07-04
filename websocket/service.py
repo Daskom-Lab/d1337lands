@@ -552,6 +552,22 @@ def send_action(sid, data):
                         success_data = new_user_datas
                     except:
                         error_data = {"error_text": "Your input data is wrong!"}
+                elif chosen_event == "shop":
+                    res = call_http_request(
+                        "/shop/buy",
+                        session["user_authtoken"],
+                        {"potion_id": int(packed_data["chosen_potion"])},
+                    )
+
+                    if res.status_code != 200:
+                        error_data = {
+                            "error_text": """
+                                Something is wrong in the system,
+                                please try again later!
+                            """.strip()
+                        }
+                    else:
+                        success_data = {"success_text": json.loads(res.text)["result"]}
 
         if not packed_data:
             error_data = {"error_text": "Please give an input data first!"}
