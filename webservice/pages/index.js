@@ -220,6 +220,11 @@ export default function Home({ peopleList, fileTree }) {
 
           socket.on("handle_action", (data) => {
             if (data.action === "run_event") {
+              if (data.error_text) {
+                setLogBuffer(`ERROR: ${data.error_text}`);
+                return;
+              }
+
               if (data.event_name !== null && data.event_name !== undefined) {
                 switch (data.event_name) {
                   case "teleportation":
