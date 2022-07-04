@@ -632,6 +632,81 @@ def send_action(sid, data):
                             }
                     except:
                         error_data = {"error_text": "Your input data is wrong!"}
+                elif chosen_event == "quest":
+                    try:
+                        eligible_maps = game.getIslandMaps()
+                        chosen_category = int(packed_data["chosen_category"])
+
+                        res = call_http_request(
+                            "/quest/list",
+                            session["user_authtoken"],
+                            {
+                                "category": eligible_maps[chosen_category],
+                            },
+                        )
+
+                        if res.status_code != 200:
+                            error_data = {
+                                "error_text": """
+                                    Something is wrong in the system,
+                                    please try again later!
+                                """.strip()
+                            }
+                        else:
+                            success_data = {
+                                "success_text": json.loads(res.text)["result"]
+                            }
+                    except:
+                        error_data = {"error_text": "Your input data is wrong!"}
+                elif chosen_event == "submission":
+                    try:
+                        res = call_http_request(
+                            "/quest/redeem",
+                            session["user_authtoken"],
+                            {
+                                "submission_id": int(packed_data["chosen_submission"]),
+                            },
+                        )
+
+                        if res.status_code != 200:
+                            error_data = {
+                                "error_text": """
+                                    Something is wrong in the system,
+                                    please try again later!
+                                """.strip()
+                            }
+                        else:
+                            success_data = {
+                                "success_text": json.loads(res.text)["result"]
+                            }
+                    except:
+                        error_data = {"error_text": "Your input data is wrong!"}
+                elif chosen_event == "submit_quest":
+                    try:
+                        quest_id, answer = packed_data["quest_answer_data"].split("###")
+
+                        res = call_http_request(
+                            "/quest/submit",
+                            session["user_authtoken"],
+                            {
+                                "quest_id": int(quest_id),
+                                "answer": answer,
+                            },
+                        )
+
+                        if res.status_code != 200:
+                            error_data = {
+                                "error_text": """
+                                    Something is wrong in the system,
+                                    please try again later!
+                                """.strip()
+                            }
+                        else:
+                            success_data = {
+                                "success_text": json.loads(res.text)["result"]
+                            }
+                    except:
+                        error_data = {"error_text": "Your input data is wrong!"}
 
         if not packed_data:
             error_data = {"error_text": "Please give an input data first!"}
