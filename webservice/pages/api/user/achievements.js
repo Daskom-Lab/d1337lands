@@ -11,7 +11,7 @@ async function handler(req, res) {
   }
 
   postgresPool.query(
-    `SELECT users.nickname, 
+    `SELECT users.id, users.nickname, 
             achievement_codes.title, achievement_codes.description
       FROM achievements
       LEFT JOIN users
