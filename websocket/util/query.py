@@ -33,7 +33,6 @@ def call_gql_request(query, variable_data, token=hasura_admin_secret):
             headers={
                 "content-type": "application/json",
                 "x-hasura-admin-secret": hasura_admin_secret,
-                "Authorization": "Bearer {}".format(token),
             },
         )
     else:
@@ -43,7 +42,6 @@ def call_gql_request(query, variable_data, token=hasura_admin_secret):
             retries=3,
             headers={
                 "content-type": "application/json",
-                "x-hasura-admin-secret": hasura_admin_secret,
                 "Authorization": "Bearer {}".format(token),
             },
         )
