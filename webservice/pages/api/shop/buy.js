@@ -91,7 +91,7 @@ async function handler(req, res) {
             );
           } else {
             res.status(200).json({
-              reason: "Your leetcoin is not enough to buy this potion!"
+              result: "Your leetcoin is not enough to buy this potion!"
             });
             return;
           }
