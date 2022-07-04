@@ -15,7 +15,11 @@ async function handler(req, res) {
 
   try {
     submission_id = req.body.submission_id;
-    is_correct = req.body.is_correct;
+
+    if (!["true", "false"].includes(req.body.is_correct.toLowerCase())) 
+      throw "is_correct could only be either \"true\" or \"false\""
+
+    is_correct = (req.body.is_correct.toLowerCase() === "true");
   } catch (error) {
     res.status(400).send({ message: "Payload is missing submission_id or is_correct" });
     return
