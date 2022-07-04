@@ -76,6 +76,8 @@ class Game:
             map_data["events"] = {
                 # Main events
                 "submission_check": map_metadata["SubmissionCheckPos"],
+                "teleportation_right": map_metadata["TeleportationRightPos"],
+                "teleportation_left": map_metadata["TeleportationLeftPos"],
             }
         else:
             map_data["start_positions"] = map_metadata["TeleportationPos"]
@@ -86,11 +88,12 @@ class Game:
                 "quest": map_metadata["QuestPos"],
                 "submission": map_metadata["SubmissionPos"],
                 "submit_quest": map_metadata["SubmitQuestPos"],
+                "teleportation": map_metadata["TeleportationPos"],
             }
 
         return map_data
 
-    def getRandomStartPosition(self, map_name, which=None):
+    def getRandomStartPosition(self, map_name, which=None, teleport_to=None):
         if map_name == "mentorcastle":
             if not which or which not in ["left", "right"]:
                 raise ValueError(
@@ -100,10 +103,17 @@ class Game:
             return random.choice(
                 self.maps_data[map_name]["start_positions"][0 if which == "left" else 1]
             )
-        return random.choice(self.maps_data[map_name]["start_positions"])
+
+        return random.choice(
+            self.maps_data[map_name]["start_positions"]
+            if not teleport_to
+            else teleport_to
+        )
 
     def getNextPosition(self, map_name, position, direction, check_collision=True):
-        return self.__getNextPosition(self, map_name, position, direction, check_collision)
+        return self.__getNextPosition(
+            self, map_name, position, direction, check_collision
+        )
 
     @staticmethod
     @lru_cache(maxsize=16)
