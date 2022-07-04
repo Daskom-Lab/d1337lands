@@ -553,21 +553,46 @@ def send_action(sid, data):
                     except:
                         error_data = {"error_text": "Your input data is wrong!"}
                 elif chosen_event == "shop":
-                    res = call_http_request(
-                        "/shop/buy",
-                        session["user_authtoken"],
-                        {"potion_id": int(packed_data["chosen_potion"])},
-                    )
+                    try:
+                        res = call_http_request(
+                            "/shop/buy",
+                            session["user_authtoken"],
+                            {"potion_id": int(packed_data["chosen_potion"])},
+                        )
 
-                    if res.status_code != 200:
-                        error_data = {
-                            "error_text": """
-                                Something is wrong in the system,
-                                please try again later!
-                            """.strip()
-                        }
-                    else:
-                        success_data = {"success_text": json.loads(res.text)["result"]}
+                        if res.status_code != 200:
+                            error_data = {
+                                "error_text": """
+                                    Something is wrong in the system,
+                                    please try again later!
+                                """.strip()
+                            }
+                        else:
+                            success_data = {"success_text": json.loads(res.text)["result"]}
+                    except:
+                        error_data = {"error_text": "Your input data is wrong!"}
+            elif current_map == "mentorcastle":
+                if chosen_event == "submission_check":
+                    try:
+                        submission_id, is_correct = packed_data["correction_data"].split("#")
+                        req = call_http_request(
+                            "/mentor/correction", session["user_authtoken"], {
+                                "submission_id": int(submission_id),
+                                "is_correct": is_correct,
+                            }
+                        )
+
+                        if res.status_code != 200:
+                            error_data = {
+                                "error_text": """
+                                    Something is wrong in the system,
+                                    please try again later!
+                                """.strip()
+                            }
+                        else:
+                            success_data = {"success_text": json.loads(res.text)["result"]}
+                    except:
+                        error_data = {"error_text": "Your input data is wrong!"}
 
         if not packed_data:
             error_data = {"error_text": "Please give an input data first!"}
