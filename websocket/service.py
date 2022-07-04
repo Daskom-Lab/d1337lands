@@ -376,7 +376,35 @@ def send_action(sid, data):
                             ).keys()
                         )
                         packed_data["packed_data"] = {"user_list": user_list}
+                    elif (
+                        event_name == "mentor_castle_right"
+                        or event_name == "mentor_castle_left"
+                    ):
+                        if session["user_role"] != "mentor":
+                            data_to_emit["action"] = {
+                                "action": data["action"],
+                                "error_text": "Hold on right there codeventurer, you are not a mentor!",
+                            }
+                        else:
+                            new_user_datas = {
+                                "map": "mentorcastle",
+                                "position": f"""{game.getRandomStartPosition('mentorcastle', 
+                                    which=event_name.split('mentor_castle_')[1])}""".strip(),
+                            }
 
+                            data_to_emit["map"] = {
+                                "user_id": session["user_id"],
+                                "user_nickname": session["user_nickname"],
+                                **new_user_datas,
+                            }
+
+                            sio.leave_room(sid, session["user_datas"]["map"])
+
+                            session["chosen_event"] = None
+                            session["user_datas"] = new_user_datas
+
+                            sio.enter_room(sid, new_user_datas["map"])
+                            sio.save_session(sid, session)
                 elif current_map == "mentorcastle":
                     if event_name == "submission_check":
                         req = call_http_request(
@@ -385,6 +413,33 @@ def send_action(sid, data):
                         packed_data["packed_data"] = {
                             "submission_list": json.loads(req.text)["result"]
                         }
+                    elif (
+                        event_name == "teleportation_right"
+                        or event_name == "teleportation_left"
+                    ):
+                        new_user_datas = {
+                            "map": "town",
+                            "position": f"""{
+                                game.getRandomStartPosition('town', 
+                                    game.maps_data['town']['events']
+                                        ['mentor_castle_' + event_name.split('teleportation_')[1]]
+                                )}
+                            """.strip(),
+                        }
+
+                        data_to_emit["map"] = {
+                            "user_id": session["user_id"],
+                            "user_nickname": session["user_nickname"],
+                            **new_user_datas,
+                        }
+
+                        sio.leave_room(sid, session["user_datas"]["map"])
+
+                        session["chosen_event"] = None
+                        session["user_datas"] = new_user_datas
+
+                        sio.enter_room(sid, new_user_datas["map"])
+                        sio.save_session(sid, session)
                 else:
                     if event_name == "hint":
                         packed_data["packed_data"] = {
@@ -428,6 +483,29 @@ def send_action(sid, data):
                                 mentors are going to be very mad at me, and they might fire me :((
                             """.strip()
                         }
+                    elif event_name == "teleportation":
+                        new_user_datas = {
+                            "map": "town",
+                            "position": f"""{
+                                game.getRandomStartPosition('town', 
+                                    game.maps_data['town']['events']['teleportation']
+                                )}
+                            """.strip(),
+                        }
+
+                        data_to_emit["map"] = {
+                            "user_id": session["user_id"],
+                            "user_nickname": session["user_nickname"],
+                            **new_user_datas,
+                        }
+
+                        sio.leave_room(sid, session["user_datas"]["map"])
+
+                        session["chosen_event"] = None
+                        session["user_datas"] = new_user_datas
+
+                        sio.enter_room(sid, new_user_datas["map"])
+                        sio.save_session(sid, session)
 
                 session["chosen_event"] = event_name
                 sio.save_session(sid, session)
@@ -445,33 +523,35 @@ def send_action(sid, data):
         error_data = {}
         success_data = {}
         if chosen_event and packed_data:
-            if chosen_event == "teleportation":
-                try:
-                    eligible_maps = game.getIslandMaps()
+            current_map = session["user_datas"]["map"]
+            if current_map == "town":
+                if chosen_event == "teleportation":
+                    try:
+                        eligible_maps = game.getIslandMaps()
 
-                    chosen_map = int(packed_data["chosen_map"])
-                    new_user_datas = {
-                        "map": eligible_maps[chosen_map],
-                        "position": f"{game.getRandomStartPosition(eligible_maps[chosen_map])}",
-                    }
+                        chosen_map = int(packed_data["chosen_map"])
+                        new_user_datas = {
+                            "map": eligible_maps[chosen_map],
+                            "position": f"{game.getRandomStartPosition(eligible_maps[chosen_map])}",
+                        }
 
-                    data_to_emit["map"] = {
-                        "user_id": session["user_id"],
-                        "user_nickname": session["user_nickname"],
-                        **new_user_datas,
-                    }
+                        data_to_emit["map"] = {
+                            "user_id": session["user_id"],
+                            "user_nickname": session["user_nickname"],
+                            **new_user_datas,
+                        }
 
-                    sio.leave_room(sid, session["user_datas"]["map"])
+                        sio.leave_room(sid, session["user_datas"]["map"])
 
-                    session["chosen_event"] = None
-                    session["user_datas"] = new_user_datas
+                        session["chosen_event"] = None
+                        session["user_datas"] = new_user_datas
 
-                    sio.enter_room(sid, new_user_datas["map"])
-                    sio.save_session(sid, session)
+                        sio.enter_room(sid, new_user_datas["map"])
+                        sio.save_session(sid, session)
 
-                    success_data = new_user_datas
-                except:
-                    error_data = {"error_text": "Your input data is wrong!"}
+                        success_data = new_user_datas
+                    except:
+                        error_data = {"error_text": "Your input data is wrong!"}
 
         if not packed_data:
             error_data = {"error_text": "Please give an input data first!"}
