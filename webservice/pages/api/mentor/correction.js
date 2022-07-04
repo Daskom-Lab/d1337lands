@@ -38,7 +38,7 @@ async function handler(req, res) {
               WHERE id = submission_id`,
       values: [is_correct, submission_id]
     },
-    (err, result) => {
+    (err, _) => {
       if (err) {
         res.status(500).json({
           reason: "Data Not Found!"
