@@ -50,6 +50,7 @@ export default function Home({ peopleList, fileTree }) {
   const [logBuffer, setLogBuffer] = useState("")
   const [chatInput, setChatInput] = useState("")
   const [logInput, setLogInput] = useState("")
+  const [currEvent, setCurrEvent] = useState("")
   const [userData, setUserData] = useState({})
   const [chats, setChats] = useState([])
   const [users, setUsers] = useState([])
@@ -105,8 +106,6 @@ export default function Home({ peopleList, fileTree }) {
       else return users
     })
   }
-
-  let sleep = ms => new Promise(r => setTimeout(r, ms));
 
   let isEmptyObject = function (object) {
     for (var _ in object) return false;
@@ -226,20 +225,140 @@ export default function Home({ peopleList, fileTree }) {
               }
 
               if (data.event_name !== null && data.event_name !== undefined) {
-                switch (data.event_name) {
-                  case "teleportation":
-                    setLogBuffer(`Welcome to the teleportation, ${userData.user_nickname}`)
-                    addLogBuffer(`                                                       `)
-                    addLogBuffer(`Please choose between these islands to teleport to:`)
-                    addLogBuffer(`(write the number of the islands which you want`)
-                    addLogBuffer(`to teleport to and click enter in the input bar below)`)
-                    addLogBuffer(`                                                       `)
-                    data.packed_data.maps.forEach((element, pos) => {
-                      addLogBuffer(`${pos + 1}. ${element}`)
-                    });
+                setCurrEvent(data.event_name);
+                switch (userData.user_datas.map) {
+                  case "town":
+                    switch (data.event_name) {
+                      case "teleportation":
+                        setLogBuffer(`Welcome to the teleportation, ${userData.user_nickname}`)
+                        addLogBuffer(`                                                       `)
+                        addLogBuffer(`Please choose between these islands to teleport to:    `)
+                        addLogBuffer(`(write the number of the islands which you want        `)
+                        addLogBuffer(`to teleport to and click enter in the input bar below) `)
+                        addLogBuffer(`                                                       `)
+                        data.packed_data.maps.forEach((element, pos) => {
+                          addLogBuffer(`${pos + 1}. ${element}`)
+                        });
+                        break;
+
+                      case "shop":
+                        setLogBuffer(`Hello and welcome to the shop, ${userData.user_nickname}`)
+                        addLogBuffer(`                                                        `)
+                        addLogBuffer(`You can choose any of these potions to buy:             `)
+                        addLogBuffer(`(write the number of the id of the potion which you     `)
+                        addLogBuffer(`want to buy and click enter in the input bar below)     `)
+                        addLogBuffer(`                                                        `)
+                        data.packed_data.shop_list.forEach(element => {
+                          addLogBuffer(`[+] potion_id = ${element.id}                `)
+                          addLogBuffer(`    potion_code = ${element.code}            `)
+                          addLogBuffer(`    potion_desc = ${element.description}     `)
+                          addLogBuffer(`    potion_price = ${element.price} leetcoins`)
+                          addLogBuffer(`                                             `)
+                        });
+                        break;
+
+                      case "leaderboard":
+                        addLogBuffer(`Congratulation to all these relentless codeventurers`)
+                        addLogBuffer(`(you guys have truly done the very best of work)    `)
+                        addLogBuffer(`                                                    `)
+                        data.packed_data.achievement_list.forEach((element, pos) => {
+                          addLogBuffer(`[RANK ${pos + 1}] ${element.user_nickname}`)
+                        });
+                        break;
+
+                      case "hall_of_fame":
+                        addLogBuffer(`Hail to the masters of this whole codeventure lands:`)
+                        addLogBuffer(`                                                    `)
+                        for (let [key, value] of Object.entries(data.packed_data.user_list)) {
+                          addLogBuffer(`>> ${key}`)
+                          value.forEach(element => {
+                            addLogBuffer(`   title = ${element.title}            `)
+                            addLogBuffer(`   description = ${element.description}`)
+                            addLogBuffer(`                                       `)
+                          });
+                          addLogBuffer(`         `)
+                        }
+                        break;
+
+                      default:
+                        break;
+                    }
                     break;
 
-                  default:
+                  case "mentorcastle":
+                    switch (data.event_name) {
+                      case "submission_check":
+                        setLogBuffer(`Hello there mentors, now we all got a job to do        `)
+                        addLogBuffer(`                                                       `)
+                        addLogBuffer(`Please make some correction check on these submissions:`)
+                        addLogBuffer(`(write the id of the submission which you want         `)
+                        addLogBuffer(`to check and click enter in the input bar below)       `)
+                        addLogBuffer(`                                                       `)
+                        data.packed_data.submission_list.forEach(element => {
+                          addLogBuffer(`[+] submission_id = ${element.id}        `)
+                          addLogBuffer(`    submission_answer = ${element.answer}`)
+                          addLogBuffer(`    quest_title = ${element.title}       `)
+                          addLogBuffer(`    quest_level = ${element.level}       `)
+                          addLogBuffer(`    quest_category = ${element.category} `)
+                          addLogBuffer(`                                         `)
+                        });
+                        break;
+
+                      default:
+                        break;
+                    }
+                    break;
+
+                  default: // all island maps
+                    if (userData.user_datas.map === undefined ||
+                        !userData.user_datas.map.endsWith("island"))
+                        return;
+
+                    switch (data.event_name) {
+                      case "hint":
+                        setLogBuffer(data.packed_data.prompt)
+                        break;
+
+                      case "quest":
+                        setLogBuffer(`Ohh at last, you successfully found me ${userData.user_nickname}`)
+                        addLogBuffer(`here are all the quests i got for you to tackle now :           `)
+                        addLogBuffer(`                                                                `)
+                        data.packed_data.quest_list.forEach(element => {
+                          addLogBuffer(`[+] quest_id = ${element.id}                 `)
+                          addLogBuffer(`    quest_title = ${element.answer}          `)
+                          addLogBuffer(`    quest_description = ${element.is_correct}`)
+                          addLogBuffer(`    quest_level = ${element.title}           `)
+                          addLogBuffer(`    quest_reward = ${element.level} leetcoins`)
+                          addLogBuffer(`                                             `)
+                        });
+                        break;
+
+                      case "submission":
+                        setLogBuffer(`Welcome back codeventurer, these are the submission  `)
+                        setLogBuffer(`that you have sent to me before                      `)
+                        addLogBuffer(`                                                     `)
+                        addLogBuffer(`You can redeem those that have been corrected by the `)
+                        addLogBuffer(`mentors by writing the id of the subimssion and click`)
+                        addLogBuffer(`enter in the input bar below                         `)
+                        addLogBuffer(`                                                     `)
+                        data.packed_data.submission_list.forEach(element => {
+                          addLogBuffer(`[+] submission_id = ${element.id}                `)
+                          addLogBuffer(`    submission_answer = ${element.answer}        `)
+                          addLogBuffer(`    submission_is_correct = ${element.is_correct}`)
+                          addLogBuffer(`    quest_title = ${element.title}               `)
+                          addLogBuffer(`    quest_level = ${element.level}               `)
+                          addLogBuffer(`    quest_category = ${element.category}         `)
+                          addLogBuffer(`                                                 `)
+                        });
+                        break;
+
+                      case "submit_quest":
+                        setLogBuffer(data.packed_data.prompt)
+                        break;
+
+                      default:
+                        break;
+                    }
                     break;
                 }
               } else {
@@ -253,10 +372,20 @@ export default function Home({ peopleList, fileTree }) {
               }
 
               if (data.success_text) setLogBuffer(`${data.success_text}`);
-              if (data.map) {
-                printWelcomingPrompt(undefined, data.map);
-                return;
-              }
+            }
+          })
+
+          socket.on("map_state", (data) => {
+            if (
+              data.user_id &&
+              data.user_id === userData.user_id &&
+              data.map !== userData.user_datas.map
+            ) {
+              let curUserData = userData;
+              curUserData.user_datas.map = data.map
+              curUserData.user_datas.position = data.position
+              setUserData(curUserData);
+              printWelcomingPrompt(undefined, data.map);
             }
           })
 

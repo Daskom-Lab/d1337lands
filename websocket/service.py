@@ -472,7 +472,14 @@ def send_action(sid, data):
                             """.strip()
                         }
                     elif event_name == "quest":
-                        packed_data["packed_data"] = {"maps": game.getIslandMaps()}
+                        req = call_http_request(
+                            "/quest/list", session["user_authtoken"], {
+                                "category": current_map
+                            }
+                        )
+                        packed_data["packed_data"] = {
+                            "submission_list": json.loads(req.text)["result"]
+                        }
                     elif event_name == "submission":
                         req = call_http_request(
                             "/quest/submission", session["user_authtoken"], {}
@@ -631,32 +638,6 @@ def send_action(sid, data):
                             session["user_authtoken"],
                             {
                                 "quest_id": int(quest_id),
-                            },
-                        )
-
-                        if res.status_code != 200:
-                            error_data = {
-                                "error_text": """
-                                    Something is wrong in the system,
-                                    please try again later!
-                                """.strip()
-                            }
-                        else:
-                            success_data = {
-                                "success_text": json.loads(res.text)["result"]
-                            }
-                    except:
-                        error_data = {"error_text": "Your input data is wrong!"}
-                elif chosen_event == "quest":
-                    try:
-                        eligible_maps = game.getIslandMaps()
-                        chosen_category = int(packed_data["chosen_category"])
-
-                        res = call_http_request(
-                            "/quest/list",
-                            session["user_authtoken"],
-                            {
-                                "category": eligible_maps[chosen_category],
                             },
                         )
 
