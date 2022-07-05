@@ -15,7 +15,7 @@ def call_http_request(url, token, data={}, method="GET"):
             data=data,
         )
     elif method == "POST":
-        return requests.get(
+        return requests.post(
             f"{webservice_endpoint_url}{url}",
             headers={"Authorization": f"Bearer {token}"},
             data=data,
