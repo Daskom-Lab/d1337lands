@@ -55,18 +55,22 @@ select_permissions:
   - role: mentor
     permission:
       columns:
+        - character
         - chosen_title
         - id
         - leetcoin
         - nickname
         - username
+        - username_color
       filter: {}
   - role: player
     permission:
       columns:
+        - character
         - chosen_title
         - id
         - leetcoin
         - nickname
         - username
+        - username_color
       filter: {}
