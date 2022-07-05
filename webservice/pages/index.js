@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Button from '@/components/Button'
 import Aboutus from '@/components/Aboutus'
 import Activity from '@/components/Activity'
@@ -55,6 +55,9 @@ export default function Home({ peopleList, fileTree }) {
   const [chats, setChats] = useState([])
   const [users, setUsers] = useState([])
   const sharedState = useAppContext()
+
+  const userDataRef = useRef()
+  userDataRef.current = userData
 
   let addLogBuffer = function (newLogBuffer) {
     setLogBuffer(logBuffer => logBuffer + (logBuffer === "" ? "" : "\n") + newLogBuffer)
@@ -202,7 +205,7 @@ export default function Home({ peopleList, fileTree }) {
             }
           })
 
-          socket.on("user_data", async (data) => {
+          socket.on("user_data", (data) => {
             setUserData(data);
             printWelcomingPrompt(data);
 
@@ -224,6 +227,7 @@ export default function Home({ peopleList, fileTree }) {
                 return;
               }
 
+              const userData = userDataRef.current;
               if (data.event_name !== null && data.event_name !== undefined) {
                 setCurrEvent(data.event_name);
                 switch (userData.user_datas.map) {
@@ -378,10 +382,10 @@ export default function Home({ peopleList, fileTree }) {
           socket.on("map_state", (data) => {
             if (
               data.user_id &&
-              data.user_id === userData.user_id &&
-              data.map !== userData.user_datas.map
+              data.user_id === userDataRef.current.user_id &&
+              data.map !== userDataRef.current.user_datas.map
             ) {
-              let curUserData = userData;
+              let curUserData = userDataRef.current;
               curUserData.user_datas.map = data.map
               curUserData.user_datas.position = data.position
               setUserData(curUserData);
