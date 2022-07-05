@@ -216,7 +216,7 @@ def send_action(sid, data):
             _ = call_gql_request(
                 r"""
                     mutation insertUserData($userId: bigint!, $map: String!, $position: String!) {
-                        insert_user_datas_one(object: {map: $map, position: $position, user_id: $userId, is_online: true}) {
+                        insert_user_datas_one(object: {map: $map, position: $position, user_id: $userId}) {
                             id
                         }
                     }
