@@ -342,6 +342,8 @@ export class GameScene extends Phaser.Scene {
       }
     })
 
+    // TODO: Map changes dont work, please investigate (but before that
+    //       we have to work on the map revision first as its the more urgent one)
     socket.on("map_state", (data) => {
       if (data.map !== undefined && data.map !== this.getChosenMap()[1]) {
         this.setCurrentRenderedMap(data.map);

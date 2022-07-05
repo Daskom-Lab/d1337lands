@@ -69,7 +69,7 @@ export default function Home({ peopleList, fileTree }) {
     if (data !== undefined)
       setLogBuffer(`Hello and welcome to ${place}, ${data.user_nickname}.`)
     else
-      setLogBuffer(`Hello and welcome to ${place}, ${userData.user_nickname}.`)
+      setLogBuffer(`Hello and welcome to ${place}, ${userDataRef.current.user_nickname}.`)
     addLogBuffer(`                                                         `)
     addLogBuffer(`Walk anywhere across the maps using these keys:          `)
     addLogBuffer(`                                                         `)
@@ -148,7 +148,10 @@ export default function Home({ peopleList, fileTree }) {
         "action": "move",
         "direction": "up"
       }, (response) => {
-        if (response === "OK") printWelcomingPrompt();
+        if (response === "OK") {
+          printWelcomingPrompt();
+          setCurrEvent("");
+        }
       })
 
       return
@@ -160,7 +163,10 @@ export default function Home({ peopleList, fileTree }) {
         "action": "move",
         "direction": "left"
       }, (response) => {
-        if (response === "OK") printWelcomingPrompt();
+        if (response === "OK") {
+          printWelcomingPrompt();
+          setCurrEvent("");
+        }
       })
 
       return
@@ -172,7 +178,10 @@ export default function Home({ peopleList, fileTree }) {
         "action": "move",
         "direction": "down"
       }, (response) => {
-        if (response === "OK") printWelcomingPrompt();
+        if (response === "OK") {
+          printWelcomingPrompt();
+          setCurrEvent("");
+        }
       })
 
       return
@@ -184,7 +193,10 @@ export default function Home({ peopleList, fileTree }) {
         "action": "move",
         "direction": "right"
       }, (response) => {
-        if (response === "OK") printWelcomingPrompt();
+        if (response === "OK") {
+          printWelcomingPrompt();
+          setCurrEvent("");
+        }
       })
 
       return

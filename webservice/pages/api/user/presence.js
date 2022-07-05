@@ -19,7 +19,7 @@ async function handler(req, res) {
     (err, result) => {
       if (err) {
         res.status(500).json({
-          reason: "Data Not Found!"
+          reason: "Data Not Found!, reason: " + err
         });
         return;
       }
