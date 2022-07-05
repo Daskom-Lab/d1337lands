@@ -81,54 +81,54 @@ def connect(sid, _, auth):
     if len(result["user_datas"]) > 0:
         sio.enter_room(sid, result["user_datas"][0]["map"])
 
-    print(f"User connected to game socket: {sid}\n\n")
-
-    if isFromWeb(auth["connection_source"]):
-        _ = call_gql_request(
-            r"""
-                mutation updateUserData($userId: bigint!, $is_online: Boolean!) {
-                    update_user_datas(where: {user_id: {_eq: $userId}}, _set: {is_online: $is_online}) {
-                        affected_rows
+        if isFromWeb(auth["connection_source"]):
+            _ = call_gql_request(
+                r"""
+                    mutation updateUserData($userId: bigint!, $is_online: Boolean!) {
+                        update_user_datas(where: {user_id: {_eq: $userId}}, _set: {is_online: $is_online}) {
+                            affected_rows
+                        }
                     }
-                }
-            """,
-            {
-                "userId": user_id,
-                "is_online": True,
-            },
-            auth["token"],
-        )
+                """,
+                {
+                    "userId": user_id,
+                    "is_online": True,
+                },
+                auth["token"],
+            )
 
-        sio.emit(
-            "user_connect",
-            {
-                "user_id": user_id,
-                "user_nickname": user_nickname,
-                "user_role": user_role,
-                "user_datas": result["user_datas"][0]
-                if len(result["user_datas"]) > 0
-                else {},
-            },
-        )
+            sio.emit(
+                "user_connect",
+                {
+                    "user_id": user_id,
+                    "user_nickname": user_nickname,
+                    "user_role": user_role,
+                    "user_datas": result["user_datas"][0]
+                    if len(result["user_datas"]) > 0
+                    else {},
+                },
+            )
 
-        r = call_http_request("/user/presence", auth["token"])
-        for user in json.loads(r.text)["result"]:
-            if user["is_online"] and user["user_id"] != user_id:
-                sio.emit(
-                    "user_connect",
-                    {
-                        "user_id": user["user_id"],
-                        "user_nickname": user["nickname"],
-                        "user_role": user["role"],
-                        "user_datas": {
-                            "map": user["map"],
-                            "position": user["position"],
-                            "character": user["character"],
-                            "chosen_title": user["chosen_title"],
+            r = call_http_request("/user/presence", auth["token"])
+            for user in json.loads(r.text)["result"]:
+                if user["is_online"] and user["user_id"] != user_id:
+                    sio.emit(
+                        "user_connect",
+                        {
+                            "user_id": user["user_id"],
+                            "user_nickname": user["nickname"],
+                            "user_role": user["role"],
+                            "user_datas": {
+                                "map": user["map"],
+                                "position": user["position"],
+                                "character": user["character"],
+                                "chosen_title": user["chosen_title"],
+                            },
                         },
-                    },
-                    room=user_id,
-                )
+                        room=user_id,
+                    )
+
+    print(f"User connected to game socket: {sid}\n\n")
 
     sio.emit(
         "user_data",
@@ -216,7 +216,7 @@ def send_action(sid, data):
             _ = call_gql_request(
                 r"""
                     mutation insertUserData($userId: bigint!, $map: String!, $position: String!) {
-                        insert_user_datas_one(object: {map: $map, position: $position, user_id: $userId}) {
+                        insert_user_datas_one(object: {map: $map, position: $position, user_id: $userId, is_online: true}) {
                             id
                         }
                     }
