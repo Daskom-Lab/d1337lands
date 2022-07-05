@@ -31,11 +31,14 @@ async function handler(req, res) {
 
   postgresPool.query(
     {
-      text: `INSERT INTO submissions(answer, is_redeemed, quest_id, user_id)
-              VALUES ($1, FALSE, $2, $3)`,
-      values: [answer, quest_id, user_id]
+      text: `SELECT id
+              FROM submissions
+              WHERE quest_id = $1
+              AND user_id = $2
+              AND is_correct IS TRUE`,
+      values: [quest_id, user_id]
     },
-    (err, _) => {
+    (err, result) => {
       if (err) {
         res.status(500).json({
           reason: "Data Not Found!"
@@ -43,9 +46,32 @@ async function handler(req, res) {
         return;
       }
 
-      res.status(200).json({
-        result: "Submission is successfully created!",
-      });
+      if (result.rowCount > 0) {
+        res.status(200).json({
+          result: "You have finished this quest already!",
+        });
+        return;
+      }
+
+      postgresPool.query(
+        {
+          text: `INSERT INTO submissions(answer, is_redeemed, quest_id, user_id)
+              VALUES ($1, FALSE, $2, $3)`,
+          values: [answer, quest_id, user_id]
+        },
+        (err, _) => {
+          if (err) {
+            res.status(500).json({
+              reason: "Data Not Found!"
+            });
+            return;
+          }
+
+          res.status(200).json({
+            result: "Submission is successfully created!",
+          });
+        }
+      );
     }
   );
 }
