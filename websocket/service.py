@@ -24,6 +24,10 @@ def isFromWeb(connection_source):
     return connection_source == "web"
 
 
+def prettify(string):
+    return "\n".join(" ".join(line.split()) for line in string.strip().split("\n"))
+
+
 @sio.event
 def connect(sid, _, auth):
     req = call_http_request("/authentication/validate", auth["token"], method="POST")
@@ -453,18 +457,20 @@ def send_action(sid, data):
                 else:
                     if event_name == "hint":
                         packed_data["packed_data"] = {
-                            "prompt": r"""
-                                Hello there codeventurer, tell me which quest that
-                                you are stuck with and what kind of hints you want me to give!
+                            "prompt": prettify(
+                                """
+                                    Hello there codeventurer, tell me which quest that
+                                    you are stuck with and what kind of hints you want me to give!
 
-                                Remember that i only accept your wishes in this format 
-                                {quest_id}\#{free||paid}
+                                    Remember that i only accept your wishes in this format 
+                                    {quest_id}#{free||paid}
 
-                                ex: 1\#free
+                                    ex: 1#free
 
-                                You can find the quest_id from a person that will give you quest
-                                when you talk to em!
-                            """.strip()
+                                    You can find the quest_id from a person that will give you quest
+                                    when you talk to em!
+                                """
+                            )
                         }
                     elif event_name == "quest":
                         req = call_http_request(
@@ -484,21 +490,23 @@ def send_action(sid, data):
                         }
                     elif event_name == "submit_quest":
                         packed_data["packed_data"] = {
-                            "prompt": r"""
-                                Hello there codeventurer, you must've been in a very long 
-                                code journey aint ya ?
+                            "prompt": prettify(
+                                """
+                                    Hello there codeventurer, you must've been in a very long 
+                                    code journey aint ya ?
 
-                                You can submit your answer to me and worry not, i will pass 
-                                it on to the mentors in the castle... i accept your answer
-                                in this kind of format
-                                {quest_id}\#\#\#{answer}
+                                    You can submit your answer to me and worry not, i will pass 
+                                    it on to the mentors in the castle... i accept your answer
+                                    in this kind of format
+                                    {quest_id}###{answer}
 
-                                ex: 1\#\#\#https://paste.sh/6IktKHqS\#Kg-rYPIyi7DLM_De-8kNr5ma
+                                    ex: 1###https://paste.sh/6IktKHqS\#Kg-rYPIyi7DLM_De-8kNr5ma
 
-                                Note that i only accept the answer part in a kind of URL (Uniform
-                                Resource Locators) and please dont give me your localhost URL or the
-                                mentors are going to be very mad at me, and they might fire me :((
-                            """.strip()
+                                    Note that i only accept the answer part in a kind of URL (Uniform
+                                    Resource Locators) and please dont give me your localhost URL or the
+                                    mentors are going to be very mad at me, and they might fire me :((
+                                """
+                            )
                         }
                     elif event_name == "teleportation":
                         new_user_datas = {
@@ -580,10 +588,12 @@ def send_action(sid, data):
 
                         if res.status_code != 200:
                             error_data = {
-                                "error_text": """
-                                    Something is wrong in the system,
-                                    please try again later!
-                                """.strip()
+                                "error_text": prettify(
+                                    """
+                                        Something is wrong in the system,
+                                        please try again later!
+                                    """
+                                )
                             }
                         else:
                             success_data = {
@@ -609,10 +619,12 @@ def send_action(sid, data):
 
                         if res.status_code != 200:
                             error_data = {
-                                "error_text": """
-                                    Something is wrong in the system,
-                                    please try again later!
-                                """.strip()
+                                "error_text": prettify(
+                                    """
+                                        Something is wrong in the system,
+                                        please try again later!
+                                    """
+                                )
                             }
                         else:
                             success_data = {
@@ -640,10 +652,12 @@ def send_action(sid, data):
 
                         if res.status_code != 200:
                             error_data = {
-                                "error_text": """
-                                    Something is wrong in the system,
-                                    please try again later!
-                                """.strip()
+                                "error_text": prettify(
+                                    """
+                                        Something is wrong in the system,
+                                        please try again later!
+                                    """
+                                )
                             }
                         else:
                             success_data = {
@@ -664,10 +678,12 @@ def send_action(sid, data):
 
                         if res.status_code != 200:
                             error_data = {
-                                "error_text": """
-                                    Something is wrong in the system,
-                                    please try again later!
-                                """.strip()
+                                "error_text": prettify(
+                                    """
+                                        Something is wrong in the system,
+                                        please try again later!
+                                    """
+                                )
                             }
                         else:
                             success_data = {
@@ -691,10 +707,12 @@ def send_action(sid, data):
 
                         if res.status_code != 200:
                             error_data = {
-                                "error_text": """
-                                    Something is wrong in the system,
-                                    please try again later!
-                                """.strip()
+                                "error_text": prettify(
+                                    """
+                                        Something is wrong in the system,
+                                        please try again later!
+                                    """
+                                )
                             }
                         else:
                             success_data = {
@@ -708,10 +726,12 @@ def send_action(sid, data):
 
         if not chosen_event:
             error_data = {
-                "error_text": """
-                    Choose an event first by hitting "enter" or 
-                    "spacebar" key on the event trigger location
-                """.strip()
+                "error_text": prettify(
+                    """
+                        Choose an event first by hitting "enter" or 
+                        "spacebar" key on the event trigger location
+                    """
+                )
             }
 
         if error_data:
