@@ -1,4 +1,3 @@
-from unicodedata import category
 import eventlet
 import socketio
 import requests
@@ -27,9 +26,7 @@ def isFromWeb(connection_source):
 
 @sio.event
 def connect(sid, _, auth):
-    req = requests.post(
-        "/authentication/validate", headers={"Authorization": f"Bearer {auth['token']}"}
-    )
+    req = call_http_request("/authentication/validate", auth["token"], method="POST")
     if req.status_code == 401:
         return "ERR: Authorization error", 401
 
@@ -114,26 +111,24 @@ def connect(sid, _, auth):
             },
         )
 
-        with requests.get(
-            "/user/presence", headers={"Authorization": f"Bearer {auth['token']}"}
-        ) as r:
-            for user in json.loads(r.text)["result"]:
-                if user["is_online"] and user["user_id"] != user_id:
-                    sio.emit(
-                        "user_connect",
-                        {
-                            "user_id": user["user_id"],
-                            "user_nickname": user["nickname"],
-                            "user_role": user["role"],
-                            "user_datas": {
-                                "map": user["map"],
-                                "position": user["position"],
-                                "character": user["character"],
-                                "chosen_title": user["chosen_title"],
-                            },
+        r = call_http_request("/user/presence", auth["token"])
+        for user in json.loads(r.text)["result"]:
+            if user["is_online"] and user["user_id"] != user_id:
+                sio.emit(
+                    "user_connect",
+                    {
+                        "user_id": user["user_id"],
+                        "user_nickname": user["nickname"],
+                        "user_role": user["role"],
+                        "user_datas": {
+                            "map": user["map"],
+                            "position": user["position"],
+                            "character": user["character"],
+                            "chosen_title": user["chosen_title"],
                         },
-                        room=user_id,
-                    )
+                    },
+                    room=user_id,
+                )
 
     sio.emit(
         "user_data",
@@ -580,6 +575,7 @@ def send_action(sid, data):
                             "/shop/buy",
                             session["user_authtoken"],
                             {"potion_id": int(packed_data["chosen_potion"])},
+                            method="POST",
                         )
 
                         if res.status_code != 200:
@@ -608,6 +604,7 @@ def send_action(sid, data):
                                 "submission_id": int(submission_id),
                                 "is_correct": is_correct,
                             },
+                            method="POST",
                         )
 
                         if res.status_code != 200:
@@ -662,6 +659,7 @@ def send_action(sid, data):
                             {
                                 "submission_id": int(packed_data["chosen_submission"]),
                             },
+                            method="POST",
                         )
 
                         if res.status_code != 200:
@@ -688,6 +686,7 @@ def send_action(sid, data):
                                 "quest_id": int(quest_id),
                                 "answer": answer,
                             },
+                            method="POST",
                         )
 
                         if res.status_code != 200:

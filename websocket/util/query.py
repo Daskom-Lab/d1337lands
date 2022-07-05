@@ -7,7 +7,7 @@ webservice_endpoint_url = "http://localhost:4444/api"
 hasura_admin_secret = "hSK6kPeZN2zTLsvd2grPNtapLbeNzD9QU9aPd38f894JsmxM7Ecpb9hkAxeX"
 
 
-def call_http_request(url, token, data, method="GET"):
+def call_http_request(url, token, data={}, method="GET"):
     if method == "GET":
         return requests.get(
             f"{webservice_endpoint_url}{url}",
