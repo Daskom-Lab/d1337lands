@@ -9,7 +9,7 @@ async function handler(req, res) {
     res.status(400).send({ message: "Only POST requests allowed" });
     return;
   }
-  
+
   let submission_id = ""
 
   try {
@@ -43,6 +43,14 @@ async function handler(req, res) {
       if (submission.rows[0].is_redeemed) {
         res.status(200).json({
           reason: "You have redeemed this submission before!"
+        });
+        return;
+      }
+
+      if (submission.rows[0].is_correct === undefined ||
+        submission.rows[0].is_correct === null) {
+        res.status(200).json({
+          result: "You cant redeem this submission yet, please (kindly) ask the mentor to check it first!",
         });
         return;
       }
