@@ -473,9 +473,9 @@ def send_action(sid, data):
                         }
                     elif event_name == "quest":
                         req = call_http_request(
-                            "/quest/list", session["user_authtoken"], {
-                                "category": current_map
-                            }
+                            "/quest/list",
+                            session["user_authtoken"],
+                            {"category": current_map},
                         )
                         packed_data["packed_data"] = {
                             "submission_list": json.loads(req.text)["result"]
@@ -626,7 +626,7 @@ def send_action(sid, data):
             else:
                 if chosen_event == "hint":
                     try:
-                        quest_id, hint_kind = packed_data["correction_data"].split("#")
+                        quest_id, hint_kind = packed_data["hint_data"].split("#")
 
                         if hint_kind not in ["free", "paid"]:
                             error_data = {

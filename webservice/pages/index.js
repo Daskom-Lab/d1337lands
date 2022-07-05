@@ -311,8 +311,8 @@ export default function Home({ peopleList, fileTree }) {
 
                   default: // all island maps
                     if (userData.user_datas.map === undefined ||
-                        !userData.user_datas.map.endsWith("island"))
-                        return;
+                      !userData.user_datas.map.endsWith("island"))
+                      return;
 
                     switch (data.event_name) {
                       case "hint":
@@ -460,12 +460,88 @@ export default function Home({ peopleList, fileTree }) {
                   onKeyDown={
                     event => {
                       if (event.key === "Enter") {
-                        gameSocketEmit("send_action", {
-                          "action": "run_action",
-                          "packed_data": {
-                            "chosen_map": logInput,
-                          }
-                        })
+                        if (userData.user_datas.map === undefined || userData.user_datas.map === null)
+                          return
+
+                        switch (userData.user_datas.map) {
+                          case "town":
+                            switch (currEvent) {
+                              case "teleportation":
+                                gameSocketEmit("send_action", {
+                                  "action": "run_action",
+                                  "packed_data": {
+                                    "chosen_map": logInput,
+                                  }
+                                })
+                                break;
+
+                              case "shop":
+                                gameSocketEmit("send_action", {
+                                  "action": "run_action",
+                                  "packed_data": {
+                                    "potion_id": logInput,
+                                  }
+                                })
+                                break;
+
+                              default:
+                                break;
+                            }
+                            break;
+
+                          case "mentorcastle":
+                            switch (currEvent) {
+                              case "submission_check":
+                                gameSocketEmit("send_action", {
+                                  "action": "run_action",
+                                  "packed_data": {
+                                    "correction_data": logInput,
+                                  }
+                                })
+                                break;
+
+                              default:
+                                break;
+                            }
+                            break;
+
+                          default:
+                            if (!userData.user_datas.map.endsWith("island"))
+                              return;
+
+                            switch (currEvent) {
+                              case "hint":
+                                gameSocketEmit("send_action", {
+                                  "action": "run_action",
+                                  "packed_data": {
+                                    "hint_data": logInput,
+                                  }
+                                })
+                                break;
+
+                              case "submission":
+                                gameSocketEmit("send_action", {
+                                  "action": "run_action",
+                                  "packed_data": {
+                                    "submission_id": logInput,
+                                  }
+                                })
+                                break;
+
+                              case "submit_quest":
+                                gameSocketEmit("send_action", {
+                                  "action": "run_action",
+                                  "packed_data": {
+                                    "quest_answer_data": logInput,
+                                  }
+                                })
+                                break;
+
+                              default:
+                                break;
+                            }
+                            break;
+                        }
                       }
                     }
                   } />

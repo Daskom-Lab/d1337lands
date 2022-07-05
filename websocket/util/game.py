@@ -44,6 +44,9 @@ class Game:
         if map_name == "town":
             map_data["start_positions"] = map_metadata["RandomStart"]
 
+            map_data["collisions"].extend(map_metadata["ShopPos"])
+            map_data["collisions"].extend(map_metadata["LeaderboardPos"])
+
             map_data["events"] = {
                 # Main events
                 "shop": map_metadata["ShopPos"],
@@ -81,6 +84,10 @@ class Game:
             }
         else:
             map_data["start_positions"] = map_metadata["TeleportationPos"]
+
+            map_data["collisions"].extend(map_metadata["QuestPos"])
+            map_data["collisions"].extend(map_metadata["SubmissionPos"])
+            map_data["collisions"].extend(map_metadata["SubmitQuestPos"])
 
             map_data["events"] = {
                 # Main events
