@@ -124,9 +124,6 @@ export class GameScene extends Phaser.Scene {
       key: map,
     });
 
-    //TODO: Remember to set tilesetnames in each of the map json files to match the ones used in
-    //      addTilesetImage method down below
-
     const groundTileset = tilemap.addTilesetImage("ground_tiles", `${map}-ground-tiles`);
     const groundLayer = tilemap.createLayer("ground", groundTileset, 0, 0);
     groundLayer.setDepth(0);
