@@ -1,7 +1,6 @@
 const { Pool } = require("pg");
 
-// TODO: BUILD THE ENV SYSTEM NOWWWW !!!!!
-const connectionString = "postgresql://postgres:M98vDBjHerkB44eYTM3t3sJSYfj2Vw@postgres:5432/postgres";
+const connectionString = `postgresql://${process.env.POSTGRES_UNAME}:${process.env.POSTGRES_PASS}@postgres:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_UNAME}`;
 
 export const postgresPool = new Pool({
   connectionString,

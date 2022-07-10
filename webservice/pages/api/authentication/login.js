@@ -33,7 +33,7 @@ export default async function handler(req, res) {
       return;
     }
 
-    axios.get(`http://localhost:5555/getUserData/${userId}`).then((userData) => {
+    axios.get(`http://discordbot:3000/getUserData/${userId}`).then((userData) => {
       let availableRoles = {};
       queryResRoles.rows.map((data) => {
         availableRoles[data.value] = data.value;

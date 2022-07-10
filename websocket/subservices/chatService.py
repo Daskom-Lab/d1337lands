@@ -2,7 +2,7 @@ import socketio
 import requests
 import json
 
-auth_validation_url = "http://localhost:4444/api/authentication/validate"
+auth_validation_url = "http://webservice:3000/api/authentication/validate"
 
 class ChatNamespace(socketio.Namespace):
     def on_connect(self, sid, _, auth):

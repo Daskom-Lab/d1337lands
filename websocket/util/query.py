@@ -1,10 +1,15 @@
 import requests
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
+from dotenv import dotenv_values
+from inspect import getsourcefile
+from os.path import abspath
 
-graphql_endpoint_url = "http://localhost:3333/v1/graphql"
-webservice_endpoint_url = "http://localhost:4444/api"
-hasura_admin_secret = "hSK6kPeZN2zTLsvd2grPNtapLbeNzD9QU9aPd38f894JsmxM7Ecpb9hkAxeX"
+config = dotenv_values(f"{abspath(getsourcefile(lambda:0))}/../../.env")
+
+graphql_endpoint_url = "http://graphql-engine:8080/v1/graphql"
+webservice_endpoint_url = "http://webservice:3000/api"
+hasura_admin_secret = config["GQL_SECRET"]
 
 
 def call_http_request(url, token, data={}, method="GET"):

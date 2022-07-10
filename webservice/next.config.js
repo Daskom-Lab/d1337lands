@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
+const path = require("path")
+const localEnv = require("dotenv").config({ path: path.resolve(__dirname, "../.env") })
+
 const nextConfig = {
   reactStrictMode: true,
+  env: localEnv,
 };
 
 const withTM = require("next-transpile-modules")(["react-syntax-highlighter", "xterm-for-react"]);

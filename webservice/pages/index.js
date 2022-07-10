@@ -208,7 +208,7 @@ export default function Home({ peopleList, fileTree }) {
       if (checkCookies("1337token")) {
         // Game socket initialization
         if (gameSocket === undefined) {
-          const socket = io("http://localhost:5000", {
+          const socket = io("http://websocket:3000", {
             auth: (cb) => {
               cb({
                 token: getCookie("1337token"),
@@ -418,7 +418,7 @@ export default function Home({ peopleList, fileTree }) {
 
         // Chat socket initialization
         if (chatSocket === undefined) {
-          const socket = io("http://localhost:5000/chat", {
+          const socket = io("http://websocket:3000/chat", {
             auth: (cb) => {
               cb({ token: getCookie("1337token") })
             }
@@ -596,7 +596,7 @@ export default function Home({ peopleList, fileTree }) {
                 )
               ) : (
                 <div className="w-full h-full text-white relative">
-                  <iframe src="http://localhost:8080" className="rounded-xl h-full w-full pointer-events-none" tabIndex="-1" onFocus={(event) => {
+                  <iframe src="http://game:3000" className="rounded-xl h-full w-full pointer-events-none" tabIndex="-1" onFocus={(event) => {
                     event.preventDefault();
                     if (event.relatedTarget) {
                       // Revert focus back to previous blurring element

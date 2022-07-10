@@ -4,7 +4,7 @@ import json
 
 from functools import lru_cache
 
-game_url = "http://localhost:8080"
+game_url = "http://game:3000"
 
 
 class Game:

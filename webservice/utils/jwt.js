@@ -4,7 +4,7 @@ const jsonwebtoken = require("jsonwebtoken");
 
 export const jwt = initMiddleware(
   Jwt({ 
-    secret: "9NE5uLKVMB5Pm3YNHXxKFBYyDCRP6FzFrY8CxmNFckQ6fJQKTvm5SHPCUE7Rma3WQpSzYh",
+    secret: process.env.JWT_SECRET,
     algorithms: ["HS256"],
     requestProperty: "decoded_jwt"
   }).unless({
@@ -15,7 +15,7 @@ export const jwt = initMiddleware(
 );
 
 export function jwt_sign(data) {
-  return jsonwebtoken.sign(data, "9NE5uLKVMB5Pm3YNHXxKFBYyDCRP6FzFrY8CxmNFckQ6fJQKTvm5SHPCUE7Rma3WQpSzYh");
+  return jsonwebtoken.sign(data, process.env.JWT_SECRET);
 }
 
 export default function check_jwt(handler) {

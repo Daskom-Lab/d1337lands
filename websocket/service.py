@@ -10,10 +10,10 @@ from util.query import call_gql_request, call_http_request
 
 sio = socketio.Server(
     cors_allowed_origins=[
-        "http://localhost:4444",
-        "http://localhost:7777",
-        "http://localhost:3000",
-        "http://localhost:8080",
+        "http://webservice:3000",
+        "http://discordbot:3000",
+        "http://websocket:3000",
+        "http://game:3000",
     ]
 )
 app = socketio.WSGIApp(sio)

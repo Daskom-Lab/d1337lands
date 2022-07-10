@@ -23,7 +23,7 @@ client.once("ready", () => {
 
   // Get a user role based on given user_id
   app.get("/getUserData/:user_id", async (request, response) => {
-    const guild = await client.guilds.fetch("962874739649548378");
+    const guild = await client.guilds.fetch(process.env.DISCORDBOT_GUILD_ID);
     guild.members.fetch(request.params.user_id)
       .then((res) => {
         let roles = res.roles.member["_roles"];
@@ -52,4 +52,4 @@ client.once("ready", () => {
 });
 
 // Login to Discord with your clients token
-client.login("OTYyODU1MDk3MDk0Nzk5NDAw.YlNmsA.KimxBAdCPm7Bdp2yd4o1Rf3i87I");
+client.login(process.env.DISCORDBOT_CLIENT_TOKEN);
