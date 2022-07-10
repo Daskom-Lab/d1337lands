@@ -41,6 +41,51 @@ d1337lands
 └── README.md   [this is where you are now]
 ```
 
+## How to run
+
+### Prerequisites
+
+Remember that you have to have these apps first in order to run the codebase :
+
+1. Hasura CLI  
+
+2. Docker & Docker Compose
+
+3. Yarn
+
+### Steps
+
+These are the steps you can follow to run the codebase without having to know all the technical details behind it (consider this as a high level overview of how to run it) :
+
+1. Setup the environment  
+    ```env
+    cat > .env <<EOF
+    WEBSERVICE_PORT=4444
+    WEBSOCKET_PORT=6666
+    GAME_PORT=7777
+
+    GQL_PORT=3333
+    GQL_SECRET=whatever_secret_you_want_to_give
+
+    POSTGRES_PORT=5432
+    POSTGRES_UNAME=postgres
+    POSTGRES_PASS=whatever_secret_you_want_to_give
+
+    JWT_SECRET=whatever_secret_you_want_to_give
+
+    DISCORDBOT_PORT=5555
+    DISCORDBOT_GUILD_ID=your_discord_server_id
+    DISCORDBOT_CLIENT_TOKEN=your_discordbot_client_token
+    EOF
+    ```
+
+    **Note: you have to change all the secrets (including pass) with something secret, ofc**
+
+2. Run the codebase
+    ```shell
+    make serve && make migrate
+    ```
+
 ## Contributing
 
 All kinds of contributions are very much welcome! Please dont hesitate to contact us via anyone of our community member if you want to talk/ask about something, or if you are a current/former daskom laboratory assistant and want to join us, go ahead and contact us as the door will always be open for you!
