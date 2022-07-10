@@ -1,7 +1,7 @@
 version: 3
-endpoint: http://localhost:3333
 metadata_directory: metadata
-access_key: hSK6kPeZN2zTLsvd2grPNtapLbeNzD9QU9aPd38f894JsmxM7Ecpb9hkAxeX
+migrations_directory: migrations
+seeds_directory: seeds
 actions:
   kind: synchronous
   handler_webhook_baseurl: http://localhost:3000

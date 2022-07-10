@@ -76,10 +76,15 @@ These are the steps you can follow to run the codebase without having to know al
     DISCORDBOT_PORT=5555
     DISCORDBOT_GUILD_ID=your_discord_server_id
     DISCORDBOT_CLIENT_TOKEN=your_discordbot_client_token
+
+    HASURA_GRAPHQL_ENDPOINT=3333
+    HASURA_GRAPHQL_ADMIN_SECRET=whatever_secret_you_want_to_give
     EOF
     ```
 
-    **Note: you have to change all the secrets (including pass) with something secret, ofc**
+    > **Note:**  
+        - **You have to change all the secrets (including pass) with something secret, ofc**  
+        - **All env variables starting with `HASURA_` have to match the ones starting with `GQL_`**
 
 2. Run the codebase
     ```shell
