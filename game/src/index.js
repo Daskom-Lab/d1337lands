@@ -299,7 +299,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
-    const socket = io("http://websocket:3000", {
+    const socket = io(`http://localhost:${WEBSOCKET_PORT}`, {
       auth: (cb) => {
         cb({
           token: Cookies.get("1337token"),

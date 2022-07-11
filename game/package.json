@@ -23,6 +23,7 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "dotenv": "^16.0.1",
     "js-cookie": "^3.0.1",
     "phaser": "^3.55.2",
     "socket.io-client": "^4.5.0",

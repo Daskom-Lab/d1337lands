@@ -6,6 +6,14 @@ from subservices.chatService import ChatNamespace
 from util.game import Game
 from util.query import call_gql_request, call_http_request
 
+from dotenv import dotenv_values
+from inspect import getsourcefile
+from os.path import abspath
+
+# Shut up, i know this is bad idea, but whatever, i'll get to this later...
+config = dotenv_values(
+    f"{abspath(getsourcefile(lambda:0)).replace('service.py', '')}/.env"
+)
 
 sio = socketio.Server(
     cors_allowed_origins=[
@@ -13,6 +21,10 @@ sio = socketio.Server(
         "http://discordbot:3000",
         "http://websocket:3000",
         "http://game:3000",
+        f"http://{config['HOST']}:{config['WEBSERVICE_PORT']}",
+        f"http://{config['HOST']}:{config['DISCORDBOT_PORT']}",
+        f"http://{config['HOST']}:{config['WEBSOCKET_PORT']}",
+        f"http://{config['HOST']}:{config['GAME_PORT']}",
     ]
 )
 app = socketio.WSGIApp(sio)

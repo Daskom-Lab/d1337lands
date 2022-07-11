@@ -60,6 +60,8 @@ These are the steps you can follow to run the codebase without having to know al
 1. Setup the environment  
     ```env
     cat > .env <<EOF
+    HOST=localhost
+
     WEBSERVICE_PORT=4444
     WEBSOCKET_PORT=6666
     GAME_PORT=7777

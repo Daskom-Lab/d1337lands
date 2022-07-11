@@ -33,15 +33,20 @@ export async function getStaticProps() {
 
   const fileTree = getFileTree();
 
+  const GAME_PORT = process.env.GAME_PORT;
+  const WEBSOCKET_PORT = process.env.WEBSOCKET_PORT;
+
   return {
     props: {
       peopleList,
-      fileTree
+      fileTree,
+      WEBSOCKET_PORT,
+      GAME_PORT
     }
   }
 }
 
-export default function Home({ peopleList, fileTree }) {
+export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }) {
   const [menu, setMenu] = useState("about-us")
   const [gameSocket, setGameSocket] = useState(undefined)
   const [chatSocket, setChatSocket] = useState(undefined)
@@ -208,7 +213,7 @@ export default function Home({ peopleList, fileTree }) {
       if (checkCookies("1337token")) {
         // Game socket initialization
         if (gameSocket === undefined) {
-          const socket = io("http://websocket:3000", {
+          const socket = io(`http://localhost:${WEBSOCKET_PORT}`, {
             auth: (cb) => {
               cb({
                 token: getCookie("1337token"),
@@ -418,7 +423,7 @@ export default function Home({ peopleList, fileTree }) {
 
         // Chat socket initialization
         if (chatSocket === undefined) {
-          const socket = io("http://websocket:3000/chat", {
+          const socket = io(`http://localhost:${WEBSOCKET_PORT}/chat`, {
             auth: (cb) => {
               cb({ token: getCookie("1337token") })
             }
@@ -596,7 +601,7 @@ export default function Home({ peopleList, fileTree }) {
                 )
               ) : (
                 <div className="w-full h-full text-white relative">
-                  <iframe src="http://game:3000" className="rounded-xl h-full w-full pointer-events-none" tabIndex="-1" onFocus={(event) => {
+                  <iframe src={"http://localhost:" + GAME_PORT} className="rounded-xl h-full w-full pointer-events-none" tabIndex="-1" onFocus={(event) => {
                     event.preventDefault();
                     if (event.relatedTarget) {
                       // Revert focus back to previous blurring element
