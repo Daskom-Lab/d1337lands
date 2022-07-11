@@ -446,7 +446,7 @@ def send_action(sid, data):
                             "map": "town",
                             "position": f"""{
                                 game.getRandomStartPosition('town', 
-                                    game.maps_data['town']['events']
+                                    teleport_to=game.maps_data['town']['events']
                                         ['mentor_castle_' + event_name.split('teleportation_')[1]]
                                 )}
                             """.strip(),
@@ -524,7 +524,7 @@ def send_action(sid, data):
                             "map": "town",
                             "position": f"""{
                                 game.getRandomStartPosition('town', 
-                                    game.maps_data['town']['events']['teleportation']
+                                    teleport_to=game.maps_data['town']['events']['teleportation']
                                 )}
                             """.strip(),
                         }
