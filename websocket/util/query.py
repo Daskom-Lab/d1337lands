@@ -5,7 +5,7 @@ from dotenv import dotenv_values
 from inspect import getsourcefile
 from os.path import abspath
 
-config = dotenv_values(f"{abspath(getsourcefile(lambda:0))}/../../.env")
+config = dotenv_values(f"{abspath(getsourcefile(lambda:0)).replace('query.py', '')}/../.env")
 
 graphql_endpoint_url = "http://graphql-engine:8080/v1/graphql"
 webservice_endpoint_url = "http://webservice:3000/api"

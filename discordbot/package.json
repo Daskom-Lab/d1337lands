@@ -9,7 +9,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon .",
-    "production": "node -r dotenv/config service.js dotenv_config_path=../.env"
+    "production": "node -r dotenv/config service.js dotenv_config_path=./.env"
   },
   "dependencies": {
     "body-parser": "^1.20.0",

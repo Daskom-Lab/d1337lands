@@ -1,6 +1,5 @@
 import eventlet
 import socketio
-import requests
 import json
 
 from subservices.chatService import ChatNamespace

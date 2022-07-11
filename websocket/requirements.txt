@@ -4,3 +4,4 @@ eventlet
 python-socketio
 requests
 gql[requests]
+python-dotenv
