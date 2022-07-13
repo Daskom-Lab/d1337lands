@@ -563,6 +563,8 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
                             }
                             break;
                         }
+
+                        setLogInput("");
                       }
                     }
                   } />

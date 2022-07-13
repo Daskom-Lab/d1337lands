@@ -93,55 +93,53 @@ def connect(sid, _, auth):
 
     sio.enter_room(sid, user_id)
 
-    if len(result["user_datas"]) > 0:
+    if len(result["user_datas"]) > 0 and isFromWeb(auth["connection_source"]):
         sio.enter_room(sid, result["user_datas"][0]["map"])
-
-        if isFromWeb(auth["connection_source"]):
-            _ = call_gql_request(
-                r"""
-                    mutation updateUserData($userId: bigint!, $is_online: Boolean!) {
-                        update_user_datas(where: {user_id: {_eq: $userId}}, _set: {is_online: $is_online}) {
-                            affected_rows
-                        }
+        _ = call_gql_request(
+            r"""
+                mutation updateUserData($userId: bigint!, $is_online: Boolean!) {
+                    update_user_datas(where: {user_id: {_eq: $userId}}, _set: {is_online: $is_online}) {
+                        affected_rows
                     }
-                """,
-                {
-                    "userId": user_id,
-                    "is_online": True,
-                },
-                auth["token"],
-            )
+                }
+            """,
+            {
+                "userId": user_id,
+                "is_online": True,
+            },
+            auth["token"],
+        )
 
-            sio.emit(
-                "user_connect",
-                {
-                    "user_id": user_id,
-                    "user_nickname": user_nickname,
-                    "user_role": user_role,
-                    "user_datas": result["user_datas"][0]
-                    if len(result["user_datas"]) > 0
-                    else {},
-                },
-            )
+        sio.emit(
+            "user_connect",
+            {
+                "user_id": user_id,
+                "user_nickname": user_nickname,
+                "user_role": user_role,
+                "user_datas": result["user_datas"][0]
+                if len(result["user_datas"]) > 0
+                else {},
+            },
+        )
 
-            r = call_http_request("/user/presence", auth["token"])
-            for user in json.loads(r.text)["result"]:
-                if user["is_online"] and user["user_id"] != user_id:
-                    sio.emit(
-                        "user_connect",
-                        {
-                            "user_id": user["user_id"],
-                            "user_nickname": user["nickname"],
-                            "user_role": user["role"],
-                            "user_datas": {
-                                "map": user["map"],
-                                "position": user["position"],
-                                "character": user["character"],
-                                "chosen_title": user["chosen_title"],
-                            },
+        r = call_http_request("/user/presence", auth["token"])
+        for user in json.loads(r.text)["result"]:
+            if user["is_online"] and user["user_id"] != user_id:
+                sio.emit(
+                    "user_connect",
+                    {
+                        "user_id": user["user_id"],
+                        "user_nickname": user["nickname"],
+                        "user_role": user["role"],
+                        "user_datas": {
+                            "map": user["map"],
+                            "position": user["position"],
+                            "character": user["character"],
+                            "chosen_title": user["chosen_title"],
                         },
-                        room=user_id,
-                    )
+                    },
+                    room=user_id,
+                )
 
     print(f"User connected to game socket: {sid}\n\n")
 
@@ -219,6 +217,7 @@ def disconnect(sid):
 @sio.event
 def send_action(sid, data):
     session = sio.get_session(sid)
+    old_session = {**session}
 
     data_to_emit = {}
     if data["action"] == "initialize_data":
@@ -423,12 +422,8 @@ def send_action(sid, data):
                                 **new_user_datas,
                             }
 
-                            sio.leave_room(sid, session["user_datas"]["map"])
-
                             session["chosen_event"] = None
                             session["user_datas"] = new_user_datas
-
-                            sio.enter_room(sid, new_user_datas["map"])
                             sio.save_session(sid, session)
                 elif current_map == "mentorcastle":
                     if event_name == "submission_check":
@@ -458,12 +453,8 @@ def send_action(sid, data):
                             **new_user_datas,
                         }
 
-                        sio.leave_room(sid, session["user_datas"]["map"])
-
                         session["chosen_event"] = None
                         session["user_datas"] = new_user_datas
-
-                        sio.enter_room(sid, new_user_datas["map"])
                         sio.save_session(sid, session)
                 else:
                     if event_name == "hint":
@@ -535,12 +526,8 @@ def send_action(sid, data):
                             **new_user_datas,
                         }
 
-                        sio.leave_room(sid, session["user_datas"]["map"])
-
                         session["chosen_event"] = None
                         session["user_datas"] = new_user_datas
-
-                        sio.enter_room(sid, new_user_datas["map"])
                         sio.save_session(sid, session)
 
                 session["chosen_event"] = event_name
@@ -565,7 +552,7 @@ def send_action(sid, data):
                     try:
                         eligible_maps = game.getIslandMaps()
 
-                        chosen_map = int(packed_data["chosen_map"])
+                        chosen_map = int(packed_data["chosen_map"]) - 1
                         new_user_datas = {
                             "map": eligible_maps[chosen_map],
                             "position": f"{game.getRandomStartPosition(eligible_maps[chosen_map])}",
@@ -577,15 +564,9 @@ def send_action(sid, data):
                             **new_user_datas,
                         }
 
-                        sio.leave_room(sid, session["user_datas"]["map"])
-
                         session["chosen_event"] = None
                         session["user_datas"] = new_user_datas
-
-                        sio.enter_room(sid, new_user_datas["map"])
                         sio.save_session(sid, session)
-
-                        success_data = new_user_datas
                     except:
                         error_data = {"error_text": "Your input data is wrong!"}
                 elif chosen_event == "shop":
@@ -771,10 +752,17 @@ def send_action(sid, data):
         )
 
     if "map" in data_to_emit and data_to_emit["map"]:
+        rooms = [data_to_emit["map"]["map"]]
+
+        if old_session["user_datas"]["map"] != session["user_datas"]["map"]:
+            rooms.append(session["user_id"])
+            sio.leave_room(sid, old_session["user_datas"]["map"])
+            sio.enter_room(sid, session["user_datas"]["map"])
+
         sio.emit(
             "map_state",
             data_to_emit["map"],
-            room=data_to_emit["map"]["map"],
+            room=rooms,
             skip_sid=sid if data["action"] not in ["run_event", "run_action"] else None,
         )
 

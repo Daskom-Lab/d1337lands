@@ -339,11 +339,16 @@ export class GameScene extends Phaser.Scene {
       }
     })
 
-    // TODO: Map changes dont work, please investigate (but before that
-    //       we have to work on the map revision first as its the more urgent one)
     socket.on("map_state", (data) => {
       if (data.map !== undefined && data.map !== this.getChosenMap()[1]) {
         this.setCurrentRenderedMap(data.map);
+        this.getMainPlayer().setMapSize(
+          new Phaser.Math.Vector2(
+            this.maps[data.map].json.width,
+            this.maps[data.map].json.height
+          )
+        );
+        this.setPlayerPosition("mainPlayer", parseInt(data.position))
       }
     })
 
