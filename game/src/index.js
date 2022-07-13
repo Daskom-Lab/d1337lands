@@ -104,13 +104,13 @@ export class GameScene extends Phaser.Scene {
     this.mainPlayer = mainPlayer;
   }
 
-  setPlayerPosition(player, position) {
+  setPlayerPosition(player, position, direction = undefined) {
     if (player === "mainPlayer") {
       if (this.getMainPlayer() !== undefined) {
-        this.getMainPlayer().setPosition(position);
+        this.getMainPlayer().setPosition(position, direction);
       }
     } else if (player !== undefined) {
-      player.setPosition(position)
+      player.setPosition(position, direction)
     }
   }
 
@@ -335,7 +335,7 @@ export class GameScene extends Phaser.Scene {
           this.nearbyEvent = "";
         }
 
-        this.setPlayerPosition("mainPlayer", parseInt(data.position))
+        this.setPlayerPosition("mainPlayer", parseInt(data.position), data.direction)
       }
     })
 
