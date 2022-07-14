@@ -254,6 +254,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   closeLoadingScene() {
+    this.load.removeAllListeners();
     this.progressBar.destroy();
     this.progressBox.destroy();
     this.loadingText.destroy();
@@ -370,7 +371,7 @@ export class GameScene extends Phaser.Scene {
           const playerSprite = this.add.sprite(0, 0, "base-character");
           playerSprite.setDepth(1);
 
-          this.cameras.main.startFollow(playerSprite);
+          this.cameras.main.startFollow(playerSprite, true, 0.1, 0.1);
           const mainPlayer = new Player(
             playerSprite,
             data.user_datas.position,
@@ -382,6 +383,9 @@ export class GameScene extends Phaser.Scene {
 
           mainPlayer.setPlayerAnimation("base-character");
           this.setMainPlayer(mainPlayer);
+
+          if (data.user_datas.character !== undefined) 
+            this.setCharacterSpritesheet(mainPlayer, data.user_datas.character)
 
         } else {
           this.setPlayerPosition("mainPlayer", parseInt(data.user_datas.position));

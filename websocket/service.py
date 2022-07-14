@@ -75,6 +75,7 @@ def connect(sid, _, auth):
                         map
                         position
                         user {
+                            leetcoin
                             character
                             chosen_title
                         }
@@ -86,6 +87,9 @@ def connect(sid, _, auth):
         )
 
         if len(result["user_datas"]) > 0:
+            result["user_datas"][0] = {**result["user_datas"][0], **result["user_datas"][0]["user"]}
+            del result["user_datas"][0]["user"]
+
             user_session["user_datas"] = result["user_datas"][0]
             sio.save_session(sid, user_session)
     except:
