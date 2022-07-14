@@ -6,6 +6,7 @@ export class Player {
     this.mapSize = mapSize;
     this.sprite = sprite;
     this.lastposition = tilePos;
+    this.lastdirection = "";
 
     this.futurepositions = [];
     this.runAnimations = false;
@@ -33,7 +34,7 @@ export class Player {
       frames: this.sprite.anims.generateFrameNumbers(key, {
         frames: Array.from({ length: 9 }, (_, i) => i + 104),
       }),
-      frameRate: 10,
+      frameRate: 15,
       repeat: -1,
     });
     this.sprite.anims.create({
@@ -49,7 +50,7 @@ export class Player {
       frames: this.sprite.anims.generateFrameNumbers(key, {
         frames: Array.from({ length: 9 }, (_, i) => i + 130),
       }),
-      frameRate: 10,
+      frameRate: 15,
       repeat: -1,
     });
     this.sprite.anims.create({
@@ -97,7 +98,10 @@ export class Player {
             let currentpositions = this.futurepositions.shift();
 
             if (this.getPosition() !== currentpositions.position) {
-              this.startAnimation(`walk-${currentpositions.direction}`);
+              if (this.lastdirection !== currentpositions.direction || !this.sprite.anims.currentAnim) {
+                this.lastdirection = currentpositions.direction
+                this.startAnimation(`walk-${currentpositions.direction}`);
+              }
 
               const last_position_x = Math.floor(this.getPosition() % this.mapSize.x) * GameScene.TILE_SIZE + offsetX;
               const last_position_y = Math.floor(this.getPosition() / this.mapSize.x) * GameScene.TILE_SIZE + offsetY;
@@ -118,7 +122,7 @@ export class Player {
                     is_moving_vertically ? position_x : changing_position,
                     is_moving_vertically ? changing_position : position_y
                   );
-                  await this.sleep(10);
+                  await this.sleep(5);
                 } else return;
               }
             }
@@ -147,6 +151,7 @@ export class Player {
       const standingFrame = this.sprite.anims.currentAnim.frames[0].frame.name;
       this.sprite.anims.stop();
       this.sprite.setFrame(standingFrame);
+      this.sprite.anims.currentAnim = undefined;
     }
   }
 

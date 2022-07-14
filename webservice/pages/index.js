@@ -51,6 +51,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
   const [gameSocket, setGameSocket] = useState(undefined)
   const [chatSocket, setChatSocket] = useState(undefined)
   const [mainMenuOpened, setMainMenuOpened] = useState(false)
+  const [isMovementThrottled, setisMovementThrottled] = useState(false)
   const [inputsFocused, setInputsFocused] = useState([])
   const [logBuffer, setLogBuffer] = useState("")
   const [chatInput, setChatInput] = useState("")
@@ -136,6 +137,8 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
     }
   }
 
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
   useEventListener("keydown", ({ key }) => {
     if (inputsFocused.length > 0 || mainMenuOpened) return
 
@@ -147,69 +150,90 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
       return
     }
 
-    // TODO: Throttle movement actions for x seconds
-    //       before it can make any more movements so
-    //       the character wont go too fast and the animation
-    //       will be smooth (use debounce technique)
+    if (!isMovementThrottled) {
+      // W or Arrow key Up clicked (move up)
+      if (["w", "W", "ArrowUp"].includes(key)) {
+        (async () => {
+          setisMovementThrottled(true);
+          await sleep(200);
+          setisMovementThrottled(false);
+        })();
 
-    // W or Arrow key Up clicked (move up)
-    if (["w", "W", "ArrowUp"].includes(key)) {
-      gameSocketEmit("send_action", {
-        "action": "move",
-        "direction": "up"
-      }, (response) => {
-        if (response === "OK") {
-          printWelcomingPrompt();
-          setCurrEvent("");
-        }
-      })
+        gameSocketEmit("send_action", {
+          "action": "move",
+          "direction": "up"
+        }, (response) => {
+          if (response === "OK") {
+            printWelcomingPrompt();
+            setCurrEvent("");
+          }
+        })
 
-      return
-    }
+        return
+      }
 
-    // A or Arrow key Left clicked (move left)
-    if (["a", "A", "ArrowLeft"].includes(key)) {
-      gameSocketEmit("send_action", {
-        "action": "move",
-        "direction": "left"
-      }, (response) => {
-        if (response === "OK") {
-          printWelcomingPrompt();
-          setCurrEvent("");
-        }
-      })
+      // A or Arrow key Left clicked (move left)
+      if (["a", "A", "ArrowLeft"].includes(key)) {
+        (async () => {
+          setisMovementThrottled(true);
+          await sleep(200);
+          setisMovementThrottled(false);
+        })();
 
-      return
-    }
+        gameSocketEmit("send_action", {
+          "action": "move",
+          "direction": "left"
+        }, (response) => {
+          if (response === "OK") {
+            printWelcomingPrompt();
+            setCurrEvent("");
+          }
+        })
 
-    // S or Arrow key Down clicked (move down)
-    if (["s", "S", "ArrowDown"].includes(key)) {
-      gameSocketEmit("send_action", {
-        "action": "move",
-        "direction": "down"
-      }, (response) => {
-        if (response === "OK") {
-          printWelcomingPrompt();
-          setCurrEvent("");
-        }
-      })
+        return
+      }
 
-      return
-    }
+      // S or Arrow key Down clicked (move down)
+      if (["s", "S", "ArrowDown"].includes(key)) {
+        (async () => {
+          setisMovementThrottled(true);
+          await sleep(200);
+          setisMovementThrottled(false);
+        })();
 
-    // D or Arrow key Right clicked (move right)
-    if (["d", "D", "ArrowRight"].includes(key)) {
-      gameSocketEmit("send_action", {
-        "action": "move",
-        "direction": "right"
-      }, (response) => {
-        if (response === "OK") {
-          printWelcomingPrompt();
-          setCurrEvent("");
-        }
-      })
+        gameSocketEmit("send_action", {
+          "action": "move",
+          "direction": "down"
+        }, (response) => {
+          if (response === "OK") {
+            printWelcomingPrompt();
+            setCurrEvent("");
+          }
+        })
 
-      return
+        return
+      }
+
+      // D or Arrow key Right clicked (move right)
+      if (["d", "D", "ArrowRight"].includes(key)) {
+        (async () => {
+          setisMovementThrottled(true);
+          await sleep(200);
+          setisMovementThrottled(false);
+        })();
+
+        gameSocketEmit("send_action", {
+          "action": "move",
+          "direction": "right"
+        }, (response) => {
+          if (response === "OK") {
+            printWelcomingPrompt();
+            setCurrEvent("");
+          }
+        })
+
+        return
+      }
     }
   });
 
