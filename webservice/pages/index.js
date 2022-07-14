@@ -147,6 +147,11 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
       return
     }
 
+    // TODO: Throttle movement actions for x seconds
+    //       before it can make any more movements so
+    //       the character wont go too fast and the animation
+    //       will be smooth (use debounce technique)
+
     // W or Arrow key Up clicked (move up)
     if (["w", "W", "ArrowUp"].includes(key)) {
       gameSocketEmit("send_action", {
