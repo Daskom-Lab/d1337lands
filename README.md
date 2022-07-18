@@ -81,6 +81,10 @@ These are the steps you can follow to run the codebase without having to know al
 
     HASURA_GRAPHQL_ENDPOINT=3333
     HASURA_GRAPHQL_ADMIN_SECRET=whatever_secret_you_want_to_give
+
+    IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
+    IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
+    IMAGEKIT_URL_ENDPOINT=your_imagekit_url_endpoint
     EOF
     ```
 

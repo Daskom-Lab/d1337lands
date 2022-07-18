@@ -1,4 +1,4 @@
-export const GET = (url, token=null) => 
+export const GET = (url, is_raw=false, token=null) => 
   fetch(url, {
       headers: {
         "Authorization": token === null ? "" : `Bearer ${token}`,
@@ -6,7 +6,7 @@ export const GET = (url, token=null) =>
     })
     .then((response) => {
       if (response.ok) {
-        return response.json();
+        return !is_raw ? response.json() : response.blob();
       }
 
       throw new Error(`${response.status} ${response.statusText}`)

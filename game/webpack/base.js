@@ -1,8 +1,11 @@
 const webpack = require("webpack");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const localEnv = require("dotenv").config({ path: path.resolve(__dirname, "../.env") }).parsed;
+const parsedEnv = require("dotenv").config({ path: path.resolve(__dirname, "../.env") }).parsed;
+const localEnv = JSON.stringify({
+  "HOST": parsedEnv.HOST,
+  "WEBSOCKET_PORT": parsedEnv.WEBSOCKET_PORT
+})
 
 module.exports = {
   mode: "development",
@@ -26,14 +29,14 @@ module.exports = {
       }
     ]
   },
+  output: {
+    clean: true,
+  },
   plugins: [
-    new CleanWebpackPlugin({
-      root: path.resolve(__dirname, "../")
-    }),
     new webpack.DefinePlugin({
       CANVAS_RENDERER: JSON.stringify(true),
       WEBGL_RENDERER: JSON.stringify(true),
-      WEBSOCKET_PORT: localEnv.WEBSOCKET_PORT
+      "PROCESS.ENV": localEnv,
     }),
     new HtmlWebpackPlugin({
       template: "./index.html"

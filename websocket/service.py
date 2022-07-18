@@ -25,6 +25,7 @@ sio = socketio.Server(
         f"http://{config['HOST']}:{config['DISCORDBOT_PORT']}",
         f"http://{config['HOST']}:{config['WEBSOCKET_PORT']}",
         f"http://{config['HOST']}:{config['GAME_PORT']}",
+        f"http://{config['HOST']}:3000"
     ]
 )
 app = socketio.WSGIApp(sio)

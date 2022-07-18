@@ -1,21 +1,24 @@
 import Head from 'next/head'
-import { useState, useEffect, useRef } from 'react'
 import Button from '@/components/Button'
 import Aboutus from '@/components/Aboutus'
 import Activity from '@/components/Activity'
 import People from '@/components/People'
+import useEventListener from '@use-it/event-listener'
+import dynamic from "next/dynamic";
+
+import SimpleBar from 'simplebar-react'
+import 'simplebar/dist/simplebar.min.css'
+
+import { useState, useEffect, useRef } from 'react'
 import { getAssetFile, getFileTree } from "@/utils/assets";
 import { getPeopleList } from '@/assets/peoples'
-import SimpleBar from 'simplebar-react'
-import useEventListener from '@use-it/event-listener'
-import 'simplebar/dist/simplebar.min.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { io } from "socket.io-client"
-
-import dynamic from "next/dynamic";
 import { useAppContext } from '@/context/appstate'
 import { checkCookies, getCookie } from 'cookies-next'
+import { GET, POST } from '@/utils/fetcher'
+
 const Playground = dynamic(() => import("@/components/Playground"), {
   ssr: false
 });
@@ -35,22 +38,25 @@ export async function getStaticProps() {
 
   const GAME_PORT = process.env.GAME_PORT;
   const WEBSOCKET_PORT = process.env.WEBSOCKET_PORT;
+  const HOST = process.env.HOST;
 
   return {
     props: {
       peopleList,
       fileTree,
       WEBSOCKET_PORT,
-      GAME_PORT
+      GAME_PORT,
+      HOST
     }
   }
 }
 
-export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }) {
+export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT, HOST }) {
   const [menu, setMenu] = useState("about-us")
   const [gameSocket, setGameSocket] = useState(undefined)
   const [chatSocket, setChatSocket] = useState(undefined)
   const [mainMenuOpened, setMainMenuOpened] = useState(false)
+  const [profileMenuOpened, setProfileMenuOpened] = useState(false)
   const [isMovementThrottled, setisMovementThrottled] = useState(false)
   const [inputsFocused, setInputsFocused] = useState([])
   const [logBuffer, setLogBuffer] = useState("")
@@ -58,6 +64,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
   const [logInput, setLogInput] = useState("")
   const [currEvent, setCurrEvent] = useState("")
   const [userData, setUserData] = useState({})
+  const [newPlayerImage, setNewPlayerImage] = useState("")
   const [chats, setChats] = useState([])
   const [users, setUsers] = useState([])
   const sharedState = useAppContext()
@@ -237,12 +244,31 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
     }
   });
 
+  const changePlayerImage = (newImage) => {
+    const canvas = document.getElementById("playerImage");
+    const ctx = canvas.getContext("2d");
+
+    var image = new Image();
+    image.onload = function () {
+      const { width, height } = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image,
+        16, 135,
+        31, 38,
+        width / 2, height / 2 - (height - 87),
+        93, 114
+      );
+    }
+
+    image.src = URL.createObjectURL(newImage);
+  }
+
   useEffect(() => {
     if (sharedState.isGameActive)
       if (checkCookies("1337token")) {
         // Game socket initialization
         if (gameSocket === undefined) {
-          const socket = io(`http://localhost:${WEBSOCKET_PORT}`, {
+          const socket = io(`http://${HOST}:${WEBSOCKET_PORT}`, {
             auth: (cb) => {
               cb({
                 token: getCookie("1337token"),
@@ -308,7 +334,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
                         break;
 
                       case "leaderboard":
-                        addLogBuffer(`Congratulation to all these relentless codeventurers`)
+                        setLogBuffer(`Congratulation to all these relentless codeventurers`)
                         addLogBuffer(`(you guys have truly done the very best of work)    `)
                         addLogBuffer(`                                                    `)
                         data.packed_data.achievement_list.forEach((element, pos) => {
@@ -317,7 +343,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
                         break;
 
                       case "hall_of_fame":
-                        addLogBuffer(`Hail to the masters of this whole codeventure lands:`)
+                        setLogBuffer(`Hail to the masters of this whole codeventure lands:`)
                         addLogBuffer(`                                                    `)
                         for (let [key, value] of Object.entries(data.packed_data.user_list)) {
                           addLogBuffer(`>> ${key}`)
@@ -385,7 +411,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
 
                       case "submission":
                         setLogBuffer(`Welcome back codeventurer, these are the submission  `)
-                        setLogBuffer(`that you have sent to me before                      `)
+                        addLogBuffer(`that you have sent to me before                      `)
                         addLogBuffer(`                                                     `)
                         addLogBuffer(`You can redeem those that have been corrected by the `)
                         addLogBuffer(`mentors by writing the id of the subimssion and click`)
@@ -452,7 +478,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
 
         // Chat socket initialization
         if (chatSocket === undefined) {
-          const socket = io(`http://localhost:${WEBSOCKET_PORT}/chat`, {
+          const socket = io(`http://${HOST}:${WEBSOCKET_PORT}/chat`, {
             auth: (cb) => {
               cb({ token: getCookie("1337token") })
             }
@@ -495,8 +521,8 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
               <div className="w-full text-black bg-green-400 text-xs tracking-wide font-bold font-merriw rounded-t-md px-2 py-1 border-b-2 border-slate-400">
                 Game logs - (always read before you ask please...)
               </div>
-              <SimpleBar className="w-full flex-auto text-white font-overpassm tracking-tighter font-normal text-sm p-2 overflow-auto">
-                <span className="whitespace-pre-wrap">
+              <SimpleBar className="flex w-full flex-auto text-white font-overpassm tracking-tighter font-normal text-sm p-2 overflow-auto">
+                <span className="h-full w-full whitespace-pre-wrap">
                   {logBuffer}
                 </span>
               </SimpleBar>
@@ -632,7 +658,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
                 )
               ) : (
                 <div className="w-full h-full text-white relative">
-                  <iframe src={"http://localhost:" + GAME_PORT} className="rounded-xl h-full w-full pointer-events-none" tabIndex="-1" onFocus={(event) => {
+                  <iframe src={"http://" + HOST + ":" + GAME_PORT} className="rounded-xl h-full w-full pointer-events-none" tabIndex="-1" onFocus={(event) => {
                     event.preventDefault();
                     if (event.relatedTarget) {
                       // Revert focus back to previous blurring element
@@ -645,8 +671,14 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
                   {
                     mainMenuOpened && (
                       <div className="w-full h-full top-0 rounded-xl absolute bg-slate-700 bg-opacity-80 flex">
-                        <div className="flex-row m-auto max-w-2xl h-auto text-black">
-                          <button className="w-full rounded-lg mb-3 bg-yellow-400 border-black border-2 text-3xl font-overpassm font-semibold p-2 hover:bg-black hover:text-yellow-400">
+                        <div className="flex flex-col m-auto max-w-2xl h-auto text-black">
+                          <button className="w-full rounded-lg mb-3 bg-yellow-400 border-black border-2 text-3xl font-overpassm font-semibold p-2 hover:bg-black hover:text-yellow-400" onClick={async () => {
+                            setProfileMenuOpened(true)
+                            setMainMenuOpened(false)
+
+                            const result = await GET(userData.user_datas.character, true);
+                            changePlayerImage(result);
+                          }}>
                             My Profile
                           </button>
                           <button className="w-full rounded-lg mb-3 bg-yellow-400 border-black border-2 text-3xl font-overpassm font-semibold p-2 hover:bg-black hover:text-yellow-400">
@@ -665,6 +697,86 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT }
                   <button className="rounded-full text-3xl text-black bg-yellow-400 p-2 w-[56px] h-auto absolute top-0 right-0 mr-4 mt-4 hover:-translate-x-1 hover:translate-y-1 hover:scale-110 hover:rotate-90 active:-translate-y-1 active:scale-90 transition duration-150 border-2 border-black" onClick={() => setMainMenuOpened(!mainMenuOpened)}>
                     <FontAwesomeIcon icon={faGear} />
                   </button>
+                  {
+                    profileMenuOpened && (
+                      <div className="w-full h-full top-0 rounded-xl absolute bg-slate-700 bg-opacity-80 flex">
+                        <div className="flex flex-col m-auto gap-3 max-w-2xl h-auto text-black">
+                          <div className="flex gap-3 m-auto">
+                            <canvas className="w-auto h-[100px] bg-white rounded-lg border-2 border-black" id="playerImage"></canvas>
+                            <div className="flex flex-col gap-1 my-auto text-white font-merriw text-xl">
+                              <span>
+                                {userData.user_nickname} [{userData.user_role}]
+                              </span>
+                              <span>
+                                {userData.user_datas.leetcoin} leetcoins
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex-1"></div>
+                          <div className="flex w-full">
+                            <input id="playerImageUpload" className="hidden" type="file" accept="image/*" onChange={(event) => {
+                              if (event.target.files && event.target.files[0]) {
+                                const file = event.target.files[0];
+                                const fr = new FileReader;
+
+                                fr.onload = function () {
+                                  const img = new Image;
+
+                                  img.onload = function () {
+                                    if (img.width !== 832 || img.height !== 1344) {
+                                      return;
+                                    }
+
+                                    changePlayerImage(file);
+                                    setNewPlayerImage(fr.result);
+                                  };
+
+                                  img.src = fr.result;
+                                };
+
+                                fr.readAsDataURL(file);
+                              }
+                            }} onClick={(event) => {
+                              event.target.value = null
+                            }} />
+                            <button className="w-full rounded-lg bg-yellow-400 border-black border-2 text-xl font-overpassm font-semibold p-2 hover:bg-black hover:text-yellow-400" onClick={() => {
+                              document.getElementById("playerImageUpload").click();
+                            }}>
+                              Change Character Image
+                            </button>
+                          </div>
+                          <div className="flex w-full gap-3 items-center">
+                            <button className="w-full rounded-lg bg-yellow-400 border-black border-2 text-xl font-overpassm font-semibold p-2 hover:bg-black hover:text-yellow-400" onClick={async () => {
+                              if (!newPlayerImage || newPlayerImage === "") {
+                                setProfileMenuOpened(false);
+                                return;
+                              }
+
+                              await POST("/api/user/character", {
+                                character_image: newPlayerImage.replace("data:image/png;base64,", "")
+                              }, getCookie("1337token"))
+                                .then((_) => {
+                                  console.log("Success uploading new character image!");
+                                  setNewPlayerImage("");
+                                  setProfileMenuOpened(false);
+                                }).catch(() => {
+                                  console.log("Error uploading new character image!");
+                                  setProfileMenuOpened(false);
+                                })
+                            }}>
+                              Save
+                            </button>
+                            <button className="w-full rounded-lg bg-yellow-400 border-black border-2 text-xl font-overpassm font-semibold p-2 hover:bg-black hover:text-yellow-400" onClick={() => {
+                              setProfileMenuOpened(false);
+                              setNewPlayerImage("");
+                            }}>
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  }
                 </div>
               )
             }

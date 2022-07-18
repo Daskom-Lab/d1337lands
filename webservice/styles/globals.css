@@ -32,7 +32,7 @@ h1 {
 }
 
 /* XTerm.js related styling */
-.xterm-viewport { 
+.xterm-viewport {
   overflow: hidden !important;
   border-radius: 10px;
 }
@@ -42,4 +42,9 @@ h1 {
   height: 100%;
   width: 100%;
   border-radius: 10px;
+}
+
+/* Simplebar related styling */
+.simplebar-track.simplebar-vertical .simplebar-scrollbar:before {
+  background-image: linear-gradient(180deg, rgba(74,222,129,1) 0%, rgba(132,204,24,1) 100%);
 }

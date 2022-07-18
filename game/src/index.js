@@ -272,9 +272,11 @@ export class GameScene extends Phaser.Scene {
     this.load.once("complete", () => {
       const newSprite = this.add.sprite(0, 0, spriteId);
       newSprite.setDepth(1);
+      this.cameras.main.startFollow(newSprite, true, 0.1, 0.1);
 
       player.setSprite(newSprite);
       player.setPlayerAnimation(spriteId);
+      player.setPosition(player.getPosition());
     })
 
     this.load.once("loaderror", (obj) => {
@@ -300,7 +302,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
-    const socket = io(`http://localhost:${WEBSOCKET_PORT}`, {
+    const socket = io(`http://${PROCESS.ENV.HOST}:${PROCESS.ENV.WEBSOCKET_PORT}`, {
       auth: (cb) => {
         cb({
           token: Cookies.get("1337token"),
