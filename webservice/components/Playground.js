@@ -2,7 +2,7 @@ import React from 'react';
 import { FitAddon } from 'xterm-addon-fit';
 import { XTerm } from 'xterm-for-react';
 import { colorize, bold } from '@/utils/vt100_codes';
-import { getCookie, checkCookies, setCookies } from 'cookies-next';
+import { getCookie, hasCookie, setCookie, deleteCookie } from 'cookies-next';
 import AppContext from '@/context/appstate';
 import { POST } from '@/utils/fetcher';
 
@@ -36,9 +36,9 @@ class CustomTerminal extends React.Component {
   }
 
   async updateCurrentUser() {
-    if (!checkCookies("1337token")) return;
+    if (!hasCookie("1337token")) return;
 
-    await POST("/api/authentication/validate", null, getCookie("1337token"))
+    await POST(`http://${this.props.env["HOST"]}:${this.props.env["WEBSERVICE_PORT"]}/api/authentication/validate`, null, getCookie("1337token"))
       .then ((res) => {
         this.setState({
           currentUser: res.nickname
@@ -110,9 +110,9 @@ class CustomTerminal extends React.Component {
               this.xtermRef.current.terminal.write("[+] Logging in...")
 
               await this.sleep(3) 
-              await POST("/api/authentication/login", this.state.loginData)
+              await POST(`http://${this.props.env["HOST"]}:${this.props.env["WEBSERVICE_PORT"]}/api/authentication/login`, this.state.loginData)
                 .then ((res) => {
-                  setCookies("1337token", res.accessToken)
+                  setCookie("1337token", res.accessToken)
 
                   this.updateCurrentUser();
                   this.xtermRef.current.terminal.write("\r\n[+] Login success \r\n")
@@ -256,8 +256,8 @@ class CustomTerminal extends React.Component {
 
       case "login":
         if (inputArgs.length > 0) {
-          this.xtermRef.current.terminal.write("\r\nlogin: Dont need any argument")
-          return
+          this.xtermRef.current.terminal.write("\r\nlogin: Dont need any argument");
+          return;
         } 
 
         this.setState({ 
@@ -268,18 +268,49 @@ class CustomTerminal extends React.Component {
         })
         break;
 
-      case "startgame":
+      case "logout":
         if (inputArgs.length > 0) {
-          this.xtermRef.current.terminal.write("\r\nstartgame: Dont need any argument")
-          return
+          this.xtermRef.current.terminal.write("\r\nstartgame: Dont need any argument");
+          return;
         } 
 
-        if (!checkCookies("1337token")) {
+        if (!hasCookie("1337token")) {
+          this.xtermRef.current.terminal.write("\r\n[+] You are not logged in yet!");
+          return;
+        }
+
+        deleteCookie("1337token");
+        this.setState({
+          currentUser: "guest"
+        })
+        break;
+
+      case "changepassword":
+        if (inputArgs.length > 0) {
+          this.xtermRef.current.terminal.write("\r\nlogin: Dont need any argument");
+          return;
+        } 
+        
+        this.setState({ 
+          isInProcess: true,
+          processType: "changepassword",
+          processState: 0,
+          shouldFlush: true
+        })
+        break;
+
+      case "startgame":
+        if (inputArgs.length > 0) {
+          this.xtermRef.current.terminal.write("\r\nstartgame: Dont need any argument");
+          return;
+        } 
+
+        if (!hasCookie("1337token")) {
           this.xtermRef.current.terminal.write("\r\n[+] You have to login first!");
           return;
         }
 
-        await POST("/api/authentication/validate", null, getCookie("1337token"))
+        await POST(`http://${this.props.env["HOST"]}:${this.props.env["WEBSERVICE_PORT"]}/api/authentication/validate`, null, getCookie("1337token"))
           .then (() => {
             this.context.setGameActive(true);
             this.xtermRef.current.terminal.write("\r\n[+] Game started successfully :D");
@@ -373,8 +404,8 @@ class CustomTerminal extends React.Component {
   }
 }
 
-export default function Playground({ fileTree }) {
+export default function Playground({ fileTree, env }) {
   return (
-    <CustomTerminal fileTree={fileTree}/> 
+    <CustomTerminal fileTree={fileTree} env={env}/> 
   ) 
 }

@@ -16,7 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGear } from '@fortawesome/free-solid-svg-icons'
 import { io } from "socket.io-client"
 import { useAppContext } from '@/context/appstate'
-import { checkCookies, getCookie } from 'cookies-next'
+import { hasCookie, getCookie } from 'cookies-next'
 import { GET, POST } from '@/utils/fetcher'
 
 const Playground = dynamic(() => import("@/components/Playground"), {
@@ -38,6 +38,7 @@ export async function getStaticProps() {
 
   const GAME_PORT = process.env.GAME_PORT;
   const WEBSOCKET_PORT = process.env.WEBSOCKET_PORT;
+  const WEBSERVICE_PORT = process.env.WEBSERVICE_PORT;
   const HOST = process.env.HOST;
 
   return {
@@ -45,13 +46,14 @@ export async function getStaticProps() {
       peopleList,
       fileTree,
       WEBSOCKET_PORT,
+      WEBSERVICE_PORT,
       GAME_PORT,
       HOST
     }
   }
 }
 
-export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT, HOST }) {
+export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, WEBSERVICE_PORT, GAME_PORT, HOST }) {
   const [menu, setMenu] = useState("about-us")
   const [gameSocket, setGameSocket] = useState(undefined)
   const [chatSocket, setChatSocket] = useState(undefined)
@@ -86,11 +88,11 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT, 
     addLogBuffer(`                                                         `)
     addLogBuffer(`Walk anywhere across the maps using these keys:          `)
     addLogBuffer(`                                                         `)
-    addLogBuffer(`                ("up arrow" or "w")                      `)
-    addLogBuffer(`                        Ʌ                                `)
-    addLogBuffer(`  ("left arrow" or a) < + > ("right arrow" or d)         `)
-    addLogBuffer(`                        V                                `)
-    addLogBuffer(`               ("down arrow" or "s")                     `)
+    addLogBuffer(`                  ("up arrow" or "w")                    `)
+    addLogBuffer(`                          Ʌ                              `)
+    addLogBuffer(`  ("left arrow" or "a") < + > ("right arrow" or "d")     `)
+    addLogBuffer(`                          V                              `)
+    addLogBuffer(`                 ("down arrow" or "s")                   `)
     addLogBuffer(`                                                         `)
     addLogBuffer(`Click "enter" or "spacebar" to run event whenever you are`)
     addLogBuffer(`inside the event trigger location.                       `)
@@ -265,7 +267,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT, 
 
   useEffect(() => {
     if (sharedState.isGameActive)
-      if (checkCookies("1337token")) {
+      if (hasCookie("1337token")) {
         // Game socket initialization
         if (gameSocket === undefined) {
           const socket = io(`http://${HOST}:${WEBSOCKET_PORT}`, {
@@ -654,7 +656,10 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT, 
                     }
                   </SimpleBar>
                 ) : (
-                  <Playground fileTree={fileTree} />
+                  <Playground fileTree={fileTree} env={{
+                    HOST: HOST, 
+                    WEBSERVICE_PORT: WEBSERVICE_PORT
+                  }} />
                 )
               ) : (
                 <div className="w-full h-full text-white relative">
@@ -752,7 +757,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, GAME_PORT, 
                                 return;
                               }
 
-                              await POST("/api/user/character", {
+                              await POST(`http://${HOST}:${WEBSERVICE_PORT}/api/user/character`, {
                                 character_image: newPlayerImage.replace("data:image/png;base64,", "")
                               }, getCookie("1337token"))
                                 .then((_) => {

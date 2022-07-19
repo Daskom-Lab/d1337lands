@@ -386,7 +386,7 @@ export class GameScene extends Phaser.Scene {
           mainPlayer.setPlayerAnimation("base-character");
           this.setMainPlayer(mainPlayer);
 
-          if (data.user_datas.character !== undefined) 
+          if (data.user_datas.character !== undefined && data.user_datas.character !== "basic") 
             this.setCharacterSpritesheet(mainPlayer, data.user_datas.character)
 
         } else {

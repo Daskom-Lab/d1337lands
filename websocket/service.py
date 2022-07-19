@@ -486,7 +486,7 @@ def send_action(sid, data):
                             {"category": current_map},
                         )
                         packed_data["packed_data"] = {
-                            "submission_list": json.loads(req.text)["result"]
+                            "quest_list": json.loads(req.text)["result"]
                         }
                     elif event_name == "submission":
                         req = call_http_request(
@@ -759,10 +759,14 @@ def send_action(sid, data):
     if "map" in data_to_emit and data_to_emit["map"]:
         rooms = [data_to_emit["map"]["map"]]
 
-        if old_session["user_datas"]["map"] != session["user_datas"]["map"]:
-            rooms.append(session["user_id"])
-            sio.leave_room(sid, old_session["user_datas"]["map"])
-            sio.enter_room(sid, session["user_datas"]["map"])
+        try:
+            if old_session["user_datas"]["map"] != session["user_datas"]["map"]:
+                rooms.append(session["user_id"])
+                sio.leave_room(sid, old_session["user_datas"]["map"])
+                sio.enter_room(sid, session["user_datas"]["map"])
+        except:
+            # Do nothing if user_datas have not been populated yet
+            pass
 
         sio.emit(
             "map_state",

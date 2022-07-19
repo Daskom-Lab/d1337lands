@@ -70,9 +70,8 @@ export default async function handler(req, res) {
 
             postgresPool.query(insertQuery, (err, result) => {
               if (err) {
-                console.log(err)
                 res.status(403).json({
-                  reason: "Login Failed!",
+                  reason: "Login Failed!"
                 });
                 return;
               }
