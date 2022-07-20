@@ -21,10 +21,11 @@ export const POST = (url, data=null, token=null) =>
       },
       body: data === null ? "" : JSON.stringify(data)
     })
-    .then((response) => {
+    .then(async (response) => {
       if (response.ok) {
         return response.json();
       }
 
-      throw new Error(`${response.status} ${response.statusText}`)
+      const res = await response.json();
+      throw new Error(`${res.reason}`)
     })

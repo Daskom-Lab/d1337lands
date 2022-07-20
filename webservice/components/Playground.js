@@ -31,6 +31,11 @@ class CustomTerminal extends React.Component {
       loginData: {
         username: "",
         password: ""
+      },
+
+      changePassData: {
+        cur_password: "",
+        new_password: ""
       }
     }
   }
@@ -44,6 +49,7 @@ class CustomTerminal extends React.Component {
           currentUser: res.nickname
         })
       }).catch (() => {
+        deleteCookie("1337token");
         this.setState({
           currentUser: "guest"
         })
@@ -111,13 +117,65 @@ class CustomTerminal extends React.Component {
 
               await this.sleep(3) 
               await POST(`http://${this.props.env["HOST"]}:${this.props.env["WEBSERVICE_PORT"]}/api/authentication/login`, this.state.loginData)
-                .then ((res) => {
+                .then (async (res) => {
                   setCookie("1337token", res.accessToken)
 
-                  this.updateCurrentUser();
+                  await this.updateCurrentUser();
                   this.xtermRef.current.terminal.write("\r\n[+] Login success \r\n")
                 }).catch (() => {
                   this.xtermRef.current.terminal.write("\r\n[+] Login failed \r\n")
+                })
+
+              this.setState({
+                processState: 0,
+                isInProcess: false,
+                shouldFlush: true
+              })
+
+              await this.sleep(3)
+              this.printUserPrompt()
+              break;
+          
+            default:
+              break;
+          } 
+          break;
+
+        case "changepassword":
+          switch (this.state.processState) {
+            case 0:
+              this.xtermRef.current.terminal.write("Current Password: ")
+              this.setState({ 
+                processState: 1,
+                shouldFlush: false
+              }) 
+              break;
+
+            case 1:
+              this.xtermRef.current.terminal.write("New Password: ")
+              this.state.changePassData.cur_password = this.state.input
+              this.setState({ 
+                processState: 2,
+                changePassData: this.state.changePassData
+              }) 
+              break;
+
+            case 2:
+              this.state.changePassData.new_password = this.state.input
+              this.setState({
+                processType: "",
+                processState: 3,
+                changePassData: this.state.changePassData
+              })
+
+              this.xtermRef.current.terminal.write("[+] Changing password...")
+
+              await this.sleep(3) 
+              await POST(`http://${this.props.env["HOST"]}:${this.props.env["WEBSERVICE_PORT"]}/api/authentication/changepass`, this.state.changePassData, getCookie("1337token"))
+                .then ((res) => {
+                  this.xtermRef.current.terminal.write(`\r\n[+] ${res.result} \r\n`)
+                }).catch ((e) => {
+                  this.xtermRef.current.terminal.write(`\r\n[+] ${e.message} \r\n`)
                 })
 
               this.setState({
@@ -227,7 +285,7 @@ class CustomTerminal extends React.Component {
         if (inputArgs.length > 1)
           this.xtermRef.current.terminal.write("\r\nhelp: Only need one argument")
         else if (inputArgs.length === 0)
-          this.xtermRef.current.terminal.write(`\r\nCommand List:\r\n- clear\r\n- cat\r\n- ls\r\n- cd\r\n- help`)
+          this.xtermRef.current.terminal.write(`\r\nCommand List:\r\n- clear\r\n- cat\r\n- ls\r\n- cd\r\n- help\r\n- login\r\n- logout\r\n- changepassword`)
         else
           switch(inputArgs[0]){
             case "clear":
@@ -248,6 +306,12 @@ class CustomTerminal extends React.Component {
             case "login":
               this.xtermRef.current.terminal.write("\r\nusage : login\r\nlog yourself in (if you are one of daskom1337 community member)")
               break;
+            case "logout":
+              this.xtermRef.current.terminal.write("\r\nusage : logout\r\nlog yourself out (if you have logged in before)")
+              break;
+            case "changepassword":
+              this.xtermRef.current.terminal.write("\r\nusage : changepassword\r\nchange your account password (if you are one of daskom1337 community member)")
+              break;
             default:
               this.xtermRef.current.terminal.write("\r\nNo Command ( ╹x╹ )")
               break;
@@ -259,6 +323,11 @@ class CustomTerminal extends React.Component {
           this.xtermRef.current.terminal.write("\r\nlogin: Dont need any argument");
           return;
         } 
+
+        if (hasCookie("1337token")) {
+          this.xtermRef.current.terminal.write("\r\n[+] You have been logged in, logout first!");
+          return;
+        }
 
         this.setState({ 
           isInProcess: true,
@@ -289,8 +358,15 @@ class CustomTerminal extends React.Component {
         if (inputArgs.length > 0) {
           this.xtermRef.current.terminal.write("\r\nlogin: Dont need any argument");
           return;
-        } 
+        }
+
+        await this.updateCurrentUser();
         
+        if (!hasCookie("1337token")) {
+          this.xtermRef.current.terminal.write("\r\n[+] You are not logged in yet!");
+          return;
+        }
+
         this.setState({ 
           isInProcess: true,
           processType: "changepassword",
