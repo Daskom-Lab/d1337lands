@@ -373,9 +373,17 @@ export class GameScene extends Phaser.Scene {
           const playerSprite = this.add.sprite(0, 0, "base-character");
           playerSprite.setDepth(1);
 
+          const playerText = this.add.text(0, 0, data.user_nickname, {
+            font: "800 16px Courier",
+            color: "#fff",
+            align: "center",
+          });
+          playerText.setDepth(1);
+
           this.cameras.main.startFollow(playerSprite, true, 0.1, 0.1);
           const mainPlayer = new Player(
             playerSprite,
+            playerText,
             data.user_datas.position,
             new Phaser.Math.Vector2(
               this.maps[data.user_datas.map].json.width,

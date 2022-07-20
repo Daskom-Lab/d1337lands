@@ -1,10 +1,11 @@
 import { GameScene } from "./index";
 
 export class Player {
-  constructor(sprite, tilePos, mapSize) {
+  constructor(sprite, text, tilePos, mapSize) {
     this.tilePos = tilePos;
     this.mapSize = mapSize;
     this.sprite = sprite;
+    this.text = text;
     this.lastposition = tilePos;
     this.lastdirection = "";
 
@@ -122,6 +123,12 @@ export class Player {
                     is_moving_vertically ? position_x : changing_position,
                     is_moving_vertically ? changing_position : position_y
                   );
+                  this.text.setPosition(
+                    parseInt(is_moving_vertically ? position_x : changing_position) -
+                    parseInt(this.text.width / 2),
+
+                    parseInt(is_moving_vertically ? changing_position : position_y) - 75
+                  );
                   await this.sleep(5);
                 } else return;
               }
@@ -141,6 +148,7 @@ export class Player {
     this.runAnimations = false;
     this.futurepositions = [];
     this.sprite.setPosition(position_x, position_y);
+    this.text.setPosition(position_x - parseInt(this.text.width / 2), position_y - 75);
     this.stopAnimation();
 
     this.lastposition = future_position;
