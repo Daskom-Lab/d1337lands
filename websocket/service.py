@@ -25,7 +25,6 @@ sio = socketio.Server(
         f"http://{config['HOST']}:{config['DISCORDBOT_PORT']}",
         f"http://{config['HOST']}:{config['WEBSOCKET_PORT']}",
         f"http://{config['HOST']}:{config['GAME_PORT']}",
-        f"http://{config['HOST']}:3000"
     ]
 )
 app = socketio.WSGIApp(sio)
@@ -88,7 +87,10 @@ def connect(sid, _, auth):
         )
 
         if len(result["user_datas"]) > 0:
-            result["user_datas"][0] = {**result["user_datas"][0], **result["user_datas"][0]["user"]}
+            result["user_datas"][0] = {
+                **result["user_datas"][0],
+                **result["user_datas"][0]["user"],
+            }
             del result["user_datas"][0]["user"]
 
             user_session["user_datas"] = result["user_datas"][0]
@@ -98,55 +100,63 @@ def connect(sid, _, auth):
 
     sio.enter_room(sid, user_id)
 
-    if len(result["user_datas"]) > 0 and isFromWeb(auth["connection_source"]):
+    if len(result["user_datas"]) > 0:
         sio.enter_room(sid, result["user_datas"][0]["map"])
-        _ = call_gql_request(
-            r"""
-                mutation updateUserData($userId: bigint!, $is_online: Boolean!) {
-                    update_user_datas(where: {user_id: {_eq: $userId}}, _set: {is_online: $is_online}) {
-                        affected_rows
+
+        if isFromWeb(auth["connection_source"]):
+            sio.emit(
+                "map_change",
+                {"map": result["user_datas"][0]["map"]},
+                room=user_id,
+                skip_sid=sid,
+            )
+            _ = call_gql_request(
+                r"""
+                    mutation updateUserData($userId: bigint!, $is_online: Boolean!) {
+                        update_user_datas(where: {user_id: {_eq: $userId}}, _set: {is_online: $is_online}) {
+                            affected_rows
+                        }
                     }
-                }
-            """,
-            {
-                "userId": user_id,
-                "is_online": True,
-            },
-            auth["token"],
-        )
+                """,
+                {
+                    "userId": user_id,
+                    "is_online": True,
+                },
+                auth["token"],
+            )
 
-        sio.emit(
-            "user_connect",
-            {
-                "user_id": user_id,
-                "user_nickname": user_nickname,
-                "user_role": user_role,
-                "user_datas": result["user_datas"][0]
-                if len(result["user_datas"]) > 0
-                else {},
-            },
-        )
+            sio.emit(
+                "user_connect",
+                {
+                    "user_id": user_id,
+                    "user_nickname": user_nickname,
+                    "user_role": user_role,
+                    "user_datas": result["user_datas"][0]
+                    if len(result["user_datas"]) > 0
+                    else {},
+                },
+            )
 
-        r = call_http_request("/user/presence", auth["token"])
-        for user in json.loads(r.text)["result"]:
-            if user["is_online"] and user["user_id"] != user_id:
-                sio.emit(
-                    "user_connect",
-                    {
-                        "user_id": user["user_id"],
-                        "user_nickname": user["nickname"],
-                        "user_role": user["role"],
-                        "user_datas": {
-                            "map": user["map"],
-                            "position": user["position"],
-                            "character": user["character"],
-                            "chosen_title": user["chosen_title"],
+            r = call_http_request("/user/presence", auth["token"])
+            for user in json.loads(r.text)["result"]:
+                if user["is_online"] and user["user_id"] != user_id:
+                    sio.emit(
+                        "user_connect",
+                        {
+                            "user_id": user["user_id"],
+                            "user_nickname": user["nickname"],
+                            "user_role": user["role"],
+                            "user_datas": {
+                                "map": user["map"],
+                                "position": user["position"],
+                                "character": user["character"],
+                                "chosen_title": user["chosen_title"],
+                            },
                         },
-                    },
-                    room=user_id,
-                )
+                        room=user_id,
+                    )
 
-    print(f"User connected to game socket: {sid}\n\n")
+    print(f"User connected to game socket: {sid}", flush=True)
 
     sio.emit(
         "user_data",
@@ -215,7 +225,25 @@ def disconnect(sid):
         sio.leave_room(sid, session["user_datas"]["map"])
 
     sio.leave_room(sid, session["user_id"])
-    print(f"User disconnected from game socket: {sid}\n\n")
+    print(f"User disconnected from game socket: {sid}", flush=True)
+    return "OK", 200
+
+
+@sio.event
+def change_map_room(sid, data):
+    session = sio.get_session(sid)
+
+    if isFromWeb(session["connection_source"]):
+        return "OK", 200
+
+    try:
+        sio.leave_room(sid, session["current_map"])
+    except:
+        pass
+
+    session["current_map"] = data["map"]
+    sio.save_session(sid, session)
+    sio.enter_room(sid, data["map"])
     return "OK", 200
 
 
@@ -255,6 +283,12 @@ def send_action(sid, data):
 
         session["user_datas"] = initial_user_datas
         sio.enter_room(sid, initial_user_datas["map"])
+        sio.emit(
+            "map_change",
+            {"map": initial_user_datas["map"]},
+            room=session["user_id"],
+            skip_sid=sid,
+        )
         sio.save_session(sid, session)
 
     elif data["action"] == "move":
@@ -274,6 +308,7 @@ def send_action(sid, data):
             }
 
             new_user_datas = {
+                "character": session["user_datas"]["character"],
                 "map": session["user_datas"]["map"],
                 "position": next_position,
             }
@@ -288,6 +323,8 @@ def send_action(sid, data):
             data_to_emit["map"] = {
                 "user_id": session["user_id"],
                 "user_nickname": session["user_nickname"],
+                "character": session["user_datas"]["character"],
+                "direction": data["direction"],
                 **new_user_datas,
                 **nearby_event_data,
             }
@@ -416,6 +453,7 @@ def send_action(sid, data):
                             }
                         else:
                             new_user_datas = {
+                                "character": session["user_datas"]["character"],
                                 "map": "mentorcastle",
                                 "position": f"""{game.getRandomStartPosition('mentorcastle', 
                                     which=event_name.split('mentor_castle_')[1])}""".strip(),
@@ -443,6 +481,7 @@ def send_action(sid, data):
                         or event_name == "teleportation_left"
                     ):
                         new_user_datas = {
+                            "character": session["user_datas"]["character"],
                             "map": "town",
                             "position": f"""{
                                 game.getRandomStartPosition('town', 
@@ -517,6 +556,7 @@ def send_action(sid, data):
                         }
                     elif event_name == "teleportation":
                         new_user_datas = {
+                            "character": session["user_datas"]["character"],
                             "map": "town",
                             "position": f"""{
                                 game.getRandomStartPosition('town', 
@@ -559,6 +599,7 @@ def send_action(sid, data):
 
                         chosen_map = int(packed_data["chosen_map"]) - 1
                         new_user_datas = {
+                            "character": session["user_datas"]["character"],
                             "map": eligible_maps[chosen_map],
                             "position": f"{game.getRandomStartPosition(eligible_maps[chosen_map])}",
                         }
@@ -764,6 +805,12 @@ def send_action(sid, data):
                 rooms.append(session["user_id"])
                 sio.leave_room(sid, old_session["user_datas"]["map"])
                 sio.enter_room(sid, session["user_datas"]["map"])
+                sio.emit(
+                    "map_change",
+                    {"map": session["user_datas"]["map"]},
+                    room=session["user_id"],
+                    skip_sid=sid,
+                )
         except:
             # Do nothing if user_datas have not been populated yet
             pass

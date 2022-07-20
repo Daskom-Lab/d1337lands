@@ -19,6 +19,7 @@ export class Player {
 
   destroy() {
     if (this.sprite !== undefined) this.sprite.destroy();
+    if (this.text !== undefined) this.text.destroy();
   }
 
   setSprite(sprite) {

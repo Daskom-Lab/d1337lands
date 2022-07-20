@@ -45,7 +45,8 @@ export class GameScene extends Phaser.Scene {
     super();
 
     this.mainPlayer = undefined;
-    this.players = undefined;
+    this.mainPlayerData = undefined;
+    this.players = {};
     this.nearbyEvent = "";
     this.chosenMap = [];
 
@@ -272,7 +273,9 @@ export class GameScene extends Phaser.Scene {
     this.load.once("complete", () => {
       const newSprite = this.add.sprite(0, 0, spriteId);
       newSprite.setDepth(1);
-      this.cameras.main.startFollow(newSprite, true, 0.1, 0.1);
+
+      if (player === this.getMainPlayer())
+        this.cameras.main.startFollow(newSprite, true, 0.1, 0.1);
 
       player.setSprite(newSprite);
       player.setPlayerAnimation(spriteId);
@@ -325,6 +328,12 @@ export class GameScene extends Phaser.Scene {
         this.assetText.setText("Getting user data");
     })
 
+    socket.on("map_change", (data) => {
+      socket.emit("change_map_room", {
+        "map": data["map"]
+      })
+    })
+
     socket.on("handle_action", (data) => {
       if (data.action === "move") {
         // Handler for nearby event
@@ -344,14 +353,67 @@ export class GameScene extends Phaser.Scene {
 
     socket.on("map_state", (data) => {
       if (data.map !== undefined && data.map !== this.getChosenMap()[1]) {
-        this.setCurrentRenderedMap(data.map);
-        this.getMainPlayer().setMapSize(
-          new Phaser.Math.Vector2(
-            this.maps[data.map].json.width,
-            this.maps[data.map].json.height
+        if (data.user_id === this.mainPlayerData.user_id) {
+          this.setCurrentRenderedMap(data.map);
+          this.getMainPlayer().setMapSize(
+            new Phaser.Math.Vector2(
+              this.maps[data.map].json.width,
+              this.maps[data.map].json.height
+            )
+          );
+
+          if (Object.keys(this.players).length > 0) {
+            for (const [_, player] of Object.entries(this.players)) {
+              player.destroy();
+            }
+            this.players = {};
+          }
+
+          this.toast(`Welcome to the ${data.map}, ${data.user_nickname}`)
+          this.setPlayerPosition("mainPlayer", parseInt(data.position))
+        } else {
+          this.players[data.user_id].destroy();
+          delete this.players[data.user_id];
+        }
+      } else {
+        if (data.user_id === this.mainPlayerData.user_id) return;
+
+        if (Object.keys(this.players).includes(data.user_id)) {
+          if (data.position === -1) {
+            this.players[data.user_id].destroy();
+            delete this.players[data.user_id];
+          } else {
+            this.setPlayerPosition(this.players[data.user_id], parseInt(data.position), data.direction)
+          }
+        } else {
+          const playerSprite = this.add.sprite(0, 0, "base-character");
+          playerSprite.setDepth(1);
+
+          const playerText = this.add.text(0, 0, data.user_nickname, {
+            font: "800 16px Courier",
+            color: "#fff",
+            align: "center",
+          });
+          playerText.setDepth(1);
+
+          const player = new Player(
+            playerSprite,
+            playerText,
+            data.position,
+            new Phaser.Math.Vector2(
+              this.maps[data.map].json.width,
+              this.maps[data.map].json.height
+            )
           )
-        );
-        this.setPlayerPosition("mainPlayer", parseInt(data.position))
+
+          player.setPlayerAnimation("base-character");
+
+          if (data.character !== undefined && data.character !== "basic")
+            this.setCharacterSpritesheet(player, data.character)
+
+          this.players[data.user_id] = player;
+          this.setPlayerPosition(this.players[data.user_id], parseInt(data.position))
+        }
       }
     })
 
@@ -368,6 +430,7 @@ export class GameScene extends Phaser.Scene {
         this.closeLoadingScene();
 
         this.setCurrentRenderedMap(data.user_datas.map);
+        this.mainPlayerData = data;
 
         if (this.getMainPlayer() === undefined) {
           const playerSprite = this.add.sprite(0, 0, "base-character");
@@ -394,12 +457,11 @@ export class GameScene extends Phaser.Scene {
           mainPlayer.setPlayerAnimation("base-character");
           this.setMainPlayer(mainPlayer);
 
-          if (data.user_datas.character !== undefined && data.user_datas.character !== "basic") 
+          if (data.user_datas.character !== undefined && data.user_datas.character !== "basic")
             this.setCharacterSpritesheet(mainPlayer, data.user_datas.character)
-
-        } else {
-          this.setPlayerPosition("mainPlayer", parseInt(data.user_datas.position));
         }
+
+        this.setPlayerPosition("mainPlayer", parseInt(data.user_datas.position));
       }
     });
   }

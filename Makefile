@@ -1,3 +1,5 @@
+.DEFAULT_GOAL := serve
+
 serve:
 	cd webservice && yarn install && cd .. && \
 	cd discordbot && yarn install && cd .. && \

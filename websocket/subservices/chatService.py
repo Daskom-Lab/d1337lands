@@ -30,11 +30,11 @@ class ChatNamespace(socketio.Namespace):
 
         self.save_session(sid, user_session)
 
-        print(f"User connected to chat socket: {sid}\n\n")
+        print(f"User connected to chat socket: {sid}", flush=True)
         return "OK", 200
 
     def on_disconnect(self, sid):
-        print(f"User disconnected from chat socket: {sid}\n\n")
+        print(f"User disconnected from chat socket: {sid}", flush=True)
         return "OK", 200
 
     def on_send_message(self, sid, data):
