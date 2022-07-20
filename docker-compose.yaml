@@ -26,7 +26,7 @@ services:
     ports:
     - "${GQL_PORT}:8080"
     depends_on:
-    - "postgres"
+    - "database"
     - "discordbot"
     restart: always
 
@@ -38,7 +38,7 @@ services:
     ports:
     - "${WEBSERVICE_PORT}:3000"
     depends_on:
-    - "postgres"
+    - "database"
     - "graphql-engine"
     - "websocket"
     - "game"
@@ -52,7 +52,7 @@ services:
     ports:
     - "${DISCORDBOT_PORT}:3000"
     depends_on:
-    - "postgres"
+    - "database"
     restart: always
 
   websocket:
@@ -63,7 +63,7 @@ services:
     ports:
     - "${WEBSOCKET_PORT}:3000"
     depends_on:
-    - "postgres"
+    - "database"
     restart: always
 
   game:
@@ -74,7 +74,7 @@ services:
     ports:
     - "${GAME_PORT}:3000"
     depends_on:
-    - "postgres"
+    - "database"
     - "graphql-engine"
     - "websocket"
     restart: always
