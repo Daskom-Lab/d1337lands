@@ -12,7 +12,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# RUN yarn build
+RUN yarn build
 
 FROM lipanski/docker-static-website:latest
 
