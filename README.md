@@ -60,6 +60,7 @@ These are the steps you can follow to run the codebase without having to know al
 1. Setup the environment  
     ```env
     cat > .env <<EOF
+    MODE=DEVELOPMENT
     HOST=localhost
 
     WEBSERVICE_PORT=4444
@@ -89,6 +90,7 @@ These are the steps you can follow to run the codebase without having to know al
     ```
 
     > **Note:**  
+        - **Change mode to PRODUCTION for production build**
         - **You have to change all the secrets (including pass) with something secret, ofc**  
         - **All env variables starting with `HASURA_` have to match the ones starting with `GQL_`**
 

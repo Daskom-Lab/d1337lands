@@ -43,7 +43,7 @@ class CustomTerminal extends React.Component {
   async updateCurrentUser() {
     if (!hasCookie("1337token")) return;
 
-    await POST(`http://${this.props.env["HOST"]}:${this.props.env["WEBSERVICE_PORT"]}/api/authentication/validate`, null, getCookie("1337token"))
+    await POST(`${this.props.env["WEBSERVICE_URL"]}/api/authentication/validate`, null, getCookie("1337token"))
       .then ((res) => {
         this.setState({
           currentUser: res.nickname
@@ -116,7 +116,7 @@ class CustomTerminal extends React.Component {
               this.xtermRef.current.terminal.write("[+] Logging in...")
 
               await this.sleep(3) 
-              await POST(`http://${this.props.env["HOST"]}:${this.props.env["WEBSERVICE_PORT"]}/api/authentication/login`, this.state.loginData)
+              await POST(`${this.props.env["WEBSERVICE_URL"]}/api/authentication/login`, this.state.loginData)
                 .then (async (res) => {
                   setCookie("1337token", res.accessToken)
 
@@ -171,7 +171,7 @@ class CustomTerminal extends React.Component {
               this.xtermRef.current.terminal.write("[+] Changing password...")
 
               await this.sleep(3) 
-              await POST(`http://${this.props.env["HOST"]}:${this.props.env["WEBSERVICE_PORT"]}/api/authentication/changepass`, this.state.changePassData, getCookie("1337token"))
+              await POST(`${this.props.env["WEBSERVICE_URL"]}/api/authentication/changepass`, this.state.changePassData, getCookie("1337token"))
                 .then ((res) => {
                   this.xtermRef.current.terminal.write(`\r\n[+] ${res.result} \r\n`)
                 }).catch ((e) => {
@@ -386,7 +386,7 @@ class CustomTerminal extends React.Component {
           return;
         }
 
-        await POST(`http://${this.props.env["HOST"]}:${this.props.env["WEBSERVICE_PORT"]}/api/authentication/validate`, null, getCookie("1337token"))
+        await POST(`${this.props.env["WEBSERVICE_URL"]}/api/authentication/validate`, null, getCookie("1337token"))
           .then (() => {
             this.context.setGameActive(true);
             this.xtermRef.current.terminal.write("\r\n[+] Game started successfully :D");

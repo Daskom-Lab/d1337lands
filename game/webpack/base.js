@@ -3,6 +3,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const parsedEnv = require("dotenv").config({ path: path.resolve(__dirname, "../.env") }).parsed;
 const localEnv = JSON.stringify({
+  "MODE": parsedEnv.MODE,
   "HOST": parsedEnv.HOST,
   "WEBSOCKET_PORT": parsedEnv.WEBSOCKET_PORT
 })

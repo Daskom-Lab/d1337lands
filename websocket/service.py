@@ -25,6 +25,12 @@ sio = socketio.Server(
         f"http://{config['HOST']}:{config['DISCORDBOT_PORT']}",
         f"http://{config['HOST']}:{config['WEBSOCKET_PORT']}",
         f"http://{config['HOST']}:{config['GAME_PORT']}",
+    ] if config["MODE"] == "DEVELOPMENT" else [
+        "http://webservice:3000",
+        "http://discordbot:3000",
+        "http://websocket:3000",
+        "http://game:3000",
+        f"https://{config['HOST']}",
     ]
 )
 app = socketio.WSGIApp(sio)

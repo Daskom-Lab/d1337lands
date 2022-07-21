@@ -41,19 +41,31 @@ export async function getStaticProps() {
   const WEBSERVICE_PORT = process.env.WEBSERVICE_PORT;
   const HOST = process.env.HOST;
 
+  let GAME_URL = ""
+  let WEBSOCKET_URL = ""
+  let WEBSERVICE_URL = ""
+  if (process.env.MODE === "DEVELOPMENT") {
+    GAME_URL = `http://${HOST}:${GAME_PORT}`
+    WEBSOCKET_URL = `http://${HOST}:${WEBSOCKET_PORT}`
+    WEBSERVICE_URL = `http://${HOST}:${WEBSERVICE_PORT}`
+  } else {
+    GAME_URL = `https://${HOST}/game`
+    WEBSOCKET_URL = `https://${HOST}/websocket`
+    WEBSERVICE_URL = `https://${HOST}`
+  }
+
   return {
     props: {
       peopleList,
       fileTree,
-      WEBSOCKET_PORT,
-      WEBSERVICE_PORT,
-      GAME_PORT,
-      HOST
+      GAME_URL,
+      WEBSOCKET_URL,
+      WEBSERVICE_URL
     }
   }
 }
 
-export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, WEBSERVICE_PORT, GAME_PORT, HOST }) {
+export default function Home({ peopleList, fileTree, GAME_URL, WEBSOCKET_URL, WEBSERVICE_URL }) {
   const [menu, setMenu] = useState("about-us")
   const [gameSocket, setGameSocket] = useState(undefined)
   const [chatSocket, setChatSocket] = useState(undefined)
@@ -270,7 +282,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, WEBSERVICE_
       if (hasCookie("1337token")) {
         // Game socket initialization
         if (gameSocket === undefined) {
-          const socket = io(`http://${HOST}:${WEBSOCKET_PORT}`, {
+          const socket = io(WEBSOCKET_URL, {
             auth: (cb) => {
               cb({
                 token: getCookie("1337token"),
@@ -480,7 +492,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, WEBSERVICE_
 
         // Chat socket initialization
         if (chatSocket === undefined) {
-          const socket = io(`http://${HOST}:${WEBSOCKET_PORT}/chat`, {
+          const socket = io(`${WEBSOCKET_URL}/chat`, {
             auth: (cb) => {
               cb({ token: getCookie("1337token") })
             }
@@ -657,13 +669,12 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, WEBSERVICE_
                   </SimpleBar>
                 ) : (
                   <Playground fileTree={fileTree} env={{
-                    HOST: HOST, 
-                    WEBSERVICE_PORT: WEBSERVICE_PORT
+                    WEBSERVICE_URL: WEBSERVICE_URL
                   }} />
                 )
               ) : (
                 <div className="w-full h-full text-white relative">
-                  <iframe src={"http://" + HOST + ":" + GAME_PORT} className="rounded-xl h-full w-full pointer-events-none" tabIndex="-1" onFocus={(event) => {
+                  <iframe src={GAME_URL} className="rounded-xl h-full w-full pointer-events-none" tabIndex="-1" onFocus={(event) => {
                     event.preventDefault();
                     if (event.relatedTarget) {
                       // Revert focus back to previous blurring element
@@ -757,7 +768,7 @@ export default function Home({ peopleList, fileTree, WEBSOCKET_PORT, WEBSERVICE_
                                 return;
                               }
 
-                              await POST(`http://${HOST}:${WEBSERVICE_PORT}/api/user/character`, {
+                              await POST(`${WEBSERVICE_URL}/api/user/character`, {
                                 character_image: newPlayerImage.replace("data:image/png;base64,", "")
                               }, getCookie("1337token"))
                                 .then((_) => {
