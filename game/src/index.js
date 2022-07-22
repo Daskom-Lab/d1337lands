@@ -305,9 +305,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
-    const WEBSOCKET_URL = PROCESS.ENV.MODE === "DEVELOPMENT" 
-      ? `http://${PROCESS.ENV.HOST}:${PROCESS.ENV.WEBSOCKET_PORT}` 
-      : `https://${PROCESS.ENV.HOST}/websocket`;
+    const WEBSOCKET_URL = `http://${PROCESS.ENV.HOST}:${PROCESS.ENV.WEBSOCKET_PORT}`;
 
     const socket = io(WEBSOCKET_URL, {
       auth: (cb) => {

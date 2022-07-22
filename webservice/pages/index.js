@@ -44,13 +44,13 @@ export async function getStaticProps() {
   let GAME_URL = ""
   let WEBSOCKET_URL = ""
   let WEBSERVICE_URL = ""
+
+  WEBSOCKET_URL = `http://${HOST}:${WEBSOCKET_PORT}`
   if (process.env.MODE === "DEVELOPMENT") {
     GAME_URL = `http://${HOST}:${GAME_PORT}`
-    WEBSOCKET_URL = `http://${HOST}:${WEBSOCKET_PORT}`
     WEBSERVICE_URL = `http://${HOST}:${WEBSERVICE_PORT}`
   } else {
     GAME_URL = `https://${HOST}/game`
-    WEBSOCKET_URL = `https://${HOST}/websocket`
     WEBSERVICE_URL = `https://${HOST}`
   }
 
