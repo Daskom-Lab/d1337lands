@@ -38,6 +38,7 @@ export async function getStaticProps() {
 
   const GAME_PORT = process.env.GAME_PORT;
   const WEBSOCKET_PORT = process.env.WEBSOCKET_PORT;
+  const PUBLISHED_WEBSOCKET_PORT = process.env.PUBLISHED_WEBSOCKET_PORT;
   const WEBSERVICE_PORT = process.env.WEBSERVICE_PORT;
   const HOST = process.env.HOST;
 
@@ -51,8 +52,8 @@ export async function getStaticProps() {
     WEBSERVICE_URL = `http://${HOST}:${WEBSERVICE_PORT}`
   } else {
     GAME_URL = `https://${HOST}/game`
-    WEBSOCKET_URL = `https://${HOST}:${WEBSOCKET_PORT}`
-    WEBSERVICE_URL = `https://${HOST}:${PUBLISHED_WEBSOCKET_PORT}`
+    WEBSOCKET_URL = `https://${HOST}:${PUBLISHED_WEBSOCKET_PORT}`
+    WEBSERVICE_URL = `https://${HOST}`
   }
 
   return {
