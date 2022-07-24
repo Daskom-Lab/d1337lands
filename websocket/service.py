@@ -31,6 +31,7 @@ sio = socketio.Server(
         "http://websocket:3000",
         "http://game:3000",
         f"https://{config['HOST']}",
+        f"https://{config['HOST']}:{config['PUBLISHED_WEBSOCKET_PORT']}",
     ]
 )
 app = socketio.WSGIApp(sio)

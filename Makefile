@@ -14,7 +14,7 @@ migrate:
 	hasura metadata apply --skip-update-check --envfile ../.env && cd ..
 
 db_console:
-	cd database && hasura console --skip-update-check --envfile ../.env
+	cd database && hasura console --skip-update-check --envfile ../.env --insecure-skip-tls-verify --no-browser --address=0.0.0.0
 
 down:
 	docker-compose down

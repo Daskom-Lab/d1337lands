@@ -45,13 +45,14 @@ export async function getStaticProps() {
   let WEBSOCKET_URL = ""
   let WEBSERVICE_URL = ""
 
-  WEBSOCKET_URL = `http://${HOST}:${WEBSOCKET_PORT}`
   if (process.env.MODE === "DEVELOPMENT") {
     GAME_URL = `http://${HOST}:${GAME_PORT}`
+    WEBSOCKET_URL = `http://${HOST}:${WEBSOCKET_PORT}`
     WEBSERVICE_URL = `http://${HOST}:${WEBSERVICE_PORT}`
   } else {
     GAME_URL = `https://${HOST}/game`
-    WEBSERVICE_URL = `https://${HOST}`
+    WEBSOCKET_URL = `https://${HOST}:${WEBSOCKET_PORT}`
+    WEBSERVICE_URL = `https://${HOST}:${PUBLISHED_WEBSOCKET_PORT}`
   }
 
   return {
@@ -414,12 +415,12 @@ export default function Home({ peopleList, fileTree, GAME_URL, WEBSOCKET_URL, WE
                         addLogBuffer(`here are all the quests i got for you to tackle now :           `)
                         addLogBuffer(`                                                                `)
                         data.packed_data.quest_list.forEach(element => {
-                          addLogBuffer(`[+] quest_id = ${element.id}                 `)
-                          addLogBuffer(`    quest_title = ${element.answer}          `)
-                          addLogBuffer(`    quest_description = ${element.is_correct}`)
-                          addLogBuffer(`    quest_level = ${element.title}           `)
-                          addLogBuffer(`    quest_reward = ${element.level} leetcoins`)
-                          addLogBuffer(`                                             `)
+                          addLogBuffer(`[+] quest_id = ${element.id}                  `)
+                          addLogBuffer(`    quest_title = ${element.title}            `)
+                          addLogBuffer(`    quest_description = ${element.description}`)
+                          addLogBuffer(`    quest_level = ${element.level}            `)
+                          addLogBuffer(`    quest_reward = ${element.reward} leetcoins`)
+                          addLogBuffer(`                                              `)
                         });
                         break;
 

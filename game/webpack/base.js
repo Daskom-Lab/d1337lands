@@ -5,7 +5,8 @@ const parsedEnv = require("dotenv").config({ path: path.resolve(__dirname, "../.
 const localEnv = JSON.stringify({
   "MODE": parsedEnv.MODE,
   "HOST": parsedEnv.HOST,
-  "WEBSOCKET_PORT": parsedEnv.WEBSOCKET_PORT
+  "WEBSOCKET_PORT": parsedEnv.WEBSOCKET_PORT,
+  "PUBLISHED_WEBSOCKET_PORT": parsedEnv.PUBLISHED_WEBSOCKET_PORT
 })
 
 module.exports = {
