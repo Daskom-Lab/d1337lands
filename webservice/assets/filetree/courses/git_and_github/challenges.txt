@@ -1,0 +1,27 @@
++--------------+
+| Challenge #1 |
++--------------+---
+| > Do you know that there is an easter egg inside Github ?
+| > For example, you can go to https://github.com/fakhrip and see
+|   a gif shown in his profile, yep that is the easter egg, but the
+|   cool thing here is that its not just a gif that you can put there
+| > But what else you can put there ? well thats for you to find out
+|
+| [*] The main objective of this challenge is to create the most
+|     awesome github profile possible
+|
+| > To do that, you have to explore what is a markdown file, how to use it
+|   what are the possibilites of what we can do in a markdown file
+| > Explore as many things as possible, that is the wonderful things about
+|   technology, its an ever growing things so you can always explore things
+|   and could never stop to do it
+|
+| [*] Once you have done this challenge, you have to give your github
+|     profile link in the prochef academy discord channel so the mentors
+|     can see it and give a score based on what you have done
+|
+|     Note: score here is just a number for the mentors to see how far
+|           you have learn about something
+|
+| > GLHF!
++---
