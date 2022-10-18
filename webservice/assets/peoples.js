@@ -78,5 +78,16 @@ export function getPeopleList() {
 |       Front End Developer at Daskom1337        |
 +------------------------------------------------+`,
     },
+    {
+      Avatar: "rey.html",
+      Handle: "Unknown Visuals",
+      Realname: "Reynaldhi Tryana Graha",
+      Description: `
++------------------------------------------------+
+|           Still unknown to this day.           |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    },
   ];
 }
