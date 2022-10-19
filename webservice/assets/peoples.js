@@ -89,5 +89,16 @@ export function getPeopleList() {
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
     },
+    {
+      Avatar: "mai.html",
+      Handle: "Raphaeline",
+      Realname: "M. Al Fitra Zulfikhar Akbar",
+      Description: `
++------------------------------------------------+
+|         Solving the problem everyday.          |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    },
   ];
 }
