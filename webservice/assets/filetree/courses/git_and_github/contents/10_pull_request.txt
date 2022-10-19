@@ -43,6 +43,8 @@ It would be much easier to understand this by using it directly, so these are th
      - and then on the reviewers part on the right side of the screen, click on the setting button with the gear icon on it, and put `fakhrip, soedipo, iritasee, adhiiimf` as reviewer, just click it and until you see green check besides each name
      - thats it, then click the create pull request button or whatever button that will create the pull request :v
 
+[*] NOTE: to be able for you to add reviewer there, you need to ask to the mentor to invite yourself into the Daskom-Lab Github Organization first, so please tag any one of us in the prochef academy channel in discord and tell us your github account username.
+
 [12] Done, congratulations on your (probably) first ever pull request!
 
 Also congratulations for finishing this course, see you on the next one (web frontend development).
