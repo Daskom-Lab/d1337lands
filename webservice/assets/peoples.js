@@ -100,5 +100,16 @@ export function getPeopleList() {
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
     },
+    {
+      Avatar: "alfa.html",
+      Handle: "alfa",
+      Realname: "M. Aushaf Al Farras",
+      Description: `
++------------------------------------------------+
+|         I come from a land down under!         |                
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    },
   ];
 }
