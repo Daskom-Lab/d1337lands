@@ -111,5 +111,18 @@ export function getPeopleList() {
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
     },
+    {
+      Avatar: "vander.html",
+      Handle: "Vanduts",
+      Realname: "Evander Ricardo Manuel",
+      Description: `
++------------------------------------------------+
+|                  Did You Know  ?               |
+|       If you hold your breath long enough      |
+|             you can sleep forever              |                
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    },
   ];
 }
