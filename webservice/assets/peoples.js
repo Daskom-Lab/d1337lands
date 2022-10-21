@@ -124,5 +124,17 @@ export function getPeopleList() {
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
     },
+    {
+      Avatar: "icen.html",
+      Handle: "vincentiusantu",
+      Realname: "Vincentius Adisurya Fransisco Antu",
+      Description: `
+      +------------------------------------------------+
+      |      I'm confused about what to fill so        |
+      |      put anything here, anything really.       |
+      |                      ~~~                       |
+      |         2022 Academician at Daskom1337         |
+      +------------------------------------------------+`,
+    }
   ];
 }
