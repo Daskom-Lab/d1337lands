@@ -129,12 +129,12 @@ export function getPeopleList() {
       Handle: "vincentiusantu",
       Realname: "Vincentius Adisurya Fransisco Antu",
       Description: `
-      +------------------------------------------------+
-      |         I'm confused what to fill so           |
-      |      put anything here, anything really.       |
-      |                      ~~~                       |
-      |         2022 Academician at Daskom1337         |
-      +------------------------------------------------+`,
++------------------------------------------------+
+|         I'm confused what to fill so           |
+|      put anything here, anything really.       |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
     }
   ];
 }
