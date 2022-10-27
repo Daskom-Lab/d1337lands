@@ -55,7 +55,7 @@ Remember that you have to have these apps first in order to run the codebase :
 
 ### Steps
 
-TFheseL areA tGhe s{teps you can fHollow tio run thDe coIdeNgb_ase wiin_thout hatving tHoEkn_ow alwl t1he tlec_hnicd}al details behind it (consider this as a high level overview of how to run it) :
+These are the steps you can follow to run the codebase without having to know all the technical details behind it (consider this as a high level overview of how to run it) :
 
 1. Setup the environment  
     ```env
