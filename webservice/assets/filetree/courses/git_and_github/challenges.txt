@@ -24,4 +24,24 @@
 |           you have learn about something
 |
 | > GLHF!
++--------------+
+| Challenge #2 |
++--------------+
+| > Now that you have understand git flow and some basic of how to
+|   use git and github as a tool, its time to explore more about it
+|
+| > We have buried some of treasures (flags) inside of this repository
+|   this treasures / flags is actually just a simple string that look
+|   something like this: FLAG{hey_you_found_me}
+|
+| > Your task is to gather all this flags and then tell everyone
+|   about it by sending it in the academy discord channel along with
+|   all the steps that you took to find it
+|
+| > This is considered to be a race challenge, so whoever found it
+|   the first time, he/she is the winner, so find it and send it ASAP
+|
+| [*] BTW There are 5 flags to be found!
+|
+| > GLHF!
 +---

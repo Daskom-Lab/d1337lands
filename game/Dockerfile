@@ -14,7 +14,7 @@ COPY . .
 
 RUN yarn build
 
-FROM lipanski/docker-static-website:latest
+FROM lipanski/docker-static-website:1.0.0
 
 COPY --from=builder /app/dist/. .
 COPY --from=builder /app/assets/. ./assets
