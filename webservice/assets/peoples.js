@@ -130,8 +130,7 @@ export function getPeopleList() {
       Realname: "Vincentius Adisurya Fransisco Antu",
       Description: `
 +------------------------------------------------+
-|         I'm confused what to fill so           |
-|      put anything here, anything really.       |
+|      Just a person who's still learning        |
 |                      ~~~                       |
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
