@@ -126,7 +126,7 @@ export function getPeopleList() {
     },
     {
       Avatar: "icen.html",
-      Handle: "vincentiusantu",
+      Handle: "icen",
       Realname: "Vincentius Adisurya Fransisco Antu",
       Description: `
 +------------------------------------------------+
