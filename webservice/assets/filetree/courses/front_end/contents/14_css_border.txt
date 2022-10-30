@@ -1,0 +1,68 @@
+=================================
+             BORDER
+=================================
+
+The second hierarchy is border. border is border of an element.
+
+actually we've make a border before at content 9, border color section.
+
+now we're gonna style more than color.
+
+=> border-style: /* value */
+    -> border-style used to give a style to the borderline. the values are:
+
+        > dotted - Defines a dotted border
+        > dashed - Defines a dashed border
+        > solid - Defines a solid border
+        > double - Defines a double border
+        > groove - Defines a 3D grooved border. The effect depends on the border-color value
+        > ridge - Defines a 3D ridged border. The effect depends on the border-color value
+        > inset - Defines a 3D inset border. The effect depends on the border-color value
+        > outset - Defines a 3D outset border. The effect depends on the border-color value
+        > none - Defines no border
+        > hidden - Defines a hidden border
+    
+    try it yourself in your stylesheet, for example:
+
+        h1 {
+            border-style: dashed;
+        }
+
+=> border-width: /* value */
+    -> border-width gives a specific width to all sides of border.
+        the values here are the unit values that we've learn before or a descriptive text: thin, medium, thick.
+    
+    example:
+
+        h1 {
+            border-style: solid;
+            border-width: thick;
+        }
+
+=> border sides
+    -> we can gives a value to a specific sides too whether it is width or style, just add:
+        
+        > border-{ sides }-{ property }: /* values */;
+    
+    sides contain (top, bottom, right, left), for example:
+
+        > border-bottom-width: /* values */;
+        > border-left-style: /* values */;
+        > border-right-width: /* values */;
+
+=> shorthand
+    -> border: size style color;
+    
+    example: 
+
+                h1 {
+                    border-style: solid;
+                    border-width: 2vw;
+                    border-color: red;
+                }
+
+            can become:
+
+                h1 {
+                    border: 2vw solid red;
+                }

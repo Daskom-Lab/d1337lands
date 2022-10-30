@@ -1,0 +1,37 @@
+=================================
+             MARGIN
+=================================
+
+            +-------------------------------------------+
+            |                   |                       |
+            |                   | margin-top            |
+            |                   |                       |
+            |            +---------------+              |
+            |<---------->|    content    |<------------>|
+            |margin-left |               | margin-right |
+            |            +---------------+              |
+            |             ^border |                     |
+            |                     |margin-bottom        |
+            |                     |                     |
+            +-------------------------------------------+
+
+
+the last is margin, you often see it while making an assignment in word that you must set the margin left, bot, top, right into
+
+a certain format.
+
+=> margin: /* size */;
+    -> with that format, it will give space to all four sides outside the border.
+    -> there's "auto" and "inherhit" value in margin, while "auto" it auto horizontally center the element in the container, "inherhit" will follow the parent element.
+
+=> padding sides
+    -> with this, we can see which sizes we set.
+        > margin-top: /* values */;
+        > margin-bottom: /* values */;
+        > margin-left: /* values */;
+        > margin-right: /* values */;
+
+=> shorthand
+    -> margin: top right bottom left;
+        > example:
+                    margin: 25px 50px 75px 100px;
