@@ -78,5 +78,63 @@ export function getPeopleList() {
 |       Front End Developer at Daskom1337        |
 +------------------------------------------------+`,
     },
+    {
+      Avatar: "rey.html",
+      Handle: "Unknown Visuals",
+      Realname: "Reynaldhi Tryana Graha",
+      Description: `
++------------------------------------------------+
+|           Still unknown to this day.           |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    },
+    {
+      Avatar: "mai.html",
+      Handle: "Raphaeline",
+      Realname: "M. Al Fitra Zulfikhar Akbar",
+      Description: `
++------------------------------------------------+
+|         Solving the problem everyday.          |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    },
+    {
+      Avatar: "alfa.html",
+      Handle: "alfa",
+      Realname: "M. Aushaf Al Farras",
+      Description: `
++------------------------------------------------+
+|         I come from a land down under!         |                
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    },
+    {
+      Avatar: "vander.html",
+      Handle: "Vanduts",
+      Realname: "Evander Ricardo Manuel",
+      Description: `
++------------------------------------------------+
+|                  Did You Know  ?               |
+|       If you hold your breath long enough      |
+|             you can sleep forever              |                
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    },
+    {
+      Avatar: "icen.html",
+      Handle: "vincentiusantu",
+      Realname: "Vincentius Adisurya Fransisco Antu",
+      Description: `
++------------------------------------------------+
+|         I'm confused what to fill so           |
+|      put anything here, anything really.       |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    }
   ];
 }
