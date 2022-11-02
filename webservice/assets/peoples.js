@@ -135,6 +135,17 @@ export function getPeopleList() {
 |                      ~~~                       |
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
+    },
+    {
+      Avatar: "mayco.html",
+      Handle: "maycoaja",
+      Realname: "Mayco Ikhsan Hanafi",
+      Description: `
++------------------------------------------------+
+|              Keep Looking Forward              |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
     }
   ];
 }
