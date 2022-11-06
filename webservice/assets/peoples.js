@@ -145,6 +145,17 @@ export function getPeopleList() {
 |                      ~~~                       |
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
+    },
+    {
+      Avatar: "chaca.html",
+      Handle: "lycheeseyes",
+      Realname: "Marshaniswah Syamsul",
+      Description: `
++------------------------------------------------+
+|                 *smiley face                   |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
     }
   ];
 }
