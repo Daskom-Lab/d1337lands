@@ -1,0 +1,44 @@
+Before we have talk about heading and list, it's all about text, how about the image that we seen in facebook? instagram? can we use it?
+
+The answer is OF COURSE we can, What we're gonna do to show image? tags again?
+
+Yep, it similar to tag, here is how to do it
+
+==================================
+             IMAGE
+==================================
+
+=> Tags : <img src="image source" alt="*alternative text if there's no such image*">
+
+for example:
+    
+    <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Flogos-download.com%2Fwp-content%2Fuploads%2F2016%2F09%2FGitHub_logo.png&f=1&nofb=1&ipt=8a8373e865eb76563939fe3ade0cb3571792557f7d5e546a45c6fe976ab85562&ipo=images" alt="github">
+
+Try copy that code and see what happen to your web! if you have seen the image, now delete the source let the alt there! see the difference.
+
+you can set the height and weight property with:
+    
+    <img src="image source" alt="*alternative text if there's no such image*" height = " *your height* " width = " *Your width* ">
+
+you can use px for the width value like width=500px etc.
+
+==================================
+
+After we talk about image, we're gonna make some hyperlink content
+
+==================================
+            HYPERLINK
+==================================
+
+=> Tags : <a href="https://daskomlab.com/"> *something* </a>
+
+With hyperlink, we can attach a link to some tags like heading, paragraph, image, div, etc.
+
+To use that tags, you can simply write it like above, or you can insert in the content of tags like
+
+    <h1><a href="https://daskomlab.com/"> Ini web daskom </a></h1>
+
+==================================
+
+That's for the fundamental theory of calculus, like before, you can experiment it with part 1 and make simple mail (maybe, its up to you) using those theory, SAYOUNARA!!! ;D
+

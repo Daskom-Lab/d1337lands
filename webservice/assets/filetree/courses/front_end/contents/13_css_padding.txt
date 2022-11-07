@@ -1,0 +1,41 @@
+=================================
+             PADDING
+=================================
+
+                border
+            +----------------------------------------+
+            |                   |                    |
+            |                   | padding-top        |
+            |                   |                    |
+            |            +---------------+           |
+            |<---------->|    content    |<--------->|
+            | padd-left  |               | padd-right|
+            |            +---------------+           |
+            |                   |                    |
+            |                   |padding-bottom      |
+            |                   |                    |
+            +----------------------------------------+
+
+
+We're gonna make from the first hierarchy, padding. padding create space around element's content, inside the border.
+
+=> padding: /* size */;
+    -> with that format, it will give padding to all four sides.
+
+=> padding sides
+    -> with this, we can see which sizes we set.
+        > padding-top: /* values */;
+        > padding-bottom: /* values */;
+        > padding-left: /* values */;
+        > padding-right: /* values */;
+
+=> shorthand
+    -> padding: top right bottom left;
+        > example:
+                    padding: 25px 50px 75px 100px;
+
+=> Example: 
+
+                h1 {
+                   padding: 50px;
+                }

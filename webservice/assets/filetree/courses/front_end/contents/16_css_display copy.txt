@@ -1,0 +1,87 @@
+In this section we're gonna talk about display. 
+
+before in HTML, there's <div> and <span> mentioned, those tags has it's own display mode.
+
+<span> has *inline* display, and <div> has *block* display. the difference between inline and block is 
+
+*inline* element does not start on a new line, but block element always start on a new line.
+
+=> example of inline elements:              => example of block element:
+    -> <span>                                   -> <div>
+    -> <a>                                      -> <h1> - <h6>
+    -> <img>                                    -> <p>
+                                                -> <header> 
+                                                -> <footer> 
+                                                -> <section>
+
+<div> tags:                                                                 <span> tags:
+                                
+    <div>HOLA<div>                                                              <span>HOLA</span>
+    <div>HOLA<div>                                                              <span>HOLA</span>
+    <div>HOLA<div>                                                              <span>HOLA</span>
+
+the web will show: 
++-------------------------------------------------+                         +-------------------------------------------------+
+| HOLA                                            |                         | HOLA HOLA HOLA                                  |
+| HOLA                                            |                         |                                                 |
+| HOLA                                            |                         |                                                 |
+|                                                 |                         |                                                 |
+|                                                 |                         |                                                 |
+|                                                 |                         |                                                 |
+|                                                 |                         |                                                 |
+|                                                 |                         |                                                 |
+|                                                 |                         |                                                 |
+|                                                 |                         |                                                 |
++-------------------------------------------------+                         +-------------------------------------------------+                      
+                                               
+You can try it on your index.html with this:
+
+            <!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Document</title>
+            </head>
+
+            <body>
+                <!-- This is inline element. -->
+                <span>HOLA</span>
+                <span>HOLA</span>
+                <span>HOLA</span>
+
+                <!-- This is block element. -->
+                <div>Hello</div>
+                <div>Hello</div>
+                <div>Hello</div>
+            </body>
+
+            </html>
+
+
+Now we're gonna learn about display property.
+
+=================================
+             DISPLAY
+=================================
+
+=> display: /* VALUE */
+
+display property can change the element display, from inline to block, block to inline, flex display and many more.
+
+for example, you can add in your sylesheet with html above:
+
+                span {
+                    display: block;
+                }
+                div {
+                    display: inline;
+                }
+
+because we set the display in stylesheet, now <div> will become an inline, and <span> become block.
+
+You can hide some of tags too with
+
+            display: none;
