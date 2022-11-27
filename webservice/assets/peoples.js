@@ -156,6 +156,17 @@ export function getPeopleList() {
 |                      ~~~                       |
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
-    }
+    },
+    {
+      Avatar: "anggun.html",
+      Handle: "anggun, unggas, nyimeng, unggan, anything u want",
+      Realname: "{Nyimas Anggun Barokatillah}",
+      Description: `
+  +------------------------------------------------+
+  |            You Have One Life To Live           |    
+  |                      ~~~                       |
+  |         2022 Academician at Daskom1337         |
+  +------------------------------------------------+`,
+  },
   ];
 }
