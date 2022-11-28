@@ -158,7 +158,7 @@ export function getPeopleList() {
 +------------------------------------------------+`,
     },
     {
-      Avatar: "anggun.html",
+      Avatar: "anggun_new.html",
       Handle: "anggun, unggas, nyimeng, unggan, anything u want",
       Realname: "{Nyimas Anggun Barokatillah}",
       Description: `
