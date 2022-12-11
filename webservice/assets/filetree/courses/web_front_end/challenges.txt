@@ -47,7 +47,26 @@
 |          case (well, the user still need their eye to interact with the animation 
 |          right ? wkwk)
 |
-| [*] Remember that you might want to read the 
+| [*] Remember that you might want to read the 26_references.txt content to help you out
+| [*] You can follow tutorials to create the personal website, and follow all the code there
+|     but please add something that will make it unique to yourself
+|
+| > To do this challenge, you have to create a repository called "{your_username}.github.io"
+|   in your github account first
+|
+| [*] Once you have done this challenge, you have to give your github
+|     repository link in the prochef academy discord channel so the mentors
+|     can see it and give a score based on what you have done
+|
+|     Note: score here is just a number for the mentors to see how far
+|           you have learn about something
+|
+| [*] And one last thing, if you have done this challenge and the mentors approved it, you 
+|     can go to https://idcloudhost.com/domain/ find your own domain name that you want to 
+|     have, and me [FAI] will buy the domain for you (maximum Rp25.000 for the price)
+|
+|     Note: to get such a cheap price for a domain, you can try to find one that ends with
+|           .xyz or .my.id or something else (this is called TLD, Top Level Domain)
 |
 | > GLHF!
 +---
