@@ -1,0 +1,53 @@
++--------------+
+| Challenge #1 |
++--------------+---
+| > To make sure that you are totally following all the contents in the
+|   courses, this first challenge is about creating *the exact* same thing
+|   in the courses
+|
+| > So what you have to do is to create a repository in your own github
+|   account and put every single files and changes that are mentioned in
+|   the courses itself
+|
+| [*] Once you have done this challenge, you have to give your github
+|     repository link in the prochef academy discord channel so the mentors
+|     can see it and give a score based on what you have done
+|
+|     Note: score here is just a number for the mentors to see how far
+|           you have learn about something
+|
+| > GLHF!
++--------------+
+| Challenge #2 |
++--------------+
+| > [ALERT] Sorry, due to some conditions this second challenge has been changed
+|
+| > So instead of adding some javascripts to the last website you made in the 
+|   previous challenge, here you have to create one more, its your own website !!!
+|
+| > But of course, its not a challenge if it doesn't have *requirements* right ?
+|   so here are all the requirements you need to meet:
+|
+|   [1] Do not use any web framework (not even something like bootstrap or tailwindcss)
+|       *except* javascript libraries that will help you when writing javascript codes
+|       (you can and should ask the mentors in the discord channel first for this one)
+|   [2] Use only native HTML, CSS, and Javascripts
+|   [3] There should be one user interaction at minimal, these are things that count as 
+|       user interactions:
+|
+|       -> Button click triggered animation / control such as page changes or scroll 
+|          to top kind of things
+|       -> Page scroll triggered animation 
+|          (i.e https://greensock.com/docs/v3/Plugins/ScrollTrigger or 
+|               https://css-tricks.com/scroll-triggered-animation-vanilla-javascript/)
+|       -> Contact page (a working one, connected to a backend if you can, and if you 
+|          need help for this one, chat in the discord channel and all the mentors will 
+|          be helping you out for sure)
+|       -> Animations even without user interaction counted as user interaction in this
+|          case (well, the user still need their eye to interact with the animation 
+|          right ? wkwk)
+|
+| [*] Remember that you might want to read the 
+|
+| > GLHF!
++---
