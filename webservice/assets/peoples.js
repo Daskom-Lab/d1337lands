@@ -156,6 +156,17 @@ export function getPeopleList() {
 |                      ~~~                       |
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
-    }
+    },
+    {
+      Avatar: "iga.html",
+      Handle: "IritaSee",
+      Realname: "Iga Narendra Pramawijaya",
+      Description: `
++------------------------------------------------+
+|               Mum look I am on TV              | 
+|                      ~~~                       |
+|    Ur Robot Brain Developer for Daskom1337     |
++------------------------------------------------+`,
+    },
   ];
 }
