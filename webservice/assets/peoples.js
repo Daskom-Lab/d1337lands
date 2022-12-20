@@ -157,5 +157,14 @@ export function getPeopleList() {
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
     }
-  ];
+  
+    {
+      Avatar: "RafiM.html",
+      Handle: "Bono Black Boy",
+      Realname: "Rafi Mahfuz Setyagraha",
+      Description: `
+  +------------------------------------------------+
+  |           I am inside your walls               |
+  +------------------------------------------------+`,
+  }];
 }
