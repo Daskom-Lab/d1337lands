@@ -1,0 +1,70 @@
+Hello again, in this contents, we're gonna learn *something*
+
+When you make a skeleton, we've learnt tags like h1, ul, ol, li, div, id, class, etc.
+
+We can edit those tags appearance with *selector* in your css style sheet, how to?
+
+=================================
+           SELECTOR
+=================================
+
+=> format : 
+                /* selector */ {
+                    /* properties: value */
+                }
+
+selector has a function to select which tag that will have some style. to select tags like body, div, span, h1, ul, etc. we can simply type:
+
+        div {
+            font-size: small;
+            color: blue;   
+        }
+        h1 {
+            font-size: small;
+            color: blue;   
+        }
+
+see the differences now in your index.html at <h1> (remember to add <h1> tags first in your index.html)
+
+you can try for ul too:
+        ul {
+            color: red;
+            margin: 40px;
+        }
+
+<--> ID and CLASS SELECTOR <-->
+
+we've seen the normal selector, now how about selector for id and class? (see at content 5_html_section)
+
+for class we can add dot (.) in selector:
+
+        .nama {
+            color: red;
+            margin: 40px;
+        }
+
+and for id we use hashtag (#):
+
+        .login-session {
+            color: red;
+            margin: 40px;
+        }
+
+<--> PSEUDO CLASS SELECTOR <-->
+
+There's a pseudo selector among selector like :hover, :click, :link. those selector are used based on activity of the selector. for example:
+
+        h1:hover {
+            font-size: small;
+            color: blue;   
+        }
+
+That selector means the <h1> will change its color and size while the <h1> text were hovered by mouse.
+
+and there's much more of pseudo that you can learn, you can browse it yourself ^_^
+
+=================================
+
+now we have learn about selector, in the next contents we're gonna learn about styling, whether it's font styling, background, semantic web, container box, etc.
+
+let's go to the next contents!!

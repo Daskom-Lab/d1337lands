@@ -126,12 +126,11 @@ export function getPeopleList() {
     },
     {
       Avatar: "icen.html",
-      Handle: "vincentiusantu",
+      Handle: "icen",
       Realname: "Vincentius Adisurya Fransisco Antu",
       Description: `
 +------------------------------------------------+
-|         I'm confused what to fill so           |
-|      put anything here, anything really.       |
+|      Just a person who's still learning        |
 |                      ~~~                       |
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+`,
@@ -147,6 +146,39 @@ export function getPeopleList() {
 |                      ~~~                       |
 |         2022 Academician at Daskom1337         |
 +------------------------------------------------+` 
-    }
+    },
+    {
+      Avatar: "mayco.html",
+      Handle: "maycoaja",
+      Realname: "Mayco Ikhsan Hanafi",
+      Description: `
++------------------------------------------------+
+|              Keep Looking Forward              |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    },
+    {
+      Avatar: "chaca.html",
+      Handle: "lycheeseyes",
+      Realname: "Marshaniswah Syamsul",
+      Description: `
++------------------------------------------------+
+|                 *smiley face                   |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+`,
+    },
+    {
+      Avatar: "iga.html",
+      Handle: "IritaSee",
+      Realname: "Iga Narendra Pramawijaya",
+      Description: `
++------------------------------------------------+
+|               Mum look I am on TV              | 
+|                      ~~~                       |
+|    Ur Robot Brain Developer for Daskom1337     |
++------------------------------------------------+`,
+    },
   ];
 }
