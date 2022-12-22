@@ -136,6 +136,18 @@ export function getPeopleList() {
 +------------------------------------------------+`,
     },
     {
+      Avatar: "abd.html",
+      Handle: "Bedilz",
+      Realname: "Abdillah Nur",
+      Description:`
++------------------------------------------------+
+|      they told me to fill the description      |
+|    with anything, welp i guess this is it      |
+|                      ~~~                       |
+|         2022 Academician at Daskom1337         |
++------------------------------------------------+` 
+    },
+    {
       Avatar: "mayco.html",
       Handle: "maycoaja",
       Realname: "Mayco Ikhsan Hanafi",
