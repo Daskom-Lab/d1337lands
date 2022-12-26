@@ -139,13 +139,13 @@ export function getPeopleList() {
       Avatar: "abd.html",
       Handle: "Bedilz",
       Realname: "Abdillah Nur",
-      Description:`
+      Description: `
 +------------------------------------------------+
 |      they told me to fill the description      |
 |    with anything, welp i guess this is it      |
 |                      ~~~                       |
 |         2022 Academician at Daskom1337         |
-+------------------------------------------------+` 
++------------------------------------------------+`,
     },
     {
       Avatar: "mayco.html",
@@ -176,6 +176,17 @@ export function getPeopleList() {
       Description: `
 +------------------------------------------------+
 |               Mum look I am on TV              | 
+|                      ~~~                       |
+|    Ur Robot Brain Developer for Daskom1337     |
++------------------------------------------------+`,
+    },
+    {
+      Avatar: "awp.html",
+      Handle: "awepe",
+      Realname: "Adam Wisnu Pradana",
+      Description: `
++------------------------------------------------+
+|              Tenang, Datar, Kuasai             | 
 |                      ~~~                       |
 |    Ur Robot Brain Developer for Daskom1337     |
 +------------------------------------------------+`,
