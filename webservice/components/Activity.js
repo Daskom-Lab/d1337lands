@@ -9,7 +9,7 @@ export default function Activity() {
 
   Hello everyone, we are pleased to announce our **first ever conference**, it will happen in between one of the last three months of this year (2023) (exact date to be available soon), we will run this conference online and all talks will be recorded and uploaded to youtube so future people can benefit from it.
 
-  The conference is currently only open for Dasar Komputer Laboratory assistant and ex-assistant, and it is planned to cover broad topics in technology ranging from highly technical things to some general career advice in this industry.
+  The conference is currently only open for Dasar Komputer Laboratory assistant and ex-assistant, and the goal of it is to cover broad topics in technology ranging from highly technical things to some general career advice in this industry.
 
   ~~~txt
   These are the speakers that will bring you some awesome talks this year:
@@ -19,7 +19,17 @@ export default function Activity() {
   +---+     by: Ade Aditya Ramadha a.k.a Adrama
            ____________________________________
 
-           Ade is blablabla
+           Ade is a researcher at Telkom University's NDN Research Group and 
+           has published several papers and books on computer networks. He likes 
+           learning about new technologies and sharing his knowledge with others. 
+
+           Ade is a master student of electrical engineering specializing in 
+           computer networks at Telkom University.
+
+           This time he will talk about Named Data Networking (NDN), one of the 
+           future Internet network candidates to resolve several current Internet 
+           problems and implement a simple File Transfer Protocol (FTP) using NDN 
+           to show the improvement over the implemented Internet Protocol (IP).
 
   +---+
   | 2 +-•  [Code directly using Nvidia GPU]
@@ -42,6 +52,8 @@ export default function Activity() {
            knowing anything about the fundamental of how a CPU work to be able
            to create one simple CPU in an FPGA and make an emulation of the CPU
            in python.
+
+  (More people will hopefully add to this)
   ~~~  
 
   The CFP for this conference is still **open until August 2023**, you can submit it to 1337daskom@gmail.com with a subject "CFP 2023", we accept either paper or slides for the submission and dont worry about anything since we are still a new player in the conference world so we will basically accept anything as long as you are talking about tech things.
