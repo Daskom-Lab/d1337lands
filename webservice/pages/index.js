@@ -515,6 +515,16 @@ export default function Home({ peopleList, fileTree, GAME_URL, WEBSOCKET_URL, WE
     }
   }, [sharedState.isGameActive])
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    for (const key of params.keys()) {
+      const value = params.get(key);
+      if (key === "s" && ['about-us', 'activity', 'people', 'playground'].includes(value)) {
+        setMenu(value);
+      }
+    }
+  }, [])
+
   return (
     <div className="w-full h-full">
       <Head>

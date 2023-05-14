@@ -1,6 +1,6 @@
 import ReactMarkdown from "react-markdown"
-import {Prism as SyntaxHighlighter} from "react-syntax-highlighter"
-import {dark} from "react-syntax-highlighter/dist/esm/styles/prism"
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
+import { dark } from "react-syntax-highlighter/dist/esm/styles/prism"
 import remarkBreaks from "remark-breaks";
 
 export default function Aboutus() {
@@ -17,14 +17,14 @@ export default function Aboutus() {
 
   [+] We hold several events to give knowledge for free for all of you (and us) which are [weekend crash course](https://github.com/Daskom-Lab/weekend-crash-course), [prochef academy](https://github.com/Daskom-Lab/2021-Academy) and [capture the flag](https://daskom-lab.github.io/daskomctf).
   `;
-  
+
   return (
-    <div className="text-white font-overpassm">
+    <div className="text-white font-ibm">
       <ReactMarkdown
         linkTarget="_blank"
         remarkPlugins={[remarkBreaks]}
         components={{
-          code({node, inline, className, children, ...props}) {
+          code({ node, inline, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '')
             return !inline && match ? (
               <SyntaxHighlighter
@@ -33,17 +33,17 @@ export default function Aboutus() {
                 PreTag="div"
                 {...props}
               >
-                { String(children).replace(/\n$/, '') }
+                {String(children).replace(/\n$/, '')}
               </SyntaxHighlighter>
             ) : (
               <code className={className} {...props}>
-                { children }
+                {children}
               </code>
             )
           }
         }}
       >
-        { aboutus_md }
+        {aboutus_md}
       </ReactMarkdown>
     </div>
   );

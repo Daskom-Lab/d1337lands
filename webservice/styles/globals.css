@@ -27,8 +27,20 @@ p:not(:last-child) {
 }
 
 h1 {
-  font-size: larger;
+  font-size: 1.5rem;
   margin-bottom: 2rem;
+}
+
+pre:has(code) {
+  margin-bottom: 1.5rem;
+}
+
+.simplebar-content a {
+  color: #fde047;
+}
+
+.language-md {
+  font-family: "Overpass Mono", monospace;
 }
 
 /* XTerm.js related styling */
@@ -46,5 +58,9 @@ h1 {
 
 /* Simplebar related styling */
 .simplebar-track.simplebar-vertical .simplebar-scrollbar:before {
-  background-image: linear-gradient(180deg, rgba(74,222,129,1) 0%, rgba(132,204,24,1) 100%);
+  background-image: linear-gradient(
+    180deg,
+    rgba(74, 222, 129, 1) 0%,
+    rgba(132, 204, 24, 1) 100%
+  );
 }
