@@ -23,7 +23,7 @@ export default function Activity() {
            has published several papers and books on computer networks. He likes 
            learning about new technologies and sharing his knowledge with others. 
 
-           Ade is a master student of electrical engineering specializing in 
+           Ade is a master's student of electrical engineering specializing in 
            computer networks at Telkom University.
 
            This time he will talk about Named Data Networking (NDN), one of the 
@@ -36,7 +36,19 @@ export default function Activity() {
   +---+     by: Iga Narendra Pramawijaya a.k.a IritaSee
            ____________________________________________
 
-           Iga is blablabla
+           Quarter time reader, part time coder, full time learner. That is how 
+           Iga describe himself. 
+           
+           Iga is a Master's Student based in Gumi, North Gyeongsang, South Korea 
+           and specialising in Digital Medical Signal Processing. Passionate about 
+           science with 12 years experience in computer programming, interpersonal 
+           skills for working in a team and successfully completing several projects.
+
+           This time, he will talk about how GPU can solve computational problem 
+           in an accelerated way, promising to deliver advanced computations and 
+           simulations. Sessions will be delivered in C programming language and 
+           hopefully this session could inspire cross-field-colaboration projects 
+           in the future.
 
   +---+
   | 3 +-•  [How to make CPU for dummies]
