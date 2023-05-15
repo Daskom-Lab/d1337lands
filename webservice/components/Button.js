@@ -1,8 +1,8 @@
 import styles from "./Button.module.css";
 
-export default function Button({ text, color, onClick }) {
+export default function Button({ text, color, onClick, className = "" }) {
   return (
-    <button className={styles.pushable} onClick={onClick}>
+    <button className={styles.pushable + " " + className} onClick={onClick}>
       <span className={styles.shadow}></span>
       <span
         className={`${styles.edge} ${{
@@ -12,10 +12,10 @@ export default function Button({ text, color, onClick }) {
         }[color]}`}
       ></span>
       <span className={`${styles.front} ${{
-          red: styles.front_red,
-          yellow: styles.front_yellow,
-          green: styles.front_green,
-        }[color]}`}>{text}</span>
+        red: styles.front_red,
+        yellow: styles.front_yellow,
+        green: styles.front_green,
+      }[color]}`}>{text}</span>
     </button>
   );
 }

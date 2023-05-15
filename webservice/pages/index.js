@@ -655,17 +655,17 @@ export default function Home({ peopleList, fileTree, GAME_URL, WEBSOCKET_URL, WE
         }
         <div className={
           "flex flex-col m-auto flex-auto transition-all duration-700 " +
-          (sharedState.isGameActive ? "h-full max-w-full" : "h-[75%] max-w-6xl")
+          (sharedState.isGameActive ? "h-full max-w-full" : "md:h-[75%] h-[90%] md:max-w-6xl max-w-full md:mx-auto mx-4")
         }>
           <div className={
-            "font-merriw font-extrabold text-4xl text-yellow-300 mx-auto " +
+            "font-merriw font-extrabold md:text-4xl text-3xl text-yellow-300 mx-auto " +
             (sharedState.isGameActive ? "hidden" : "visible")
           }>
             Daskom1337 Community
           </div>
           <div className={
             "w-full border-2 border-slate-400 bg-slate-900 rounded-xl shadow-l transition-all duration-700 " +
-            (sharedState.isGameActive ? "h-4/6" : "mt-6 h-[75%]")
+            (sharedState.isGameActive ? "h-4/6" : "mt-6 md:mb-0 mb-6 md:h-[75%] h-[65%]")
           }>
             {
               !sharedState.isGameActive ? (
@@ -811,11 +811,11 @@ export default function Home({ peopleList, fileTree, GAME_URL, WEBSOCKET_URL, WE
           </div>
           {
             !sharedState.isGameActive ? (
-              <div className="flex flex-row mt-5 px-10">
+              <div className="flex md:flex-row mt-5 md:px-10 md:gap-0 gap-4 flex-col md:text-base text-sm">
                 <Button text="About Us" color={menu === "about-us" ? "red" : "yellow"} onClick={() => setMenu("about-us")} />
                 <Button text="The Activity" color={menu === "activity" ? "red" : "yellow"} onClick={() => setMenu("activity")} />
                 <Button text="The People" color={menu === "people" ? "red" : "yellow"} onClick={() => setMenu("people")} />
-                <Button text="The Playground" color={menu === "playground" ? "red" : "yellow"} onClick={() => setMenu("playground")} />
+                <Button className="hidden md:block" text="The Playground" color={menu === "playground" ? "red" : "yellow"} onClick={() => setMenu("playground")} />
               </div>
             ) : (
               <div className="flex flex-row mt-2 h-2/6">
